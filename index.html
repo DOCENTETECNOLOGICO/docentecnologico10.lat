@@ -1,0 +1,1506 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Docente Tecnológico | Centro de Capacitación e Innovación Pedagógica</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --azul: #0f2d8a;
+    --azul-oscuro: #091e5e;
+    --azul-medio: #1a3fac;
+    --dorado: #c9a227;
+    --dorado-claro: #f0c84a;
+    --dorado-oscuro: #9e7d1a;
+    --blanco: #ffffff;
+    --gris-claro: #f4f6fb;
+    --gris: #6b7280;
+    --texto: #1a1a2e;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    color: var(--texto);
+    background: var(--blanco);
+    overflow-x: hidden;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 0 5%;
+    height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(9, 30, 94, 0.96);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(201,162,39,0.3);
+  }
+
+  .nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+  }
+
+  .nav-logo img {
+    height: 46px;
+    width: 46px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .nav-logo-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.1;
+  }
+
+  .nav-logo-text span:first-child {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    color: var(--dorado);
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+
+  .nav-logo-text span:last-child {
+    font-size: 0.65rem;
+    color: rgba(255,255,255,0.6);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+  }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    color: rgba(255,255,255,0.8);
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--dorado); }
+
+  .btn-nav {
+    background: linear-gradient(135deg, var(--dorado), var(--dorado-claro));
+    color: var(--azul-oscuro) !important;
+    padding: 9px 22px;
+    border-radius: 6px;
+    font-weight: 600 !important;
+    font-size: 0.85rem !important;
+    transition: transform 0.2s, box-shadow 0.2s !important;
+  }
+
+  .btn-nav:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(201,162,39,0.4);
+    color: var(--azul-oscuro) !important;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    background: linear-gradient(135deg, var(--azul-oscuro) 0%, var(--azul) 50%, #1a3fac 100%);
+    display: flex;
+    align-items: center;
+    padding: 100px 5% 60px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -200px; right: -200px;
+    width: 700px; height: 700px;
+    background: radial-gradient(circle, rgba(201,162,39,0.12) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: -100px; left: -100px;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(201,162,39,0.08) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+
+  /* Decorative grid */
+  .hero-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(201,162,39,0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(201,162,39,0.05) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 640px;
+    animation: fadeUp 0.9s ease both;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(201,162,39,0.15);
+    border: 1px solid rgba(201,162,39,0.4);
+    color: var(--dorado-claro);
+    padding: 6px 16px;
+    border-radius: 100px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 28px;
+  }
+
+  .hero-badge::before {
+    content: '';
+    width: 7px; height: 7px;
+    background: var(--dorado);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.4); }
+  }
+
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.4rem, 5vw, 3.8rem);
+    color: var(--blanco);
+    line-height: 1.15;
+    margin-bottom: 20px;
+  }
+
+  .hero h1 em {
+    font-style: normal;
+    color: var(--dorado);
+  }
+
+  .hero p {
+    font-size: 1.05rem;
+    color: rgba(255,255,255,0.75);
+    line-height: 1.7;
+    margin-bottom: 40px;
+    max-width: 520px;
+  }
+
+  .hero-btns {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--dorado), var(--dorado-claro));
+    color: var(--azul-oscuro);
+    padding: 14px 32px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    text-decoration: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(201,162,39,0.45);
+  }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--blanco);
+    padding: 14px 32px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: none;
+    border: 1.5px solid rgba(255,255,255,0.35);
+    transition: border-color 0.2s, background 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn-secondary:hover {
+    border-color: var(--dorado);
+    background: rgba(201,162,39,0.08);
+    color: var(--dorado);
+  }
+
+  .hero-stats {
+    position: relative;
+    z-index: 2;
+    margin-left: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    animation: fadeUp 0.9s 0.2s ease both;
+  }
+
+  .stat-card {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(201,162,39,0.25);
+    border-radius: 16px;
+    padding: 24px 28px;
+    text-align: center;
+    min-width: 160px;
+    backdrop-filter: blur(8px);
+    transition: transform 0.3s, border-color 0.3s;
+  }
+
+  .stat-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--dorado);
+  }
+
+  .stat-card .num {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.4rem;
+    color: var(--dorado);
+    font-weight: 900;
+    line-height: 1;
+  }
+
+  .stat-card .label {
+    font-size: 0.78rem;
+    color: rgba(255,255,255,0.65);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 6px;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── SERVICIOS ── */
+  .section {
+    padding: 90px 5%;
+  }
+
+  .section-header {
+    text-align: center;
+    margin-bottom: 60px;
+  }
+
+  .section-tag {
+    display: inline-block;
+    color: var(--dorado-oscuro);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .section-header h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.9rem, 4vw, 2.8rem);
+    color: var(--azul-oscuro);
+    line-height: 1.2;
+  }
+
+  .section-header h2 em {
+    font-style: normal;
+    color: var(--dorado-oscuro);
+  }
+
+  .section-header p {
+    color: var(--gris);
+    margin-top: 14px;
+    font-size: 1rem;
+    max-width: 540px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.7;
+  }
+
+  /* Servicios grid */
+  .servicios-bg {
+    background: var(--gris-claro);
+  }
+
+  .servicios-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .servicio-card {
+    background: var(--blanco);
+    border-radius: 16px;
+    padding: 36px 30px;
+    border: 1px solid rgba(15,45,138,0.08);
+    transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .servicio-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--azul), var(--dorado));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s;
+  }
+
+  .servicio-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 50px rgba(15,45,138,0.12);
+    border-color: rgba(15,45,138,0.15);
+  }
+
+  .servicio-card:hover::before { transform: scaleX(1); }
+
+  .servicio-icon {
+    width: 56px; height: 56px;
+    background: linear-gradient(135deg, var(--azul), var(--azul-medio));
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+  }
+
+  .servicio-card h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    color: var(--azul-oscuro);
+    margin-bottom: 10px;
+  }
+
+  .servicio-card p {
+    font-size: 0.9rem;
+    color: var(--gris);
+    line-height: 1.65;
+  }
+
+  .servicio-card .badge {
+    display: inline-block;
+    margin-top: 16px;
+    padding: 4px 12px;
+    border-radius: 100px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+
+  .badge-free {
+    background: rgba(34,197,94,0.1);
+    color: #16a34a;
+    border: 1px solid rgba(34,197,94,0.25);
+  }
+
+  .badge-premium {
+    background: rgba(201,162,39,0.12);
+    color: var(--dorado-oscuro);
+    border: 1px solid rgba(201,162,39,0.35);
+  }
+
+  /* ── SIMULACROS DESTACADOS ── */
+  .simulacros-section {
+    background: linear-gradient(135deg, var(--azul-oscuro), var(--azul));
+    padding: 90px 5%;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .simulacros-section::before {
+    content: '';
+    position: absolute;
+    top: -150px; right: -150px;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(201,162,39,0.15) 0%, transparent 65%);
+    border-radius: 50%;
+  }
+
+  .simulacros-section .section-header h2 { color: var(--blanco); }
+  .simulacros-section .section-header p { color: rgba(255,255,255,0.65); }
+  .simulacros-section .section-tag { color: var(--dorado-claro); }
+
+  .simulacros-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 28px;
+    max-width: 900px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 2;
+  }
+
+  .simulacro-card {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(201,162,39,0.3);
+    border-radius: 20px;
+    padding: 40px 36px;
+    backdrop-filter: blur(10px);
+    transition: transform 0.3s, border-color 0.3s, background 0.3s;
+    text-align: center;
+  }
+
+  .simulacro-card:hover {
+    transform: translateY(-6px);
+    border-color: var(--dorado);
+    background: rgba(255,255,255,0.1);
+  }
+
+  .simulacro-card .sim-icon {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    display: block;
+  }
+
+  .simulacro-card h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    color: var(--blanco);
+    margin-bottom: 12px;
+  }
+
+  .simulacro-card p {
+    font-size: 0.88rem;
+    color: rgba(255,255,255,0.65);
+    line-height: 1.65;
+    margin-bottom: 28px;
+  }
+
+  .simulacro-card ul {
+    list-style: none;
+    margin-bottom: 28px;
+    text-align: left;
+  }
+
+  .simulacro-card ul li {
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.8);
+    padding: 5px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .simulacro-card ul li::before {
+    content: '✓';
+    color: var(--dorado);
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .btn-dorado {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--dorado), var(--dorado-claro));
+    color: var(--azul-oscuro);
+    padding: 12px 28px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .btn-dorado:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(201,162,39,0.5);
+  }
+
+  /* ── CURSOS ── */
+  .cursos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .curso-card {
+    background: var(--blanco);
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid rgba(15,45,138,0.09);
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+
+  .curso-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 16px 40px rgba(15,45,138,0.12);
+  }
+
+  .curso-thumb {
+    height: 160px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3.5rem;
+    position: relative;
+  }
+
+  .curso-thumb.c1 { background: linear-gradient(135deg, #0f2d8a, #1a3fac); }
+  .curso-thumb.c2 { background: linear-gradient(135deg, #1a3fac, #2e5bcc); }
+  .curso-thumb.c3 { background: linear-gradient(135deg, #9e7d1a, #c9a227); }
+  .curso-thumb.c4 { background: linear-gradient(135deg, #0f2d8a, #9e7d1a); }
+
+  .curso-body {
+    padding: 22px;
+  }
+
+  .curso-nivel {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--dorado-oscuro);
+    margin-bottom: 8px;
+  }
+
+  .curso-body h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.05rem;
+    color: var(--azul-oscuro);
+    margin-bottom: 8px;
+    line-height: 1.3;
+  }
+
+  .curso-body p {
+    font-size: 0.83rem;
+    color: var(--gris);
+    line-height: 1.5;
+    margin-bottom: 16px;
+  }
+
+  .curso-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 14px;
+    border-top: 1px solid rgba(15,45,138,0.08);
+  }
+
+  .curso-precio {
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--azul);
+  }
+
+  .curso-precio.free { color: #16a34a; }
+
+  .btn-ver {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--azul);
+    text-decoration: none;
+    border: 1.5px solid var(--azul);
+    padding: 6px 14px;
+    border-radius: 6px;
+    transition: background 0.2s, color 0.2s;
+  }
+
+  .btn-ver:hover {
+    background: var(--azul);
+    color: var(--blanco);
+  }
+
+  /* ── RECURSOS ── */
+  .recursos-bg { background: var(--gris-claro); }
+
+  .recursos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .recurso-card {
+    background: var(--blanco);
+    border-radius: 12px;
+    padding: 28px 24px;
+    text-align: center;
+    border: 1px solid rgba(15,45,138,0.08);
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+
+  .recurso-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(15,45,138,0.1);
+  }
+
+  .recurso-card .icon { font-size: 2.2rem; margin-bottom: 12px; }
+
+  .recurso-card h4 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    color: var(--azul-oscuro);
+    margin-bottom: 6px;
+  }
+
+  .recurso-card p {
+    font-size: 0.82rem;
+    color: var(--gris);
+    line-height: 1.5;
+  }
+
+  /* ── TESTIMONIOS ── */
+  .testimonios-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .testimonio-card {
+    background: var(--blanco);
+    border-radius: 16px;
+    padding: 32px;
+    border: 1px solid rgba(15,45,138,0.08);
+    position: relative;
+  }
+
+  .testimonio-card::before {
+    content: '"';
+    font-family: 'Playfair Display', serif;
+    font-size: 5rem;
+    color: rgba(201,162,39,0.2);
+    position: absolute;
+    top: 10px; left: 20px;
+    line-height: 1;
+  }
+
+  .testimonio-card p {
+    font-size: 0.9rem;
+    color: var(--gris);
+    line-height: 1.7;
+    margin-bottom: 20px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .testimonio-autor {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .autor-avatar {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+  }
+
+  .av1 { background: linear-gradient(135deg, var(--azul), var(--azul-medio)); }
+  .av2 { background: linear-gradient(135deg, var(--dorado-oscuro), var(--dorado)); }
+  .av3 { background: linear-gradient(135deg, var(--azul-medio), var(--dorado-oscuro)); }
+
+  .autor-info strong {
+    display: block;
+    font-size: 0.88rem;
+    color: var(--azul-oscuro);
+    font-weight: 600;
+  }
+
+  .autor-info span {
+    font-size: 0.78rem;
+    color: var(--gris);
+  }
+
+  .estrellas { color: var(--dorado); font-size: 0.85rem; margin-bottom: 12px; }
+
+  /* ── CTA ── */
+  .cta-section {
+    background: linear-gradient(135deg, var(--azul-oscuro), var(--azul));
+    padding: 90px 5%;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cta-section::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(201,162,39,0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(201,162,39,0.06) 1px, transparent 1px);
+    background-size: 50px 50px;
+  }
+
+  .cta-section h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    color: var(--blanco);
+    margin-bottom: 16px;
+    position: relative;
+  }
+
+  .cta-section h2 em {
+    font-style: normal;
+    color: var(--dorado);
+  }
+
+  .cta-section p {
+    color: rgba(255,255,255,0.7);
+    font-size: 1rem;
+    margin-bottom: 36px;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+    position: relative;
+  }
+
+  .cta-btns {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+    position: relative;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--azul-oscuro);
+    padding: 60px 5% 30px;
+    border-top: 1px solid rgba(201,162,39,0.2);
+  }
+
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 40px;
+    max-width: 1200px;
+    margin: 0 auto 40px;
+  }
+
+  .footer-brand p {
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.5);
+    line-height: 1.7;
+    margin-top: 14px;
+    max-width: 280px;
+  }
+
+  .footer-col h4 {
+    font-family: 'Playfair Display', serif;
+    color: var(--dorado);
+    font-size: 0.95rem;
+    margin-bottom: 16px;
+  }
+
+  .footer-col ul { list-style: none; }
+
+  .footer-col ul li {
+    margin-bottom: 8px;
+  }
+
+  .footer-col ul li a {
+    color: rgba(255,255,255,0.55);
+    text-decoration: none;
+    font-size: 0.83rem;
+    transition: color 0.2s;
+  }
+
+  .footer-col ul li a:hover { color: var(--dorado-claro); }
+
+  .footer-bottom {
+    border-top: 1px solid rgba(255,255,255,0.08);
+    padding-top: 24px;
+    text-align: center;
+    font-size: 0.78rem;
+    color: rgba(255,255,255,0.3);
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    .hero {
+      flex-direction: column;
+      gap: 40px;
+    }
+    .hero-stats {
+      flex-direction: row;
+      margin-left: 0;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .footer-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+    .nav-links { display: none; }
+  }
+
+  @media (max-width: 600px) {
+    .footer-grid { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 2rem; }
+  }
+
+  /* hero flex layout */
+  .hero-inner {
+    display: flex;
+    align-items: center;
+    gap: 60px;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">
+    <div style="width:46px;height:46px;background:linear-gradient(135deg,#0f2d8a,#1a3fac);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.3rem;border:2px solid rgba(201,162,39,0.6);">🎓</div>
+    <div class="nav-logo-text">
+      <span>Docente Tecnológico</span>
+      <span>Cap. e Innovación Pedagógica</span>
+    </div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#servicios">Servicios</a></li>
+    <li><a href="#simulacros">Simulacros</a></li>
+    <li><a href="#cursos">Cursos</a></li>
+    <li><a href="#recursos">Recursos</a></li>
+    <li><a href="#precios">Precios</a></li>
+    <li><a href="login.html" class="btn-nav">Iniciar sesión</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-inner">
+    <div class="hero-content">
+      <div class="hero-badge">⚡ Plataforma #1 para docentes peruanos</div>
+      <h1>Transforma tu <em>carrera docente</em> con tecnología e innovación</h1>
+      <p>Capacítate, certifícate y prepárate para el nombramiento y ascenso docente con la plataforma más completa del Perú. Cursos, simulacros, recursos y comunidad en un solo lugar.</p>
+      <div class="hero-btns">
+        <a href="#simulacros" class="btn-primary">🎯 Ver Simulacros</a>
+        <a href="#cursos" class="btn-secondary">📚 Explorar Cursos</a>
+      </div>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-card">
+        <div class="num">+5k</div>
+        <div class="label">Docentes activos</div>
+      </div>
+      <div class="stat-card">
+        <div class="num">98%</div>
+        <div class="label">Satisfacción</div>
+      </div>
+      <div class="stat-card">
+        <div class="num">+120</div>
+        <div class="label">Cursos disponibles</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICIOS -->
+<section class="section servicios-bg" id="servicios">
+  <div class="section-header">
+    <span class="section-tag">¿Qué ofrecemos?</span>
+    <h2>Todo lo que necesitas para <em>crecer profesionalmente</em></h2>
+    <p>Una plataforma integral diseñada específicamente para docentes peruanos que buscan superarse.</p>
+  </div>
+  <div class="servicios-grid">
+    <div class="servicio-card">
+      <div class="servicio-icon">🎯</div>
+      <h3>Simulacros de Evaluación</h3>
+      <p>Prepárate para los exámenes de Nombramiento y Ascenso Docente del MINEDU con simulacros actualizados y feedback inmediato.</p>
+      <span class="badge badge-premium">⭐ Premium</span>
+    </div>
+    <div class="servicio-card">
+      <div class="servicio-icon">🎓</div>
+      <h3>Cursos con Certificación</h3>
+      <p>Formación asincrónica de calidad con certificados digitales verificables. Aprende a tu ritmo desde cualquier dispositivo.</p>
+      <span class="badge badge-premium">⭐ Premium</span>
+    </div>
+    <div class="servicio-card">
+      <div class="servicio-icon">🤖</div>
+      <h3>Herramientas con IA</h3>
+      <p>Genera planificaciones de clase, rúbricas y materiales didácticos en segundos usando inteligencia artificial educativa.</p>
+      <span class="badge badge-free">✓ Gratis</span>
+    </div>
+    <div class="servicio-card">
+      <div class="servicio-icon">📄</div>
+      <h3>Recursos Descargables</h3>
+      <p>Accede a plantillas, fichas, planificaciones curriculares y materiales listos para usar en el aula.</p>
+      <span class="badge badge-free">✓ Gratis</span>
+    </div>
+    <div class="servicio-card">
+      <div class="servicio-icon">📰</div>
+      <h3>Publicación Académica</h3>
+      <p>Publica tus investigaciones y artículos pedagógicos en nuestra revista educativa con revisión de expertos.</p>
+      <span class="badge badge-premium">⭐ Premium</span>
+    </div>
+    <div class="servicio-card">
+      <div class="servicio-icon">🏢</div>
+      <h3>Capacitación Corporativa</h3>
+      <p>Soluciones de formación para instituciones educativas, UGEL y colegios con planes personalizados.</p>
+      <span class="badge badge-premium">⭐ Premium</span>
+    </div>
+  </div>
+</section>
+
+<!-- SIMULACROS -->
+<section class="simulacros-section" id="simulacros">
+  <div class="section-header">
+    <span class="section-tag">⭐ Producto estrella</span>
+    <h2>Simulacros oficiales del <em>MINEDU</em></h2>
+    <p>Miles de docentes ya se preparan con nosotros. Preguntas actualizadas, estadísticas de rendimiento y retroalimentación personalizada.</p>
+  </div>
+  <div class="simulacros-grid">
+    <div class="simulacro-card">
+      <span class="sim-icon">📋</span>
+      <h3>Nombramiento Docente</h3>
+      <p>Prepárate para el concurso de nombramiento con simulacros que replican el formato oficial del MINEDU.</p>
+      <ul>
+        <li>+500 preguntas actualizadas 2024-2025</li>
+        <li>Simulacros cronometrados</li>
+        <li>Resultados y ranking en tiempo real</li>
+        <li>Explicación detallada de cada respuesta</li>
+        <li>Historial de intentos y progreso</li>
+      </ul>
+      <a href="#" class="btn-dorado">Comenzar simulacro →</a>
+    </div>
+    <div class="simulacro-card">
+      <span class="sim-icon">🏆</span>
+      <h3>Ascenso Docente</h3>
+      <p>Sube de escala magisterial con nuestra preparación especializada para la evaluación de ascenso.</p>
+      <ul>
+        <li>+400 preguntas por escala magisterial</li>
+        <li>Contenido pedagógico actualizado</li>
+        <li>Modo práctica y modo examen</li>
+        <li>Estadísticas de rendimiento por área</li>
+        <li>Acceso desde móvil y computadora</li>
+      </ul>
+      <a href="https://wa.me/51908532827?text=Hola%2C%20me%20interesa%20el%20simulacro%20de%20Ascenso%20Docente%20%F0%9F%8F%86" target="_blank" class="btn-dorado">Comenzar simulacro →</a>
+    </div>
+  </div>
+</section>
+
+<!-- CURSOS -->
+<section class="section" id="cursos">
+  <div class="section-header">
+    <span class="section-tag">Formación continua</span>
+    <h2>Cursos diseñados para el <em>docente del siglo XXI</em></h2>
+    <p>Aprende a tu propio ritmo con certificación incluida y contenido 100% actualizado.</p>
+  </div>
+  <div class="cursos-grid">
+    <div class="curso-card">
+      <div class="curso-thumb c1">🤖</div>
+      <div class="curso-body">
+        <div class="curso-nivel">Tecnología Educativa</div>
+        <h3>Inteligencia Artificial en el Aula</h3>
+        <p>Domina ChatGPT, Gemini y herramientas IA para transformar tus clases y reducir carga administrativa.</p>
+        <div class="curso-footer">
+          <span class="curso-precio">S/ 89</span>
+          <a href="https://wa.me/51908532827?text=Hola%2C%20quiero%20m%C3%A1s%20informaci%C3%B3n%20sobre%20los%20cursos%20disponibles%20%F0%9F%93%9A" target="_blank" class="btn-ver">Ver curso</a>
+        </div>
+      </div>
+    </div>
+    <div class="curso-card">
+      <div class="curso-thumb c2">📊</div>
+      <div class="curso-body">
+        <div class="curso-nivel">Evaluación</div>
+        <h3>Evaluación Formativa y Rúbricas Digitales</h3>
+        <p>Diseña instrumentos de evaluación modernos alineados al Currículo Nacional 2025.</p>
+        <div class="curso-footer">
+          <span class="curso-precio">S/ 79</span>
+          <a href="https://wa.me/51908532827?text=Hola%2C%20quiero%20m%C3%A1s%20informaci%C3%B3n%20sobre%20los%20cursos%20disponibles%20%F0%9F%93%9A" target="_blank" class="btn-ver">Ver curso</a>
+        </div>
+      </div>
+    </div>
+    <div class="curso-card">
+      <div class="curso-thumb c3">🧠</div>
+      <div class="curso-body">
+        <div class="curso-nivel">Pedagogía</div>
+        <h3>Metodologías Activas de Aprendizaje</h3>
+        <p>Aprende ABP, aula invertida, gamificación y más estrategias para aulas dinámicas.</p>
+        <div class="curso-footer">
+          <span class="curso-precio free">Gratis</span>
+          <a href="https://wa.me/51908532827?text=Hola%2C%20quiero%20m%C3%A1s%20informaci%C3%B3n%20sobre%20los%20cursos%20disponibles%20%F0%9F%93%9A" target="_blank" class="btn-ver">Ver curso</a>
+        </div>
+      </div>
+    </div>
+    <div class="curso-card">
+      <div class="curso-thumb c4">💻</div>
+      <div class="curso-body">
+        <div class="curso-nivel">Herramientas Digitales</div>
+        <h3>Google for Education Completo</h3>
+        <p>Domina todo el ecosistema Google: Classroom, Forms, Slides, Meet y más herramientas educativas.</p>
+        <div class="curso-footer">
+          <span class="curso-precio">S/ 69</span>
+          <a href="https://wa.me/51908532827?text=Hola%2C%20quiero%20m%C3%A1s%20informaci%C3%B3n%20sobre%20los%20cursos%20disponibles%20%F0%9F%93%9A" target="_blank" class="btn-ver">Ver curso</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RECURSOS -->
+<section class="section recursos-bg" id="recursos">
+  <div class="section-header">
+    <span class="section-tag">Biblioteca de recursos</span>
+    <h2>Materiales listos para <em>usar hoy mismo</em></h2>
+    <p>Descarga y adapta recursos pedagógicos creados por especialistas. Muchos completamente gratis.</p>
+  </div>
+  <div class="recursos-grid">
+    <div class="recurso-card">
+      <div class="icon">📝</div>
+      <h4>Planificaciones Curriculares</h4>
+      <p>Unidades y sesiones alineadas al CN 2025 para todos los niveles.</p>
+    </div>
+    <div class="recurso-card">
+      <div class="icon">📊</div>
+      <h4>Instrumentos de Evaluación</h4>
+      <p>Rúbricas, listas de cotejo y fichas de observación editables.</p>
+    </div>
+    <div class="recurso-card">
+      <div class="icon">🎨</div>
+      <h4>Material Didáctico</h4>
+      <p>Fichas de trabajo, infografías y recursos visuales para el aula.</p>
+    </div>
+    <div class="recurso-card">
+      <div class="icon">📰</div>
+      <h4>Artículos Pedagógicos</h4>
+      <p>Investigaciones educativas revisadas por expertos del sector.</p>
+    </div>
+    <div class="recurso-card">
+      <div class="icon">🖥️</div>
+      <h4>Presentaciones PPT</h4>
+      <p>Plantillas profesionales para tus sesiones de aprendizaje.</p>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIOS -->
+<section class="section">
+  <div class="section-header">
+    <span class="section-tag">Testimonios</span>
+    <h2>Lo que dicen <em>nuestros docentes</em></h2>
+  </div>
+  <div class="testimonios-grid">
+    <div class="testimonio-card">
+      <div class="estrellas">★★★★★</div>
+      <p>Gracias a los simulacros de nombramiento pude aprobar en mi primer intento. Las preguntas son muy similares al examen real y la retroalimentación es excelente.</p>
+      <div class="testimonio-autor">
+        <div class="autor-avatar av1">👩‍🏫</div>
+        <div class="autor-info">
+          <strong>María Elena Quispe</strong>
+          <span>Docente nombrada — Cusco</span>
+        </div>
+      </div>
+    </div>
+    <div class="testimonio-card">
+      <div class="estrellas">★★★★★</div>
+      <p>El curso de IA en el Aula cambió completamente mi forma de planificar. Ahora creo materiales en minutos que antes me tomaban horas. ¡Totalmente recomendado!</p>
+      <div class="testimonio-autor">
+        <div class="autor-avatar av2">👨‍🏫</div>
+        <div class="autor-info">
+          <strong>Carlos Flores Mamani</strong>
+          <span>Profesor de secundaria — Arequipa</span>
+        </div>
+      </div>
+    </div>
+    <div class="testimonio-card">
+      <div class="estrellas">★★★★★</div>
+      <p>Me preparé para el ascenso a escala VI con la plataforma. Los simulacros cronometrados me ayudaron a manejar el tiempo en el examen real. ¡Subí de escala!</p>
+      <div class="testimonio-autor">
+        <div class="autor-avatar av3">👩‍🏫</div>
+        <div class="autor-info">
+          <strong>Rosa Mendoza Torres</strong>
+          <span>Docente escala VI — Lima</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRECIOS -->
+<section class="section" id="precios">
+  <div class="section-header">
+    <span class="section-tag">Planes y precios</span>
+    <h2>Elige el plan que <em>impulse tu carrera</em></h2>
+    <p>Sin contratos ni sorpresas. Cancela cuando quieras. Todos los planes incluyen acceso inmediato.</p>
+  </div>
+
+  <div class="precios-grid">
+
+    <!-- Plan 1 mes -->
+    <div class="precio-card">
+      <div class="precio-periodo">1 mes</div>
+      <div class="precio-monto">S/ <span>9.99</span></div>
+      <div class="precio-sub">por mes</div>
+      <ul class="precio-features">
+        <li class="si">Simulacros limitados</li>
+        <li class="si">Estadísticas de exámenes</li>
+        <li class="si">Multi-exámenes</li>
+        <li class="si">Lectura de preguntas y recursos</li>
+        <li class="no">Notas personales por examen</li>
+        <li class="no">Recursos premium</li>
+      </ul>
+      <a href="https://wa.me/51908532827?text=Hola%2C%20quiero%20adquirir%20el%20plan%201%20mes%20(S%2F%209.99)%20%F0%9F%9B%92" target="_blank" class="btn-plan-outline">Elegir plan</a>
+    </div>
+
+    <!-- Plan 6 meses POPULAR -->
+    <div class="precio-card popular">
+      <div class="popular-badge">⭐ Más popular</div>
+      <div class="precio-periodo dorado">6 meses</div>
+      <div class="precio-monto dorado">S/ <span>19.99</span></div>
+      <div class="precio-sub dorado">S/ 3.33 / mes — Ahorra 45%</div>
+      <ul class="precio-features">
+        <li class="si">Simulacros ilimitados</li>
+        <li class="si">Estadísticas de exámenes</li>
+        <li class="si">Multi-exámenes</li>
+        <li class="si">Lectura de preguntas y recursos</li>
+        <li class="si">Notas personales por examen</li>
+        <li class="no">Recursos premium</li>
+      </ul>
+      <a href="https://wa.me/51908532827?text=Hola%2C%20quiero%20adquirir%20el%20plan%206%20meses%20(S%2F%2019.99)%20%F0%9F%9B%92" target="_blank" class="btn-plan-dorado">Elegir plan →</a>
+    </div>
+
+    <!-- Plan 12 meses -->
+    <div class="precio-card anual">
+      <div class="anual-badge">🏆 Mejor valor</div>
+      <div class="precio-periodo">12 meses</div>
+      <div class="precio-monto">S/ <span>21.00</span></div>
+      <div class="precio-sub">S/ 1.75 / mes — Ahorra 82%</div>
+      <ul class="precio-features">
+        <li class="si">Simulacros ilimitados</li>
+        <li class="si">Recursos premium</li>
+        <li class="si">Estadísticas de exámenes</li>
+        <li class="si">Multi-exámenes</li>
+        <li class="si">Lectura de preguntas y recursos</li>
+        <li class="si">Notas personales por examen</li>
+        <li class="si destacado">✦ Solo Nombramiento Docente</li>
+      </ul>
+      <a href="https://wa.me/51908532827?text=Hola%2C%20quiero%20adquirir%20el%20plan%2012%20meses%20(S%2F%2021.00)%20%F0%9F%9B%92" target="_blank" class="btn-plan-outline">Elegir plan</a>
+    </div>
+
+  </div>
+
+  <p style="text-align:center;margin-top:32px;color:var(--gris);font-size:0.83rem;">
+    🔒 Pago seguro · 📱 Acceso desde cualquier dispositivo · ✅ Garantía de satisfacción 7 días
+  </p>
+</section>
+
+<style>
+.precios-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  max-width: 1000px;
+  margin: 0 auto;
+  align-items: center;
+}
+
+.precio-card {
+  background: var(--blanco);
+  border-radius: 20px;
+  padding: 36px 30px;
+  border: 1.5px solid rgba(15,45,138,0.1);
+  position: relative;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.precio-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 50px rgba(15,45,138,0.12);
+}
+
+.precio-card.popular {
+  background: linear-gradient(160deg, var(--azul-oscuro) 0%, var(--azul) 100%);
+  border-color: var(--dorado);
+  transform: scale(1.05);
+  box-shadow: 0 24px 60px rgba(15,45,138,0.3);
+  z-index: 2;
+}
+
+.precio-card.popular:hover {
+  transform: scale(1.05) translateY(-6px);
+}
+
+.precio-card.anual {
+  background: linear-gradient(160deg, #fdfaf2, #fff8e7);
+  border-color: rgba(201,162,39,0.4);
+}
+
+.popular-badge, .anual-badge {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 5px 18px;
+  border-radius: 100px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.popular-badge {
+  background: linear-gradient(135deg, var(--dorado), var(--dorado-claro));
+  color: var(--azul-oscuro);
+}
+
+.anual-badge {
+  background: linear-gradient(135deg, var(--azul), var(--azul-medio));
+  color: white;
+}
+
+.precio-periodo {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--gris);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 8px;
+}
+
+.precio-periodo.dorado { color: var(--dorado-claro); }
+
+.precio-monto {
+  font-family: 'Playfair Display', serif;
+  font-size: 1rem;
+  color: var(--azul-oscuro);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.precio-monto span {
+  font-size: 3.2rem;
+  font-weight: 900;
+}
+
+.precio-monto.dorado { color: var(--blanco); }
+.precio-monto.dorado span { color: var(--dorado-claro); }
+
+.precio-sub {
+  font-size: 0.78rem;
+  color: var(--gris);
+  margin-bottom: 28px;
+}
+
+.precio-sub.dorado { color: rgba(255,255,255,0.65); }
+
+.precio-features {
+  list-style: none;
+  margin-bottom: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.precio-features li {
+  font-size: 0.87rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.precio-features li::before {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.precio-features li.si { color: var(--texto); }
+.precio-features li.no { color: rgba(107,114,128,0.5); text-decoration: line-through; }
+
+.precio-features li.si::before {
+  content: '✓';
+  background: rgba(34,197,94,0.15);
+  color: #16a34a;
+}
+
+.precio-features li.no::before {
+  content: '✕';
+  background: rgba(107,114,128,0.1);
+  color: rgba(107,114,128,0.4);
+}
+
+.precio-card.popular .precio-features li.si { color: rgba(255,255,255,0.9); }
+.precio-card.popular .precio-features li.no { color: rgba(255,255,255,0.25); text-decoration: line-through; }
+.precio-card.popular .precio-features li.si::before {
+  background: rgba(201,162,39,0.25);
+  color: var(--dorado-claro);
+}
+
+.precio-features li.destacado {
+  color: var(--dorado-oscuro) !important;
+  font-weight: 700;
+}
+
+.precio-features li.destacado::before {
+  content: '★' !important;
+  background: rgba(201,162,39,0.15) !important;
+  color: var(--dorado-oscuro) !important;
+}
+
+.btn-plan-outline {
+  display: block;
+  text-align: center;
+  padding: 13px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-decoration: none;
+  border: 2px solid var(--azul);
+  color: var(--azul);
+  transition: background 0.2s, color 0.2s, transform 0.2s;
+}
+
+.btn-plan-outline:hover {
+  background: var(--azul);
+  color: var(--blanco);
+  transform: translateY(-2px);
+}
+
+.precio-card.anual .btn-plan-outline {
+  border-color: var(--dorado-oscuro);
+  color: var(--dorado-oscuro);
+}
+
+.precio-card.anual .btn-plan-outline:hover {
+  background: var(--dorado-oscuro);
+  color: var(--blanco);
+}
+
+.btn-plan-dorado {
+  display: block;
+  text-align: center;
+  padding: 14px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-decoration: none;
+  background: linear-gradient(135deg, var(--dorado), var(--dorado-claro));
+  color: var(--azul-oscuro);
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 18px rgba(201,162,39,0.4);
+}
+
+.btn-plan-dorado:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(201,162,39,0.55);
+}
+
+@media (max-width: 800px) {
+  .precios-grid {
+    grid-template-columns: 1fr;
+    max-width: 380px;
+  }
+  .precio-card.popular {
+    transform: scale(1);
+    order: -1;
+  }
+  .precio-card.popular:hover {
+    transform: translateY(-6px);
+  }
+}
+</style>
+
+<!-- CTA -->
+<section class="cta-section">
+  <h2>Empieza hoy tu <em>transformación docente</em></h2>
+  <p>Únete a más de 5,000 docentes peruanos que ya están un paso adelante en su carrera.</p>
+  <div class="cta-btns">
+    <a href="https://wa.me/51908532827?text=Hola%2C%20quiero%20registrarme%20en%20Docente%20Tecnol%C3%B3gico%20%F0%9F%9A%80" target="_blank" class="btn-primary">🚀 Registrarme gratis</a>
+    <a href="#simulacros" class="btn-secondary">Ver simulacros →</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+        <div style="width:40px;height:40px;background:linear-gradient(135deg,#1a3fac,#c9a227);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.1rem;">🎓</div>
+        <span style="font-family:'Playfair Display',serif;color:#c9a227;font-size:1rem;font-weight:700;">Docente Tecnológico</span>
+      </div>
+      <p>Centro de Capacitación e Innovación Pedagógica. Formando al docente del Perú para los desafíos educativos del siglo XXI.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Plataforma</h4>
+      <ul>
+        <li><a href="#">Simulacros</a></li>
+        <li><a href="#">Cursos</a></li>
+        <li><a href="#">Recursos</a></li>
+        <li><a href="#">Herramientas IA</a></li>
+        <li><a href="#">Certificados</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Institución</h4>
+      <ul>
+        <li><a href="#">Nosotros</a></li>
+        <li><a href="#">Blog pedagógico</a></li>
+        <li><a href="#">Revista académica</a></li>
+        <li><a href="#">Capacitación corporativa</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Soporte</h4>
+      <ul>
+        <li><a href="https://wa.me/51908532827?text=Hola%2C%20necesito%20ayuda%20con%20Docente%20Tecnol%C3%B3gico" target="_blank">Contacto</a></li>
+        <li><a href="#">Preguntas frecuentes</a></li>
+        <li><a href="#">Términos de uso</a></li>
+        <li><a href="#">Política de privacidad</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    © 2025 Docente Tecnológico — Centro de Capacitación e Innovación Pedagógica. Todos los derechos reservados. | Hecho con ❤️ para los docentes del Perú
+  </div>
+</footer>
+
+</body>
+</html>
