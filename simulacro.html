@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulacro | Docente Tecnológico</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root {
+  --azul: #0f2d8a;
+  --azul-oscuro: #091e5e;
+  --azul-medio: #1a3fac;
+  --dorado: #c9a227;
+  --dorado-claro: #f0c84a;
+  --dorado-oscuro: #9e7d1a;
+  --blanco: #ffffff;
+  --gris-claro: #f4f6fb;
+  --gris: #6b7280;
+  --error: #ef4444;
+  --success: #22c55e;
+  --warning: #f59e0b;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'DM Sans',sans-serif; background:var(--gris-claro); min-height:100vh; }
+
+/* ── TOPBAR ── */
+.topbar {
+  background:linear-gradient(135deg,var(--azul-oscuro),var(--azul));
+  padding:0 5%;
+  height:64px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  position:sticky;
+  top:0;
+  z-index:100;
+  box-shadow:0 2px 16px rgba(0,0,0,0.2);
+}
+.topbar-brand {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  text-decoration:none;
+}
+.topbar-brand span {
+  font-family:'Playfair Display',serif;
+  color:var(--dorado);
+  font-size:1rem;
+  font-weight:700;
+}
+.topbar-user {
+  display:flex;
+  align-items:center;
+  gap:16px;
+}
+.topbar-user span {
+  color:rgba(255,255,255,0.75);
+  font-size:0.83rem;
+}
+.btn-logout {
+  background:rgba(255,255,255,0.1);
+  border:1px solid rgba(255,255,255,0.2);
+  color:rgba(255,255,255,0.8);
+  padding:7px 16px;
+  border-radius:7px;
+  font-size:0.8rem;
+  font-weight:600;
+  cursor:pointer;
+  font-family:'DM Sans',sans-serif;
+  transition:background 0.2s;
+}
+.btn-logout:hover { background:rgba(255,255,255,0.18); }
+
+/* ── PANTALLAS ── */
+.screen { display:none; }
+.screen.active { display:block; }
+
+/* ── LOGIN ── */
+#screen-login {
+  min-height:100vh;
+  background:linear-gradient(135deg,var(--azul-oscuro),var(--azul));
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:40px 20px;
+  position:relative;
+}
+#screen-login.active { display:flex; }
+#screen-login::before {
+  content:'';
+  position:fixed;
+  inset:0;
+  background-image:linear-gradient(rgba(201,162,39,0.06) 1px,transparent 1px),linear-gradient(90deg,rgba(201,162,39,0.06) 1px,transparent 1px);
+  background-size:55px 55px;
+  pointer-events:none;
+}
+.login-box {
+  background:var(--blanco);
+  border-radius:20px;
+  padding:48px 40px;
+  width:100%;
+  max-width:420px;
+  box-shadow:0 24px 60px rgba(0,0,0,0.25);
+  position:relative;
+  z-index:2;
+}
+.login-logo {
+  text-align:center;
+  margin-bottom:28px;
+}
+.login-logo .icon {
+  width:64px;height:64px;
+  background:linear-gradient(135deg,var(--azul),var(--azul-medio));
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.8rem;
+  margin:0 auto 12px;
+}
+.login-logo h2 {
+  font-family:'Playfair Display',serif;
+  font-size:1.4rem;
+  color:var(--azul-oscuro);
+  margin-bottom:2px;
+}
+.login-logo p { font-size:0.82rem; color:var(--gris); }
+.form-group { margin-bottom:16px; }
+.form-group label { display:block; font-size:0.82rem; font-weight:600; color:var(--azul-oscuro); margin-bottom:6px; }
+.input-wrap { position:relative; }
+.input-wrap .ico { position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:1rem;pointer-events:none; }
+.form-group input {
+  width:100%;padding:12px 14px 12px 40px;
+  border:1.5px solid rgba(15,45,138,0.15);
+  border-radius:10px;
+  font-family:'DM Sans',sans-serif;
+  font-size:0.9rem;color:var(--azul-oscuro);
+  background:var(--gris-claro);
+  outline:none;transition:border-color 0.2s,box-shadow 0.2s;
+}
+.form-group input:focus { border-color:var(--azul);background:var(--blanco);box-shadow:0 0 0 3px rgba(15,45,138,0.08); }
+.btn-primary {
+  width:100%;padding:13px;
+  background:linear-gradient(135deg,var(--azul),var(--azul-medio));
+  color:var(--blanco);border:none;border-radius:10px;
+  font-family:'DM Sans',sans-serif;font-size:0.95rem;font-weight:700;
+  cursor:pointer;transition:transform 0.2s,box-shadow 0.2s;
+  margin-top:4px;
+}
+.btn-primary:hover { transform:translateY(-2px);box-shadow:0 8px 24px rgba(15,45,138,0.3); }
+.alerta { padding:10px 14px;border-radius:8px;font-size:0.82rem;font-weight:500;margin-bottom:14px;display:none; }
+.alerta.error { background:rgba(239,68,68,0.1);color:var(--error);border:1px solid rgba(239,68,68,0.25); }
+.alerta.success { background:rgba(34,197,94,0.1);color:var(--success);border:1px solid rgba(34,197,94,0.25); }
+.alerta.warning { background:rgba(245,158,11,0.1);color:var(--warning);border:1px solid rgba(245,158,11,0.25); }
+.login-tabs { display:flex;background:var(--gris-claro);border-radius:10px;padding:4px;margin-bottom:24px; }
+.ltab { flex:1;padding:9px;border:none;background:transparent;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.85rem;font-weight:600;color:var(--gris);cursor:pointer;transition:all 0.2s; }
+.ltab.active { background:var(--blanco);color:var(--azul);box-shadow:0 2px 8px rgba(15,45,138,0.12); }
+
+/* ── DASHBOARD ── */
+#screen-dashboard { padding:36px 5%; }
+.dash-header { margin-bottom:32px; }
+.dash-header h1 { font-family:'Playfair Display',serif;font-size:1.7rem;color:var(--azul-oscuro); }
+.dash-header p { color:var(--gris);font-size:0.9rem;margin-top:4px; }
+.membresia-badge {
+  display:inline-flex;align-items:center;gap:8px;
+  padding:6px 16px;border-radius:100px;
+  font-size:0.78rem;font-weight:700;
+  margin-top:10px;
+}
+.membresia-badge.activa { background:rgba(34,197,94,0.12);color:#16a34a;border:1px solid rgba(34,197,94,0.3); }
+.membresia-badge.inactiva { background:rgba(239,68,68,0.1);color:var(--error);border:1px solid rgba(239,68,68,0.25); }
+.dash-grid { display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px;margin-bottom:36px; }
+.sim-card {
+  background:var(--blanco);border-radius:16px;padding:32px;
+  border:1.5px solid rgba(15,45,138,0.09);
+  transition:transform 0.3s,box-shadow 0.3s;
+  position:relative;overflow:hidden;
+}
+.sim-card::before {
+  content:'';position:absolute;top:0;left:0;right:0;height:4px;
+  background:linear-gradient(90deg,var(--azul),var(--dorado));
+}
+.sim-card:hover { transform:translateY(-5px);box-shadow:0 16px 40px rgba(15,45,138,0.12); }
+.sim-card .sim-icon { font-size:2.5rem;margin-bottom:14px; }
+.sim-card h3 { font-family:'Playfair Display',serif;font-size:1.2rem;color:var(--azul-oscuro);margin-bottom:8px; }
+.sim-card p { font-size:0.85rem;color:var(--gris);line-height:1.6;margin-bottom:20px; }
+.sim-meta { display:flex;gap:16px;margin-bottom:20px; }
+.sim-meta span { font-size:0.78rem;color:var(--gris);background:var(--gris-claro);padding:4px 10px;border-radius:100px; }
+.btn-iniciar {
+  display:inline-block;padding:11px 24px;
+  background:linear-gradient(135deg,var(--azul),var(--azul-medio));
+  color:var(--blanco);border:none;border-radius:9px;
+  font-family:'DM Sans',sans-serif;font-size:0.88rem;font-weight:700;
+  cursor:pointer;transition:transform 0.2s,box-shadow 0.2s;
+  text-decoration:none;
+}
+.btn-iniciar:hover { transform:translateY(-2px);box-shadow:0 8px 20px rgba(15,45,138,0.25); }
+.btn-iniciar:disabled,.btn-iniciar.locked {
+  background:#d1d5db;color:#9ca3af;cursor:not-allowed;
+  transform:none;box-shadow:none;
+}
+.historial-section h2 { font-family:'Playfair Display',serif;font-size:1.3rem;color:var(--azul-oscuro);margin-bottom:16px; }
+.historial-table { width:100%;background:var(--blanco);border-radius:12px;overflow:hidden;border:1px solid rgba(15,45,138,0.08); }
+.historial-table th { background:var(--azul-oscuro);color:var(--blanco);padding:12px 16px;font-size:0.8rem;text-align:left;font-weight:600; }
+.historial-table td { padding:12px 16px;font-size:0.85rem;color:var(--texto);border-bottom:1px solid rgba(15,45,138,0.06); }
+.historial-table tr:last-child td { border-bottom:none; }
+.puntaje-chip { padding:3px 10px;border-radius:100px;font-size:0.75rem;font-weight:700; }
+.puntaje-chip.alto { background:rgba(34,197,94,0.12);color:#16a34a; }
+.puntaje-chip.medio { background:rgba(245,158,11,0.12);color:var(--warning); }
+.puntaje-chip.bajo { background:rgba(239,68,68,0.1);color:var(--error); }
+.sin-historial { text-align:center;padding:32px;color:var(--gris);font-size:0.88rem; }
+
+/* ── SIMULACRO ── */
+#screen-simulacro { padding:36px 5%; }
+.sim-topbar {
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--blanco);border-radius:14px;padding:18px 24px;
+  margin-bottom:28px;border:1px solid rgba(15,45,138,0.09);
+  box-shadow:0 4px 16px rgba(15,45,138,0.06);
+}
+.sim-titulo { font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--azul-oscuro); }
+.sim-prog { font-size:0.85rem;color:var(--gris); }
+.cronometro {
+  display:flex;align-items:center;gap:8px;
+  background:linear-gradient(135deg,var(--azul),var(--azul-medio));
+  color:var(--blanco);padding:10px 20px;border-radius:10px;
+  font-size:1.1rem;font-weight:700;font-family:'DM Sans',sans-serif;
+  min-width:100px;justify-content:center;
+}
+.cronometro.warning { background:linear-gradient(135deg,#dc2626,#ef4444); }
+.progress-bar { background:rgba(15,45,138,0.08);border-radius:100px;height:6px;margin-bottom:28px;overflow:hidden; }
+.progress-fill { height:100%;background:linear-gradient(90deg,var(--azul),var(--dorado));border-radius:100px;transition:width 0.4s; }
+.pregunta-card {
+  background:var(--blanco);border-radius:16px;padding:36px;
+  border:1px solid rgba(15,45,138,0.09);
+  box-shadow:0 4px 20px rgba(15,45,138,0.06);
+  max-width:800px;margin:0 auto;
+}
+.pregunta-num { font-size:0.78rem;font-weight:700;color:var(--dorado-oscuro);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px; }
+.pregunta-texto { font-size:1.05rem;color:var(--azul-oscuro);line-height:1.65;margin-bottom:28px;font-weight:500; }
+.opciones { display:flex;flex-direction:column;gap:12px;margin-bottom:28px; }
+.opcion {
+  display:flex;align-items:flex-start;gap:14px;
+  padding:14px 18px;border-radius:12px;
+  border:1.5px solid rgba(15,45,138,0.12);
+  cursor:pointer;transition:all 0.2s;background:var(--gris-claro);
+}
+.opcion:hover { border-color:var(--azul);background:rgba(15,45,138,0.04); }
+.opcion.seleccionada { border-color:var(--azul);background:rgba(15,45,138,0.07); }
+.opcion.correcta { border-color:var(--success);background:rgba(34,197,94,0.08); }
+.opcion.incorrecta { border-color:var(--error);background:rgba(239,68,68,0.07); }
+.opcion-letra {
+  width:30px;height:30px;flex-shrink:0;border-radius:50%;
+  background:rgba(15,45,138,0.1);color:var(--azul);
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.82rem;font-weight:700;transition:all 0.2s;
+}
+.opcion.seleccionada .opcion-letra { background:var(--azul);color:var(--blanco); }
+.opcion.correcta .opcion-letra { background:var(--success);color:var(--blanco); }
+.opcion.incorrecta .opcion-letra { background:var(--error);color:var(--blanco); }
+.opcion-texto { font-size:0.9rem;color:var(--azul-oscuro);line-height:1.5;padding-top:3px; }
+.explicacion {
+  background:rgba(15,45,138,0.04);border-left:4px solid var(--azul);
+  padding:14px 18px;border-radius:0 10px 10px 0;
+  font-size:0.85rem;color:var(--gris);line-height:1.6;
+  margin-bottom:20px;display:none;
+}
+.explicacion.visible { display:block; }
+.sim-nav { display:flex;gap:12px;justify-content:flex-end; }
+.btn-nav-sim {
+  padding:11px 24px;border-radius:9px;font-family:'DM Sans',sans-serif;
+  font-size:0.9rem;font-weight:700;cursor:pointer;transition:all 0.2s;border:none;
+}
+.btn-nav-sim.secondary { background:var(--gris-claro);color:var(--azul);border:1.5px solid rgba(15,45,138,0.2); }
+.btn-nav-sim.secondary:hover { background:rgba(15,45,138,0.08); }
+.btn-nav-sim.primary { background:linear-gradient(135deg,var(--azul),var(--azul-medio));color:var(--blanco); }
+.btn-nav-sim.primary:hover { transform:translateY(-2px);box-shadow:0 6px 18px rgba(15,45,138,0.25); }
+.btn-nav-sim.dorado { background:linear-gradient(135deg,var(--dorado),var(--dorado-claro));color:var(--azul-oscuro); }
+.btn-nav-sim.dorado:hover { transform:translateY(-2px);box-shadow:0 6px 18px rgba(201,162,39,0.35); }
+
+/* ── RESULTADO ── */
+#screen-resultado { padding:36px 5%; }
+.resultado-card {
+  background:var(--blanco);border-radius:20px;padding:48px 40px;
+  max-width:640px;margin:0 auto;text-align:center;
+  border:1px solid rgba(15,45,138,0.09);
+  box-shadow:0 8px 40px rgba(15,45,138,0.1);
+}
+.resultado-emoji { font-size:4rem;margin-bottom:16px; }
+.resultado-card h2 { font-family:'Playfair Display',serif;font-size:2rem;color:var(--azul-oscuro);margin-bottom:8px; }
+.resultado-card .subtitulo { color:var(--gris);font-size:0.95rem;margin-bottom:32px; }
+.puntaje-grande {
+  font-family:'Playfair Display',serif;font-size:5rem;font-weight:900;
+  line-height:1;margin-bottom:8px;
+}
+.puntaje-grande.alto { color:var(--success); }
+.puntaje-grande.medio { color:var(--warning); }
+.puntaje-grande.bajo { color:var(--error); }
+.puntaje-label { font-size:0.85rem;color:var(--gris);margin-bottom:32px; }
+.resultado-stats { display:flex;justify-content:center;gap:32px;margin-bottom:36px;flex-wrap:wrap; }
+.rst { text-align:center; }
+.rst strong { display:block;font-size:1.6rem;font-weight:900;font-family:'Playfair Display',serif; }
+.rst span { font-size:0.75rem;color:var(--gris);text-transform:uppercase;letter-spacing:1px; }
+.rst.verde strong { color:var(--success); }
+.rst.rojo strong { color:var(--error); }
+.rst.azul strong { color:var(--azul); }
+.resultado-btns { display:flex;gap:12px;justify-content:center;flex-wrap:wrap; }
+.btn-resultado {
+  padding:12px 24px;border-radius:9px;font-family:'DM Sans',sans-serif;
+  font-size:0.9rem;font-weight:700;cursor:pointer;border:none;text-decoration:none;
+  transition:all 0.2s;display:inline-block;
+}
+.btn-resultado.primary { background:linear-gradient(135deg,var(--azul),var(--azul-medio));color:var(--blanco); }
+.btn-resultado.primary:hover { transform:translateY(-2px);box-shadow:0 6px 18px rgba(15,45,138,0.25); }
+.btn-resultado.secondary { background:var(--gris-claro);color:var(--azul);border:1.5px solid rgba(15,45,138,0.2); }
+
+/* ── ADMIN ── */
+#screen-admin { padding:36px 5%; }
+.admin-header { margin-bottom:28px; }
+.admin-header h1 { font-family:'Playfair Display',serif;font-size:1.7rem;color:var(--azul-oscuro); }
+.admin-header p { color:var(--gris);font-size:0.88rem;margin-top:4px; }
+.admin-stats { display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;margin-bottom:28px; }
+.admin-stat-card { background:var(--blanco);border-radius:12px;padding:20px;border:1px solid rgba(15,45,138,0.08);text-align:center; }
+.admin-stat-card strong { display:block;font-family:'Playfair Display',serif;font-size:2rem;color:var(--azul); }
+.admin-stat-card span { font-size:0.75rem;color:var(--gris);text-transform:uppercase;letter-spacing:1px; }
+.usuarios-table { width:100%;background:var(--blanco);border-radius:14px;overflow:hidden;border:1px solid rgba(15,45,138,0.08);box-shadow:0 4px 16px rgba(15,45,138,0.05); }
+.usuarios-table th { background:var(--azul-oscuro);color:var(--blanco);padding:13px 16px;font-size:0.78rem;text-align:left;font-weight:600;text-transform:uppercase;letter-spacing:0.5px; }
+.usuarios-table td { padding:13px 16px;font-size:0.85rem;color:var(--azul-oscuro);border-bottom:1px solid rgba(15,45,138,0.06); }
+.usuarios-table tr:last-child td { border-bottom:none; }
+.usuarios-table tr:hover td { background:rgba(15,45,138,0.02); }
+.toggle-membresia {
+  padding:5px 14px;border-radius:7px;font-size:0.78rem;font-weight:700;
+  cursor:pointer;border:none;font-family:'DM Sans',sans-serif;transition:all 0.2s;
+}
+.toggle-membresia.activar { background:rgba(34,197,94,0.12);color:#16a34a;border:1px solid rgba(34,197,94,0.3); }
+.toggle-membresia.activar:hover { background:rgba(34,197,94,0.2); }
+.toggle-membresia.desactivar { background:rgba(239,68,68,0.1);color:var(--error);border:1px solid rgba(239,68,68,0.25); }
+.toggle-membresia.desactivar:hover { background:rgba(239,68,68,0.18); }
+.estado-chip { padding:3px 10px;border-radius:100px;font-size:0.75rem;font-weight:700; }
+.estado-chip.activo { background:rgba(34,197,94,0.12);color:#16a34a; }
+.estado-chip.inactivo { background:rgba(239,68,68,0.1);color:var(--error); }
+
+/* Responsive */
+@media(max-width:600px){
+  .sim-topbar { flex-direction:column;gap:12px;align-items:flex-start; }
+  .pregunta-card { padding:24px 18px; }
+  .resultado-card { padding:32px 20px; }
+  .login-box { padding:36px 24px; }
+}
+
+/* Loading spinner */
+.spinner { display:inline-block;width:20px;height:20px;border:2px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:spin 0.7s linear infinite; }
+@keyframes spin { to { transform:rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<!-- TOPBAR (oculta en login) -->
+<div class="topbar" id="topbar" style="display:none">
+  <a href="index.html" class="topbar-brand">
+    <span style="font-size:1.3rem">🎓</span>
+    <span>Docente Tecnológico</span>
+  </a>
+  <div class="topbar-user">
+    <span id="topbar-nombre">Usuario</span>
+    <button class="btn-logout" onclick="logout()">Cerrar sesión</button>
+  </div>
+</div>
+
+<!-- ════════ SCREEN: LOGIN ════════ -->
+<div id="screen-login" class="screen active">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="icon">🎓</div>
+      <h2>Bienvenido</h2>
+      <p style="font-family:'Playfair Display',serif;font-size:1rem;color:var(--azul-oscuro);font-weight:700;margin:4px 0 2px">Docente Tecnológico</p>
+      <p>Centro de Capacitación e Innovación Pedagógica</p>
+    </div>
+
+    <div class="login-tabs">
+      <button class="ltab active" id="ltab-login" onclick="switchLoginTab('login')">Iniciar sesión</button>
+      <button class="ltab" id="ltab-registro" onclick="switchLoginTab('registro')">Crear cuenta</button>
+    </div>
+
+    <div id="alerta-login" class="alerta"></div>
+
+    <!-- Panel login -->
+    <div id="lform-login">
+      <div class="form-group">
+        <label>Correo electrónico</label>
+        <div class="input-wrap"><span class="ico">✉️</span>
+          <input type="email" id="li-email" placeholder="tucorreo@gmail.com">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Contraseña</label>
+        <div class="input-wrap"><span class="ico">🔒</span>
+          <input type="password" id="li-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+        </div>
+      </div>
+      <button class="btn-primary" onclick="doLogin()" id="btn-login-submit">Ingresar a mi cuenta</button>
+    </div>
+
+    <!-- Panel registro -->
+    <div id="lform-registro" style="display:none">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="form-group">
+          <label>Nombre</label>
+          <div class="input-wrap"><span class="ico">👤</span>
+            <input type="text" id="rg-nombre" placeholder="Juan">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Apellido</label>
+          <div class="input-wrap"><span class="ico">👤</span>
+            <input type="text" id="rg-apellido" placeholder="Pérez">
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Correo electrónico</label>
+        <div class="input-wrap"><span class="ico">✉️</span>
+          <input type="email" id="rg-email" placeholder="tucorreo@gmail.com">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Contraseña</label>
+        <div class="input-wrap"><span class="ico">🔒</span>
+          <input type="password" id="rg-pass" placeholder="Mínimo 8 caracteres">
+        </div>
+      </div>
+      <button class="btn-primary" onclick="doRegistro()" id="btn-reg-submit">Crear mi cuenta gratis</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ SCREEN: DASHBOARD ════════ -->
+<div id="screen-dashboard" class="screen">
+  <div class="dash-header">
+    <h1>Hola, <span id="dash-nombre">Docente</span> 👋</h1>
+    <p>Bienvenido a tu panel de simulacros</p>
+    <div id="dash-membresia-badge"></div>
+  </div>
+
+  <div class="dash-grid">
+    <!-- Simulacro Nombramiento -->
+    <div class="sim-card">
+      <div class="sim-icon">📋</div>
+      <h3>Nombramiento Docente</h3>
+      <p>Prepárate para el concurso de nombramiento con preguntas actualizadas y feedback inmediato.</p>
+      <div class="sim-meta">
+        <span>⏱ 45 minutos</span>
+        <span>📝 30 preguntas</span>
+      </div>
+      <button class="btn-iniciar" id="btn-sim-nombramiento" onclick="iniciarSimulacro('nombramiento')">
+        Iniciar simulacro →
+      </button>
+    </div>
+
+    <!-- Simulacro Ascenso -->
+    <div class="sim-card">
+      <div class="sim-icon">🏆</div>
+      <h3>Ascenso Docente</h3>
+      <p>Sube de escala magisterial con simulacros especializados por área y nivel.</p>
+      <div class="sim-meta">
+        <span>⏱ 45 minutos</span>
+        <span>📝 30 preguntas</span>
+      </div>
+      <button class="btn-iniciar" id="btn-sim-ascenso" onclick="iniciarSimulacro('ascenso')">
+        Iniciar simulacro →
+      </button>
+    </div>
+  </div>
+
+  <!-- Historial -->
+  <div class="historial-section">
+    <h2>📊 Mi historial de simulacros</h2>
+    <div id="historial-container">
+      <table class="historial-table">
+        <thead><tr>
+          <th>Simulacro</th><th>Fecha</th><th>Puntaje</th><th>Correctas</th><th>Tiempo</th>
+        </tr></thead>
+        <tbody id="historial-tbody">
+          <tr><td colspan="5" class="sin-historial">Aún no has realizado ningún simulacro</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ SCREEN: SIMULACRO ════════ -->
+<div id="screen-simulacro" class="screen">
+  <div class="sim-topbar">
+    <div>
+      <div class="sim-titulo" id="sim-titulo-texto">Simulacro</div>
+      <div class="sim-prog" id="sim-progreso">Pregunta 1 de 30</div>
+    </div>
+    <div class="cronometro" id="cronometro">⏱ 45:00</div>
+  </div>
+
+  <div class="progress-bar">
+    <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+  </div>
+
+  <div class="pregunta-card">
+    <div class="pregunta-num" id="pregunta-num">Pregunta 1</div>
+    <div class="pregunta-texto" id="pregunta-texto"></div>
+    <div class="opciones" id="opciones-container"></div>
+    <div class="explicacion" id="explicacion-texto"></div>
+    <div class="sim-nav">
+      <button class="btn-nav-sim secondary" onclick="anteriorPregunta()" id="btn-anterior" style="display:none">← Anterior</button>
+      <button class="btn-nav-sim primary" onclick="siguientePregunta()" id="btn-siguiente">Siguiente →</button>
+      <button class="btn-nav-sim dorado" onclick="finalizarSimulacro()" id="btn-finalizar" style="display:none">Finalizar simulacro ✓</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ SCREEN: RESULTADO ════════ -->
+<div id="screen-resultado" class="screen">
+  <div class="resultado-card">
+    <div class="resultado-emoji" id="resultado-emoji">🎉</div>
+    <h2 id="resultado-titulo">¡Buen trabajo!</h2>
+    <p class="subtitulo" id="resultado-subtitulo"></p>
+    <div class="puntaje-grande" id="resultado-puntaje">0%</div>
+    <div class="puntaje-label">Puntaje obtenido</div>
+    <div class="resultado-stats">
+      <div class="rst verde"><strong id="res-correctas">0</strong><span>Correctas</span></div>
+      <div class="rst rojo"><strong id="res-incorrectas">0</strong><span>Incorrectas</span></div>
+      <div class="rst azul"><strong id="res-tiempo">0:00</strong><span>Tiempo usado</span></div>
+    </div>
+    <div class="resultado-btns">
+      <button class="btn-resultado primary" onclick="repetirSimulacro()">🔄 Repetir simulacro</button>
+      <button class="btn-resultado secondary" onclick="irDashboard()">← Volver al panel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ SCREEN: ADMIN ════════ -->
+<div id="screen-admin" class="screen">
+  <div class="admin-header">
+    <h1>🛡️ Panel Administrador</h1>
+    <p>Gestiona usuarios y membresías de la plataforma</p>
+  </div>
+  <div class="admin-stats" id="admin-stats">
+    <div class="admin-stat-card"><strong id="stat-total">0</strong><span>Usuarios totales</span></div>
+    <div class="admin-stat-card"><strong id="stat-activos">0</strong><span>Membresías activas</span></div>
+    <div class="admin-stat-card"><strong id="stat-simulacros">0</strong><span>Simulacros realizados</span></div>
+  </div>
+  <table class="usuarios-table" id="admin-tabla">
+    <thead><tr>
+      <th>Nombre</th><th>Correo</th><th>Registro</th><th>Membresía</th><th>Acción</th>
+    </tr></thead>
+    <tbody id="admin-tbody">
+      <tr><td colspan="5" class="sin-historial">Cargando usuarios...</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<script>
+// ══════════════════════════════════════════
+// CONFIGURACIÓN SUPABASE — reemplaza con tus credenciales
+// ══════════════════════════════════════════
+const SUPABASE_URL = 'https://potlcmhbwrxjjligowof.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBvdGxjbWhid3J4ampsaWdvd29mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0MjQ1NzAsImV4cCI6MjA5NjAwMDU3MH0.gwqHYzmbqRNsL03-i6zjw235YmEExyGadjlBe5xF2sA';
+const ADMIN_EMAIL = 'retodocenteimparable2026@gmail.com'; // Tu correo para acceder al panel admin
+
+const { createClient } = supabase;
+const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// ══════════════════════════════════════════
+// BANCO DE PREGUNTAS
+// ══════════════════════════════════════════
+const PREGUNTAS = {
+  nombramiento: [
+    { p:"¿Cuál es el marco legal que rige la Carrera Pública Magisterial en el Perú?", ops:["Ley N° 24029","Ley N° 29062","Ley N° 30512","Ley N° 28044"], r:1, exp:"La Ley N° 29062 modifica la Ley del Profesorado y rige la Carrera Pública Magisterial." },
+    { p:"¿Qué documento orienta el trabajo pedagógico del docente peruano?", ops:["PEN al 2036","Currículo Nacional de la Educación Básica","PEI de la institución","Reglamento Interno"], r:1, exp:"El Currículo Nacional es el documento de base que orienta la labor pedagógica en la educación básica." },
+    { p:"¿Cuántas escalas tiene la Carrera Pública Magisterial según la Ley N° 29062?", ops:["5 escalas","6 escalas","7 escalas","8 escalas"], r:3, exp:"La CPM tiene 8 escalas magisteriales, siendo la primera la de ingreso a la carrera." },
+    { p:"¿Qué enfoque pedagógico promueve el Currículo Nacional?", ops:["Enfoque conductista","Enfoque por competencias","Enfoque memorístico","Enfoque disciplinar"], r:1, exp:"El CN promueve el desarrollo de competencias, entendidas como la combinación de capacidades para lograr propósitos." },
+    { p:"¿Cuál es el perfil de egreso del Currículo Nacional?", ops:["Conjunto de aprendizajes que todo estudiante peruano debe lograr al terminar la EBR","Lista de cursos que debe aprobar","Objetivos del docente","Metas institucionales"], r:0, exp:"El perfil de egreso es el conjunto de aprendizajes comunes que deben lograr todos los estudiantes al concluir la EBR." },
+    { p:"¿Qué son las competencias en el Currículo Nacional?", ops:["Conocimientos específicos","Facultad de combinar capacidades","Habilidades motoras","Actitudes positivas"], r:1, exp:"Las competencias son la facultad de combinar un conjunto de capacidades para lograr un propósito específico en situaciones diversas." },
+    { p:"¿Qué es una capacidad en el marco del CN?", ops:["Un recurso para actuar de manera competente","Un objetivo de aprendizaje","Una estrategia didáctica","Un instrumento de evaluación"], r:0, exp:"Las capacidades son recursos (conocimientos, habilidades y actitudes) que los estudiantes utilizan para actuar de manera competente." },
+    { p:"¿Qué evalúa principalmente la evaluación formativa?", ops:["Solo los productos finales","El proceso de aprendizaje para retroalimentar","La conducta del estudiante","El desempeño del docente"], r:1, exp:"La evaluación formativa evalúa el proceso de aprendizaje con el fin de retroalimentar oportunamente al estudiante." },
+    { p:"¿Qué instrumento se usa para planificar las sesiones de aprendizaje?", ops:["El proyecto de aprendizaje","La sesión de aprendizaje","La unidad didáctica","El portafolio"], r:2, exp:"La unidad didáctica es la herramienta que organiza las secuencias de sesiones de aprendizaje hacia un propósito." },
+    { p:"¿Qué ley establece la Ley General de Educación en el Perú?", ops:["Ley N° 29062","Ley N° 28044","Ley N° 30512","Ley N° 27444"], r:1, exp:"La Ley N° 28044 es la Ley General de Educación que establece los lineamientos generales del sistema educativo peruano." },
+    { p:"¿Cuál es la función principal del docente según el marco del Buen Desempeño Docente?", ops:["Transmitir conocimientos","Facilitar el aprendizaje de los estudiantes","Administrar la institución","Evaluar los libros de texto"], r:1, exp:"El MBDD establece que el docente es un facilitador del aprendizaje que promueve el desarrollo integral del estudiante." },
+    { p:"¿Qué es el Marco del Buen Desempeño Docente?", ops:["Un reglamento sancionador","Una herramienta de gestión institucional","Una guía que define dominios, competencias y desempeños docentes","Un manual de convivencia"], r:2, exp:"El MBDD es una guía de referencia que define los dominios, competencias y desempeños que caracterizan la buena docencia." },
+    { p:"¿Cuántos dominios tiene el Marco del Buen Desempeño Docente?", ops:["2","3","4","5"], r:2, exp:"El MBDD tiene 4 dominios: Preparación para el aprendizaje, Enseñanza para el aprendizaje, Participación en la gestión y Desarrollo profesional." },
+    { p:"¿Qué es el Proyecto Educativo Institucional (PEI)?", ops:["Un documento de gestión que orienta la acción educativa de la IE","Un plan de sesiones de aprendizaje","El reglamento de la IE","El presupuesto anual"], r:0, exp:"El PEI es un instrumento de gestión de mediano plazo que orienta la acción educativa de la institución educativa." },
+    { p:"¿Cuál es el nivel más alto de la jerarquía curricular en el Perú?", ops:["Diseño Curricular Regional","Proyecto Curricular Institucional","Currículo Nacional","Programación anual"], r:2, exp:"El Currículo Nacional es el nivel más alto, del que se derivan los currículos regionales y los proyectos curriculares institucionales." },
+    { p:"¿Qué son los estándares de aprendizaje?", ops:["Notas mínimas aprobatorias","Descripción del nivel esperado de desarrollo de competencias","Lista de contenidos","Objetivos anuales"], r:1, exp:"Los estándares son descripciones del nivel esperado de desarrollo de las competencias en momentos dados de la escolaridad." },
+    { p:"¿Qué es la planificación curricular inversa o 'backward design'?", ops:["Planificar desde las actividades","Planificar desde los resultados esperados de aprendizaje","Copiar sesiones del año anterior","Planificar solo actividades lúdicas"], r:1, exp:"La planificación inversa parte de definir los resultados esperados (competencias) para luego determinar evidencias y actividades." },
+    { p:"¿Qué promueve el enfoque inclusivo en educación?", ops:["Aulas especiales para estudiantes con discapacidad","Participación y aprendizaje de todos sin discriminación","Solo atención a estudiantes con discapacidad","Reducir la cantidad de estudiantes por aula"], r:1, exp:"El enfoque inclusivo promueve que todos los estudiantes, independientemente de sus condiciones, participen y aprendan juntos." },
+    { p:"¿Cuál es la primera escala de la Carrera Pública Magisterial?", ops:["Escala I","Escala II","Escala III","Escala IV"], r:0, exp:"La Escala I es la de ingreso a la Carrera Pública Magisterial, donde inician los docentes nombrados." },
+    { p:"¿Qué es la retroalimentación formativa?", ops:["Calificación numérica final","Información oportuna para mejorar el aprendizaje","Sanción por bajo rendimiento","Informe a los padres de familia"], r:1, exp:"La retroalimentación formativa es la información que se brinda al estudiante para que tome consciencia de su aprendizaje y lo mejore." },
+    { p:"¿Qué rol cumple el docente en la evaluación formativa?", ops:["Juez que califica","Mediador que retroalimenta para mejorar","Administrador de exámenes","Calificador de conducta"], r:1, exp:"En la evaluación formativa el docente actúa como mediador que usa la información para brindar retroalimentación y ajustar su enseñanza." },
+    { p:"¿Cuál es el fin de la educación peruana según la Ley General de Educación?", ops:["Formar técnicos calificados","Desarrollar la personalidad integral del estudiante","Garantizar el empleo de los egresados","Homogenizar a los estudiantes"], r:1, exp:"La Ley 28044 establece que la educación peruana tiene como fin el desarrollo integral de la persona humana." },
+    { p:"¿Qué son las Rutas de Aprendizaje?", ops:["Documentos vigentes del CN","Orientaciones pedagógicas previas al CN para apoyar a los docentes","Mapas de contenidos","Evaluaciones estandarizadas"], r:1, exp:"Las Rutas de Aprendizaje fueron orientaciones pedagógicas que antecedieron al Currículo Nacional y apoyaban el trabajo docente." },
+    { p:"¿Qué tipo de gestión promueve el MBDD en su tercer dominio?", ops:["Gestión administrativa","Gestión comunitaria y participativa","Gestión de recursos económicos","Gestión del tiempo libre"], r:1, exp:"El tercer dominio del MBDD se enfoca en la participación en la gestión de la IE articulada a la comunidad." },
+    { p:"¿Qué es la diversificación curricular?", ops:["Eliminar contenidos del CN","Adaptar el CN a la realidad regional y local","Crear un nuevo currículo","Copiar el currículo de otro país"], r:1, exp:"La diversificación curricular es el proceso de adaptar y contextualizar el CN a las características y necesidades del contexto regional y local." },
+    { p:"¿Qué instrumento recoge evidencias del aprendizaje del estudiante a lo largo del tiempo?", ops:["Examen escrito","Portafolio de aprendizaje","Prueba de entrada","Lista de cotejo"], r:1, exp:"El portafolio de aprendizaje es una colección de evidencias que muestra el progreso del estudiante a lo largo del tiempo." },
+    { p:"¿Cuál es el propósito de la evaluación diagnóstica?", ops:["Calificar al inicio","Conocer los saberes previos para planificar","Sancionar a los que no saben","Comparar estudiantes"], r:1, exp:"La evaluación diagnóstica permite conocer los saberes previos de los estudiantes para planificar la enseñanza de manera pertinente." },
+    { p:"¿Qué entiende el CN por 'aprendizaje significativo'?", ops:["Memorizar muchos datos","Conectar nuevos conocimientos con saberes previos","Aprender solo con tecnología","Reproducir información"], r:1, exp:"El aprendizaje significativo ocurre cuando el estudiante conecta los nuevos conocimientos con sus saberes y experiencias previas." },
+    { p:"¿Qué caracteriza a una buena sesión de aprendizaje según el MBDD?", ops:["Muchos contenidos en poco tiempo","Clima favorable, alta demanda cognitiva y retroalimentación","Examen al final de cada clase","Silencio y disciplina total"], r:1, exp:"Una buena sesión combina clima de respeto, actividades de alta demanda cognitiva y retroalimentación oportuna al estudiante." },
+    { p:"¿Qué implica el enfoque por competencias en la práctica docente?", ops:["Solo transmitir conocimientos teóricos","Desarrollar situaciones que permitan actuar competentemente","Enfocarse en los contenidos del libro","Evaluar solo con pruebas escritas"], r:1, exp:"El enfoque por competencias implica diseñar situaciones de aprendizaje que permitan al estudiante movilizar sus capacidades de forma integrada." }
+  ],
+  ascenso: [
+    { p:"¿Cuál es el propósito del ascenso en la Carrera Pública Magisterial?", ops:["Aumentar la carga horaria","Reconocer el desarrollo profesional y mejorar la remuneración","Solo cambiar de institución","Obtener más vacaciones"], r:1, exp:"El ascenso reconoce el desarrollo profesional del docente y conlleva mejoras remunerativas en la escala magisterial." },
+    { p:"¿Qué evalúa principalmente el concurso de ascenso de escala?", ops:["Solo la antigüedad","Desempeño, formación y conocimientos pedagógicos","Solo el título profesional","La puntualidad"], r:1, exp:"El concurso de ascenso evalúa el desempeño laboral, formación continua y conocimientos pedagógicos del docente." },
+    { p:"¿Qué es la metacognición en el aprendizaje?", ops:["Memorizar fórmulas","Reflexionar sobre el propio proceso de aprendizaje","Copiar estrategias de otros","Evaluar a los compañeros"], r:1, exp:"La metacognición es la capacidad de reflexionar sobre el propio proceso de aprendizaje, reconociendo fortalezas y aspectos por mejorar." },
+    { p:"¿Cuál es la diferencia entre enseñanza y aprendizaje?", ops:["Son lo mismo","La enseñanza es la acción del docente; el aprendizaje el proceso del estudiante","Solo cambia el nombre","El aprendizaje es responsabilidad del docente"], r:1, exp:"La enseñanza es la acción intencional del docente para facilitar aprendizajes; el aprendizaje es el proceso interno del estudiante." },
+    { p:"¿Qué es el aprendizaje colaborativo?", ops:["Trabajar de forma individual","Proceso en que los estudiantes aprenden interactuando entre sí","Competir para obtener mejores notas","Copiar trabajos de compañeros"], r:1, exp:"El aprendizaje colaborativo es un proceso donde los estudiantes trabajan juntos, compartiendo conocimientos y apoyándose mutuamente." },
+    { p:"¿Qué son las estrategias metacognitivas?", ops:["Técnicas para memorizar","Acciones para planificar, monitorear y evaluar el propio aprendizaje","Métodos de castigo","Formas de copiar en exámenes"], r:1, exp:"Las estrategias metacognitivas ayudan al estudiante a planificar, monitorear y evaluar su propio proceso de aprendizaje." },
+    { p:"¿Qué es la zona de desarrollo próximo (ZDP) de Vygotsky?", ops:["El límite máximo del aprendizaje","Distancia entre lo que el estudiante puede hacer solo y con ayuda","El nivel actual de conocimiento","El espacio físico del aula"], r:1, exp:"La ZDP es la distancia entre el nivel de desarrollo actual y el nivel de desarrollo potencial con la guía de un adulto o par más capaz." },
+    { p:"¿Qué es el andamiaje pedagógico?", ops:["Construcción de mobiliario escolar","Apoyo temporal del docente para que el estudiante alcance mayor autonomía","Sistema de evaluación","Tipo de planificación"], r:1, exp:"El andamiaje es el apoyo ajustado que brinda el docente para ayudar al estudiante a superar su ZDP y lograr mayor autonomía." },
+    { p:"¿Qué caracteriza al pensamiento crítico?", ops:["Aceptar todo sin cuestionar","Analizar, evaluar y formar juicios propios sobre la información","Memorizar datos","Seguir instrucciones sin reflexionar"], r:1, exp:"El pensamiento crítico implica analizar, evaluar evidencias y formar juicios propios fundamentados sobre la información recibida." },
+    { p:"¿Qué es la gamificación educativa?", ops:["Jugar en clases sin propósito","Aplicar elementos de juego para motivar y mejorar el aprendizaje","Ver videos de entretenimiento","Competencia entre docentes"], r:1, exp:"La gamificación aplica dinámicas y elementos de juego en contextos educativos para motivar a los estudiantes y potenciar el aprendizaje." },
+    { p:"¿Qué promueve el aprendizaje basado en proyectos (ABP)?", ops:["Estudio individual de contenidos","Aprendizaje activo mediante la resolución de problemas reales","Lectura pasiva de textos","Repetición de ejercicios"], r:1, exp:"El ABP promueve que los estudiantes aprendan desarrollando proyectos que responden a problemas o desafíos del mundo real." },
+    { p:"¿Cuál es la función del docente en el aula invertida (flipped classroom)?", ops:["Explicar contenidos durante toda la clase","Guiar y acompañar mientras los estudiantes aplican lo aprendido en casa","Solo evaluar","Asignar tareas sin explicar"], r:1, exp:"En el aula invertida el docente usa el tiempo de clase para guiar la aplicación de contenidos que el estudiante exploró previamente." },
+    { p:"¿Qué es la evaluación auténtica?", ops:["Exámenes tradicionales con preguntas memorísticas","Evaluación mediante tareas reales y complejas vinculadas a contextos reales","Calificación por asistencia","Autoevaluación sin criterios"], r:1, exp:"La evaluación auténtica valora las competencias del estudiante mediante tareas complejas conectadas a situaciones del mundo real." },
+    { p:"¿Qué es la diferenciación curricular?", ops:["Dar el mismo trabajo a todos","Adaptar la enseñanza a las necesidades, intereses y estilos de aprendizaje de cada estudiante","Separar a los estudiantes por nivel","Reducir los contenidos"], r:1, exp:"La diferenciación curricular implica adaptar contenidos, procesos y productos para atender las diversas necesidades de los estudiantes." },
+    { p:"¿Qué implica la educación intercultural bilingüe (EIB)?", ops:["Enseñar solo en español","Valorar y desarrollar aprendizajes desde la lengua y cultura originaria junto al castellano","Eliminar las lenguas originarias","Solo enseñar inglés"], r:1, exp:"La EIB implica desarrollar aprendizajes en la lengua materna originaria y el castellano, valorando la identidad cultural del estudiante." },
+    { p:"¿Qué es la inteligencia emocional en el docente?", ops:["Tener un coeficiente intelectual alto","Capacidad de reconocer y gestionar las propias emociones y las de los demás","No mostrar emociones","Solo conocer teorías psicológicas"], r:1, exp:"La inteligencia emocional es la capacidad de identificar, comprender y gestionar las emociones propias y ajenas de manera efectiva." },
+    { p:"¿Qué es la práctica reflexiva docente?", ops:["Hacer lo mismo cada año","Analizar la propia práctica para mejorar continuamente","Seguir el libro de texto sin cambios","Evaluar solo a los estudiantes"], r:1, exp:"La práctica reflexiva implica que el docente analiza críticamente su propia enseñanza para identificar mejoras y crecer profesionalmente." },
+    { p:"¿Cuál es el papel de las TIC en la educación contemporánea?", ops:["Reemplazar al docente","Herramienta para enriquecer y diversificar los procesos de enseñanza-aprendizaje","Solo para entretenimiento","Obligar a los estudiantes a usar pantallas"], r:1, exp:"Las TIC son herramientas que, bien utilizadas, enriquecen y diversifican las experiencias de enseñanza y aprendizaje." },
+    { p:"¿Qué son las competencias digitales docentes?", ops:["Saber usar redes sociales","Capacidades para usar tecnología de forma pedagógica, segura y ética","Tener muchos dispositivos","Solo saber usar Word y Excel"], r:1, exp:"Las competencias digitales docentes incluyen el uso pedagógico, seguro y ético de las tecnologías para mejorar el aprendizaje." },
+    { p:"¿Qué es el liderazgo pedagógico del director?", ops:["Administrar los recursos económicos","Influir en la mejora de la enseñanza y el aprendizaje en la IE","Controlar la asistencia docente","Gestionar la infraestructura"], r:1, exp:"El liderazgo pedagógico del director se enfoca en influir positivamente en la práctica docente para mejorar los aprendizajes." },
+    { p:"¿Qué es la comunidad de aprendizaje profesional (CAP)?", ops:["Club de lectura de docentes","Grupo de docentes que colaboran para mejorar su práctica y los aprendizajes","Reunión de padres de familia","Comité de disciplina"], r:1, exp:"Una CAP es un grupo de docentes que trabajan colaborativamente, compartiendo experiencias y conocimientos para mejorar su práctica." },
+    { p:"¿Qué promueve el enfoque ambiental en la educación?", ops:["Estudiar solo ciencias naturales","Desarrollar conciencia y actitudes para el cuidado del ambiente","Eliminar actividades al aire libre","Solo reciclar papel"], r:1, exp:"El enfoque ambiental promueve que los estudiantes desarrollen conciencia, valores y actitudes para cuidar el ambiente y la sostenibilidad." },
+    { p:"¿Qué es la tutoría en la educación básica regular?", ops:["Reforzamiento de matemáticas","Acompañamiento socioafectivo y cognitivo al estudiante","Sanción de conductas","Solo orientación vocacional"], r:1, exp:"La tutoría es el acompañamiento socioafectivo, cognitivo y pedagógico que brinda el docente para el bienestar integral del estudiante." },
+    { p:"¿Qué implica la convivencia democrática en el aula?", ops:["El docente impone todas las normas","Construir normas participativamente y resolver conflictos pacíficamente","No tener ninguna norma","Solo premiar el buen comportamiento"], r:1, exp:"La convivencia democrática implica construir participativamente normas de convivencia y gestionar conflictos de manera pacífica y formativa." },
+    { p:"¿Cuál es el propósito del Plan de Mejora en la IE?", ops:["Sancionar docentes de bajo desempeño","Establecer acciones para mejorar los resultados de aprendizaje","Aumentar la infraestructura","Reducir el número de estudiantes"], r:1, exp:"El Plan de Mejora busca establecer acciones concretas y priorizadas para mejorar los resultados de aprendizaje en la IE." },
+    { p:"¿Qué es la autoevaluación institucional?", ops:["Evaluación externa de la UGEL","Proceso por el cual la IE reflexiona sobre su propia gestión y resultados","Solo evaluar a los docentes","Rendir cuentas al ministerio"], r:1, exp:"La autoevaluación institucional es el proceso por el cual la propia IE analiza su funcionamiento para identificar fortalezas y mejorar." },
+    { p:"¿Qué es el enfoque de derechos en educación?", ops:["Solo proteger derechos laborales docentes","Reconocer al estudiante como sujeto de derechos que debe ser respetado y protegido","Exigir deberes sin reconocer derechos","Solo aplicar el código del niño"], r:1, exp:"El enfoque de derechos reconoce al estudiante como sujeto de derechos, promoviendo su dignidad, participación y protección." },
+    { p:"¿Qué es la neuroeducación?", ops:["Cirugía cerebral para mejorar notas","Disciplina que aplica hallazgos de neurociencia para mejorar los procesos educativos","Solo estudiar el cerebro","Psicología clínica"], r:1, exp:"La neuroeducación aplica los conocimientos sobre el funcionamiento cerebral para diseñar mejores estrategias de enseñanza y aprendizaje." },
+    { p:"¿Qué caracteriza al docente reflexivo según Schön?", ops:["Sigue rutinas sin cuestionarlas","Reflexiona en y sobre la acción para mejorar su práctica profesional","Solo aplica teorías","Evalúa constantemente a los estudiantes"], r:1, exp:"Según Schön, el docente reflexivo analiza sus propias acciones durante y después de la práctica para aprender de ellas y mejorar." },
+    { p:"¿Cuál es el impacto de las altas expectativas docentes en el aprendizaje?", ops:["No tienen ningún impacto","Mejoran el rendimiento al motivar a los estudiantes (efecto Pigmalión)","Solo aumentan la presión","Generan ansiedad sin beneficio"], r:1, exp:"El efecto Pigmalión demuestra que las altas expectativas del docente influyen positivamente en el rendimiento y motivación de los estudiantes." }
+  ]
+};
+
+// ══════════════════════════════════════════
+// ESTADO DE LA APP
+// ══════════════════════════════════════════
+let currentUser = null;
+let currentProfile = null;
+let currentSim = null; // { tipo, preguntas, idx, respuestas, tiempoInicio, timer }
+
+// ══════════════════════════════════════════
+// INICIALIZACIÓN
+// ══════════════════════════════════════════
+async function init() {
+  const { data: { session } } = await sb.auth.getSession();
+  if (session) {
+    currentUser = session.user;
+    await loadProfile();
+  } else {
+    showScreen('login');
+  }
+}
+
+async function loadProfile() {
+  const { data } = await sb.from('perfiles').select('*').eq('id', currentUser.id).single();
+  currentProfile = data;
+  document.getElementById('topbar').style.display = 'flex';
+  document.getElementById('topbar-nombre').textContent = currentProfile?.nombre || currentUser.email;
+
+  if (currentUser.email === ADMIN_EMAIL) {
+    showScreen('admin');
+    cargarAdmin();
+  } else {
+    showScreen('dashboard');
+    cargarDashboard();
+  }
+}
+
+// ══════════════════════════════════════════
+// NAVEGACIÓN
+// ══════════════════════════════════════════
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + name).classList.add('active');
+  if (name === 'login') document.getElementById('topbar').style.display = 'none';
+}
+
+// ══════════════════════════════════════════
+// AUTH
+// ══════════════════════════════════════════
+function switchLoginTab(tab) {
+  const isLogin = tab === 'login';
+  document.getElementById('lform-login').style.display = isLogin ? 'block' : 'none';
+  document.getElementById('lform-registro').style.display = isLogin ? 'none' : 'block';
+  document.getElementById('ltab-login').classList.toggle('active', isLogin);
+  document.getElementById('ltab-registro').classList.toggle('active', !isLogin);
+}
+
+function showAlerta(msg, tipo) {
+  const el = document.getElementById('alerta-login');
+  el.textContent = msg;
+  el.className = 'alerta ' + tipo;
+  el.style.display = 'block';
+  if (tipo !== 'warning') setTimeout(() => el.style.display = 'none', 4000);
+}
+
+async function doLogin() {
+  const email = document.getElementById('li-email').value.trim();
+  const pass  = document.getElementById('li-pass').value;
+  if (!email || !pass) return showAlerta('⚠️ Completa todos los campos.', 'error');
+
+  const btn = document.getElementById('btn-login-submit');
+  btn.innerHTML = '<span class="spinner"></span> Ingresando...';
+  btn.disabled = true;
+
+  const { error } = await sb.auth.signInWithPassword({ email, password: pass });
+  btn.innerHTML = 'Ingresar a mi cuenta';
+  btn.disabled = false;
+
+  if (error) return showAlerta('❌ Correo o contraseña incorrectos.', 'error');
+  const { data: { session } } = await sb.auth.getSession();
+  currentUser = session.user;
+  await loadProfile();
+}
+
+async function doRegistro() {
+  const nombre   = document.getElementById('rg-nombre').value.trim();
+  const apellido = document.getElementById('rg-apellido').value.trim();
+  const email    = document.getElementById('rg-email').value.trim();
+  const pass     = document.getElementById('rg-pass').value;
+
+  if (!nombre || !apellido || !email || !pass) return showAlerta('⚠️ Completa todos los campos.', 'error');
+  if (pass.length < 8) return showAlerta('⚠️ La contraseña debe tener al menos 8 caracteres.', 'error');
+
+  const btn = document.getElementById('btn-reg-submit');
+  btn.innerHTML = '<span class="spinner"></span> Creando cuenta...';
+  btn.disabled = true;
+
+  const { data, error } = await sb.auth.signUp({ email, password: pass });
+  btn.innerHTML = 'Crear mi cuenta gratis';
+  btn.disabled = false;
+
+  if (error) return showAlerta('❌ ' + error.message, 'error');
+
+  // Crear perfil
+  await sb.from('perfiles').insert({
+    id: data.user.id,
+    nombre: nombre + ' ' + apellido,
+    email,
+    membresia_activa: false
+  });
+
+  showAlerta('✅ ¡Cuenta creada! Confirma tu correo y luego inicia sesión.', 'success');
+}
+
+async function logout() {
+  await sb.auth.signOut();
+  currentUser = null;
+  currentProfile = null;
+  document.getElementById('topbar').style.display = 'none';
+  showScreen('login');
+}
+
+// ══════════════════════════════════════════
+// DASHBOARD
+// ══════════════════════════════════════════
+async function cargarDashboard() {
+  const nombre = (currentProfile?.nombre || currentUser.email).split(' ')[0];
+  document.getElementById('dash-nombre').textContent = nombre;
+
+  const activa = currentProfile?.membresia_activa;
+  const badge = document.getElementById('dash-membresia-badge');
+  badge.innerHTML = activa
+    ? '<span class="membresia-badge activa">✅ Membresía Activa</span>'
+    : '<span class="membresia-badge inactiva">🔒 Sin membresía — <a href="https://wa.me/51922573625?text=Hola%2C%20quiero%20adquirir%20una%20membresia" target="_blank" style="color:inherit;font-weight:700">Adquirir aquí</a></span>';
+
+  // Bloquear botones si no tiene membresía
+  ['btn-sim-nombramiento','btn-sim-ascenso'].forEach(id => {
+    const btn = document.getElementById(id);
+    if (!activa) {
+      btn.classList.add('locked');
+      btn.textContent = '🔒 Requiere membresía';
+      btn.onclick = () => window.open('https://wa.me/51922573625?text=Hola%2C%20quiero%20adquirir%20una%20membresia','_blank');
+    }
+  });
+
+  // Cargar historial
+  const { data: hist } = await sb.from('historial_simulacros')
+    .select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false }).limit(10);
+
+  const tbody = document.getElementById('historial-tbody');
+  if (!hist || hist.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="5" class="sin-historial">Aún no has realizado ningún simulacro</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = hist.map(h => {
+    const pct = Math.round((h.correctas / h.total) * 100);
+    const cls = pct >= 70 ? 'alto' : pct >= 50 ? 'medio' : 'bajo';
+    const fecha = new Date(h.created_at).toLocaleDateString('es-PE');
+    return `<tr>
+      <td>${h.tipo === 'nombramiento' ? '📋 Nombramiento' : '🏆 Ascenso'}</td>
+      <td>${fecha}</td>
+      <td><span class="puntaje-chip ${cls}">${pct}%</span></td>
+      <td>${h.correctas} / ${h.total}</td>
+      <td>${h.tiempo_usado}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════
+// SIMULACRO
+// ══════════════════════════════════════════
+function iniciarSimulacro(tipo) {
+  if (!currentProfile?.membresia_activa) return;
+
+  const preguntas = [...PREGUNTAS[tipo]].sort(() => Math.random() - 0.5).slice(0, 30);
+  currentSim = {
+    tipo,
+    preguntas,
+    idx: 0,
+    respuestas: new Array(30).fill(null),
+    tiempoInicio: Date.now(),
+    tiempoTotal: 45 * 60,
+    tiempoRestante: 45 * 60,
+    respondida: false
+  };
+
+  document.getElementById('sim-titulo-texto').textContent =
+    tipo === 'nombramiento' ? '📋 Simulacro — Nombramiento Docente' : '🏆 Simulacro — Ascenso Docente';
+
+  showScreen('simulacro');
+  renderPregunta();
+  iniciarCronometro();
+}
+
+function renderPregunta() {
+  const { preguntas, idx, respuestas } = currentSim;
+  const q = preguntas[idx];
+  const total = preguntas.length;
+  const yaRespondida = respuestas[idx] !== null;
+
+  document.getElementById('pregunta-num').textContent = `Pregunta ${idx + 1}`;
+  document.getElementById('pregunta-texto').textContent = q.p;
+  document.getElementById('sim-progreso').textContent = `Pregunta ${idx + 1} de ${total}`;
+  document.getElementById('progress-fill').style.width = ((idx + 1) / total * 100) + '%';
+
+  // Opciones
+  const letras = ['A','B','C','D'];
+  const cont = document.getElementById('opciones-container');
+  cont.innerHTML = q.ops.map((op, i) => {
+    let cls = 'opcion';
+    if (yaRespondida) {
+      if (i === q.r) cls += ' correcta';
+      else if (i === respuestas[idx]) cls += ' incorrecta';
+    } else if (i === respuestas[idx]) cls += ' seleccionada';
+    return `<div class="${cls}" onclick="seleccionarOpcion(${i})">
+      <div class="opcion-letra">${letras[i]}</div>
+      <div class="opcion-texto">${op}</div>
+    </div>`;
+  }).join('');
+
+  // Explicación
+  const exp = document.getElementById('explicacion-texto');
+  if (yaRespondida) {
+    exp.textContent = '💡 ' + q.exp;
+    exp.classList.add('visible');
+  } else {
+    exp.classList.remove('visible');
+  }
+
+  // Navegación
+  document.getElementById('btn-anterior').style.display = idx > 0 ? 'inline-block' : 'none';
+  document.getElementById('btn-siguiente').style.display = idx < total - 1 ? 'inline-block' : 'none';
+  document.getElementById('btn-finalizar').style.display = idx === total - 1 ? 'inline-block' : 'none';
+
+  currentSim.respondida = yaRespondida;
+}
+
+function seleccionarOpcion(i) {
+  if (currentSim.respuestas[currentSim.idx] !== null) return;
+  currentSim.respuestas[currentSim.idx] = i;
+  currentSim.respondida = true;
+  renderPregunta();
+}
+
+function siguientePregunta() {
+  if (currentSim.idx < currentSim.preguntas.length - 1) {
+    currentSim.idx++;
+    renderPregunta();
+  }
+}
+
+function anteriorPregunta() {
+  if (currentSim.idx > 0) {
+    currentSim.idx--;
+    renderPregunta();
+  }
+}
+
+function iniciarCronometro() {
+  if (currentSim.timer) clearInterval(currentSim.timer);
+  currentSim.timer = setInterval(() => {
+    currentSim.tiempoRestante--;
+    const m = Math.floor(currentSim.tiempoRestante / 60);
+    const s = currentSim.tiempoRestante % 60;
+    const el = document.getElementById('cronometro');
+    el.textContent = `⏱ ${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    el.className = 'cronometro' + (currentSim.tiempoRestante < 300 ? ' warning' : '');
+    if (currentSim.tiempoRestante <= 0) finalizarSimulacro();
+  }, 1000);
+}
+
+async function finalizarSimulacro() {
+  clearInterval(currentSim.timer);
+  const { preguntas, respuestas, tiempoTotal, tiempoRestante, tipo } = currentSim;
+  const correctas = respuestas.filter((r, i) => r === preguntas[i].r).length;
+  const total = preguntas.length;
+  const pct = Math.round((correctas / total) * 100);
+  const tiempoUsado = tiempoTotal - tiempoRestante;
+  const mins = Math.floor(tiempoUsado / 60);
+  const segs = tiempoUsado % 60;
+  const tiempoStr = `${mins}:${String(segs).padStart(2,'0')}`;
+
+  // Guardar en Supabase
+  await sb.from('historial_simulacros').insert({
+    user_id: currentUser.id,
+    tipo,
+    correctas,
+    total,
+    puntaje: pct,
+    tiempo_usado: tiempoStr
+  });
+
+  // Mostrar resultado
+  showScreen('resultado');
+  const cls = pct >= 70 ? 'alto' : pct >= 50 ? 'medio' : 'bajo';
+  const emoji = pct >= 70 ? '🎉' : pct >= 50 ? '💪' : '📚';
+  const titulo = pct >= 70 ? '¡Excelente resultado!' : pct >= 50 ? '¡Buen esfuerzo!' : 'Sigue practicando';
+  const sub = pct >= 70 ? 'Estás muy bien preparado/a' : pct >= 50 ? 'Puedes mejorar con más práctica' : 'Revisa los temas y vuelve a intentarlo';
+
+  document.getElementById('resultado-emoji').textContent = emoji;
+  document.getElementById('resultado-titulo').textContent = titulo;
+  document.getElementById('resultado-subtitulo').textContent = sub;
+  document.getElementById('resultado-puntaje').textContent = pct + '%';
+  document.getElementById('resultado-puntaje').className = 'puntaje-grande ' + cls;
+  document.getElementById('res-correctas').textContent = correctas;
+  document.getElementById('res-incorrectas').textContent = total - correctas;
+  document.getElementById('res-tiempo').textContent = tiempoStr;
+}
+
+function repetirSimulacro() { iniciarSimulacro(currentSim.tipo); }
+function irDashboard() { showScreen('dashboard'); cargarDashboard(); }
+
+// ══════════════════════════════════════════
+// ADMIN
+// ══════════════════════════════════════════
+async function cargarAdmin() {
+  const { data: usuarios } = await sb.from('perfiles').select('*').order('created_at', { ascending: false });
+  const { data: historial } = await sb.from('historial_simulacros').select('id');
+
+  if (!usuarios) return;
+
+  document.getElementById('stat-total').textContent = usuarios.length;
+  document.getElementById('stat-activos').textContent = usuarios.filter(u => u.membresia_activa).length;
+  document.getElementById('stat-simulacros').textContent = historial?.length || 0;
+
+  const tbody = document.getElementById('admin-tbody');
+  tbody.innerHTML = usuarios.map(u => {
+    const fecha = new Date(u.created_at).toLocaleDateString('es-PE');
+    const activa = u.membresia_activa;
+    return `<tr>
+      <td>${u.nombre || '—'}</td>
+      <td>${u.email}</td>
+      <td>${fecha}</td>
+      <td><span class="estado-chip ${activa ? 'activo' : 'inactivo'}">${activa ? '✅ Activa' : '❌ Inactiva'}</span></td>
+      <td><button class="toggle-membresia ${activa ? 'desactivar' : 'activar'}"
+        onclick="toggleMembresia('${u.id}', ${!activa})">
+        ${activa ? 'Desactivar' : 'Activar'}
+      </button></td>
+    </tr>`;
+  }).join('');
+}
+
+async function toggleMembresia(userId, estado) {
+  await sb.from('perfiles').update({ membresia_activa: estado }).eq('id', userId);
+  cargarAdmin();
+}
+
+// Iniciar
+init();
+</script>
+</body>
+</html>
