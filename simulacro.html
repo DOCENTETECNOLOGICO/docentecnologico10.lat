@@ -1400,13 +1400,23 @@ async function doLogin() {
   btn.innerHTML = '<span class="spinner"></span> Ingresando...';
   btn.disabled = true;
 
-  const { error } = await sb.auth.signInWithPassword({ email, password: pass });
+  const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
   btn.innerHTML = 'Ingresar a mi cuenta';
   btn.disabled = false;
 
-  if (error) return showAlerta('❌ Correo o contraseña incorrectos.', 'error');
-  const { data: { session } } = await sb.auth.getSession();
-  currentUser = session.user;
+  if (error) {
+    // Mostrar mensaje claro según el tipo de error
+    if (error.message.includes('Email not confirmed')) {
+      return showAlerta('⚠️ Debes confirmar tu correo electrónico antes de ingresar. Revisa tu bandeja de entrada.', 'warning');
+    }
+    return showAlerta('❌ Correo o contraseña incorrectos.', 'error');
+  }
+
+  if (!data.session) {
+    return showAlerta('⚠️ No se pudo iniciar sesión. Si recién creaste tu cuenta, confirma tu correo primero.', 'warning');
+  }
+
+  currentUser = data.session.user;
   await loadProfile();
 }
 
