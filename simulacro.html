@@ -398,7 +398,52 @@ body { font-family:'DM Sans',sans-serif; background:var(--gris-claro); min-heigh
   </a>
   <div class="topbar-user">
     <span id="topbar-nombre">Usuario</span>
+    <button onclick="togglePerfil()" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.8);padding:7px 14px;border-radius:7px;font-size:0.8rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;margin-right:4px">👤 Mi perfil</button>
     <button class="btn-logout" onclick="logout()">Cerrar sesión</button>
+  </div>
+</div>
+
+<!-- MODAL PERFIL -->
+<div id="modal-perfil" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:400;align-items:center;justify-content:center;padding:20px">
+  <div style="background:var(--blanco);border-radius:16px;padding:32px;max-width:400px;width:100%;box-shadow:0 24px 60px rgba(0,0,0,0.2)">
+    <h3 style="font-family:'Playfair Display',serif;color:var(--azul-oscuro);margin-bottom:6px">👤 Mi perfil</h3>
+    <p style="color:var(--gris);font-size:0.83rem;margin-bottom:20px">Actualiza tu información personal</p>
+
+    <div id="alerta-perfil" class="alerta"></div>
+
+    <div class="form-group">
+      <label>Nombre completo</label>
+      <div class="input-wrap">
+        <span class="ico">👤</span>
+        <input type="text" id="perfil-nombre" placeholder="Tu nombre completo">
+      </div>
+    </div>
+
+    <div style="border-top:1px solid rgba(15,45,138,0.08);margin:16px 0;padding-top:16px">
+      <div style="font-size:0.82rem;font-weight:700;color:var(--azul-oscuro);margin-bottom:12px">🔒 Cambiar contraseña</div>
+      <div class="form-group">
+        <label>Nueva contraseña</label>
+        <div class="input-wrap">
+          <span class="ico">🔒</span>
+          <input type="password" id="perfil-pass" placeholder="Mínimo 8 caracteres">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Confirmar contraseña</label>
+        <div class="input-wrap">
+          <span class="ico">🔒</span>
+          <input type="password" id="perfil-pass2" placeholder="Repite la contraseña">
+        </div>
+      </div>
+    </div>
+
+    <!-- Info membresía -->
+    <div id="perfil-membresia" style="background:var(--gris-claro);border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:0.83rem"></div>
+
+    <div style="display:flex;gap:12px">
+      <button onclick="guardarPerfil()" style="flex:1;padding:12px;background:linear-gradient(135deg,var(--azul),var(--azul-medio));color:white;border:none;border-radius:9px;font-family:'DM Sans',sans-serif;font-weight:700;cursor:pointer" id="btn-guardar-perfil">Guardar cambios</button>
+      <button onclick="cerrarPerfil()" style="padding:12px 18px;background:var(--gris-claro);color:var(--gris);border:none;border-radius:9px;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer">Cerrar</button>
+    </div>
   </div>
 </div>
 
@@ -1294,6 +1339,18 @@ async function init() {
 async function loadProfile() {
   const { data } = await sb.from('perfiles').select('*').eq('id', currentUser.id).single();
   currentProfile = data;
+
+  // Verificar vencimiento automático
+  if (currentProfile?.membresia_activa && currentProfile?.vencimiento) {
+    const vence = new Date(currentProfile.vencimiento);
+    const ahora = new Date();
+    if (ahora > vence) {
+      // Desactivar automáticamente
+      await sb.from('perfiles').update({ membresia_activa: false }).eq('id', currentUser.id);
+      currentProfile.membresia_activa = false;
+    }
+  }
+
   document.getElementById('topbar').style.display = 'flex';
   document.getElementById('topbar-nombre').textContent = currentProfile?.nombre || currentUser.email;
 
@@ -1445,34 +1502,83 @@ async function cargarDashboard() {
 // Subprueba 2: 50 CP · 3pts · Mín 84
 // Puntaje total mínimo: 110
 // ══════════════════════════════════════════
-function iniciarSimulacro(tipo) {
+async function iniciarSimulacro(tipo) {
   if (!currentProfile?.membresia_activa) return;
 
-  // Mezclar preguntas de cada subprueba
-  const hg = [...PREGUNTAS.habilidades_generales].sort(() => Math.random() - 0.5).slice(0, 25);
-  const cp = tipo === 'nombramiento'
-    ? [...PREGUNTAS.nombramiento].sort(() => Math.random() - 0.5).slice(0, 50)
-    : [...PREGUNTAS.ascenso].sort(() => Math.random() - 0.5).slice(0, 50);
+  // Mostrar loading
+  const btn = document.getElementById('btn-sim-' + tipo);
+  const textoOriginal = btn.innerHTML;
+  btn.innerHTML = '<span class="spinner" style="border-top-color:white"></span> Cargando...';
+  btn.disabled = true;
 
-  // Combinar: primero HG (índices 0-24), luego CP (índices 25-74)
-  const preguntas = [...hg, ...cp];
+  try {
+    // 1. Intentar cargar desde Supabase
+    const { data: hgDB } = await sb.from('preguntas')
+      .select('*')
+      .eq('subprueba', 'hg')
+      .eq('activa', true);
 
-  currentSim = {
-    tipo,
-    preguntas,
-    idx: 0,
-    respuestas: new Array(75).fill(null),
-    tiempoTotal: 225 * 60, // 3h 45min en segundos
-    tiempoRestante: 225 * 60,
-    timer: null
-  };
+    const { data: cpDB } = await sb.from('preguntas')
+      .select('*')
+      .eq('tipo', tipo)
+      .eq('subprueba', 'cp')
+      .eq('activa', true);
 
-  document.getElementById('sim-titulo-texto').textContent =
-    tipo === 'nombramiento' ? '📋 Simulacro — Nombramiento Docente' : '🏆 Simulacro — Ascenso Docente';
+    // 2. Convertir formato Supabase al formato interno
+    const convertir = (p) => ({
+      p: p.pregunta,
+      ops: p.opciones,
+      r: p.respuesta_correcta,
+      exp: p.explicacion || ''
+    });
 
-  showScreen('simulacro');
-  renderPregunta();
-  iniciarCronometro();
+    // 3. Decidir fuente: Supabase si hay suficientes, sino código
+    let hgPool, cpPool;
+    const usandoDB_HG = hgDB && hgDB.length >= 25;
+    const usandoDB_CP = cpDB && cpDB.length >= 50;
+
+    hgPool = usandoDB_HG
+      ? hgDB.map(convertir)
+      : [...PREGUNTAS.habilidades_generales];
+
+    cpPool = usandoDB_CP
+      ? cpDB.map(convertir)
+      : [...PREGUNTAS[tipo]];
+
+    // 4. Mezclar y tomar 25 HG + 50 CP
+    const hg = hgPool.sort(() => Math.random() - 0.5).slice(0, 25);
+    const cp = cpPool.sort(() => Math.random() - 0.5).slice(0, 50);
+    const preguntas = [...hg, ...cp];
+
+    // 5. Mostrar de dónde vienen las preguntas (solo para info del admin)
+    if (currentUser.email === ADMIN_EMAIL) {
+      console.log(`HG: ${usandoDB_HG ? 'Supabase ('+hgDB.length+')' : 'Código'} | CP: ${usandoDB_CP ? 'Supabase ('+cpDB.length+')' : 'Código'}`);
+    }
+
+    currentSim = {
+      tipo,
+      preguntas,
+      idx: 0,
+      respuestas: new Array(75).fill(null),
+      tiempoTotal: 225 * 60,
+      tiempoRestante: 225 * 60,
+      timer: null
+    };
+
+    document.getElementById('sim-titulo-texto').textContent =
+      tipo === 'nombramiento' ? '📋 Simulacro — Nombramiento Docente' : '🏆 Simulacro — Ascenso Docente';
+
+    showScreen('simulacro');
+    renderPregunta();
+    iniciarCronometro();
+
+  } catch(err) {
+    console.error(err);
+    alert('Error al cargar preguntas. Intenta de nuevo.');
+  } finally {
+    btn.innerHTML = textoOriginal;
+    btn.disabled = false;
+  }
 }
 
 function getPuntos(idx) {
@@ -1925,6 +2031,76 @@ async function cargarStats() {
       <td>${r.max}%</td>
     </tr>`;
   }).join('');
+}
+
+// ══════════════════════════════════════════
+// PERFIL DEL DOCENTE
+// ══════════════════════════════════════════
+function togglePerfil() {
+  const modal = document.getElementById('modal-perfil');
+  modal.style.display = 'flex';
+
+  // Cargar datos actuales
+  document.getElementById('perfil-nombre').value = currentProfile?.nombre || '';
+  document.getElementById('perfil-pass').value = '';
+  document.getElementById('perfil-pass2').value = '';
+  document.getElementById('alerta-perfil').style.display = 'none';
+
+  // Info membresía
+  const memEl = document.getElementById('perfil-membresia');
+  const activa = currentProfile?.membresia_activa;
+  const vence = currentProfile?.vencimiento
+    ? new Date(currentProfile.vencimiento).toLocaleDateString('es-PE')
+    : null;
+
+  memEl.innerHTML = activa
+    ? `✅ <strong>Membresía activa</strong> · Plan: ${currentProfile?.plan || '—'} ${vence ? '· Vence: ' + vence : ''}`
+    : `❌ <strong>Sin membresía activa</strong> · <a href="https://wa.me/51922573625?text=Hola%2C%20quiero%20adquirir%20una%20membresia" target="_blank" style="color:var(--azul);font-weight:700">Adquirir aquí</a>`;
+}
+
+function cerrarPerfil() {
+  document.getElementById('modal-perfil').style.display = 'none';
+}
+
+async function guardarPerfil() {
+  const nombre = document.getElementById('perfil-nombre').value.trim();
+  const pass = document.getElementById('perfil-pass').value;
+  const pass2 = document.getElementById('perfil-pass2').value;
+
+  const alertaEl = document.getElementById('alerta-perfil');
+  const showA = (msg, tipo) => {
+    alertaEl.textContent = msg;
+    alertaEl.className = 'alerta ' + tipo;
+    alertaEl.style.display = 'block';
+  };
+
+  if (!nombre) return showA('⚠️ El nombre no puede estar vacío.', 'error');
+  if (pass && pass.length < 8) return showA('⚠️ La contraseña debe tener al menos 8 caracteres.', 'error');
+  if (pass && pass !== pass2) return showA('⚠️ Las contraseñas no coinciden.', 'error');
+
+  const btn = document.getElementById('btn-guardar-perfil');
+  btn.innerHTML = '<span class="spinner"></span>';
+  btn.disabled = true;
+
+  // Actualizar nombre en perfiles
+  await sb.from('perfiles').update({ nombre }).eq('id', currentUser.id);
+  currentProfile.nombre = nombre;
+  document.getElementById('topbar-nombre').textContent = nombre;
+
+  // Cambiar contraseña si se ingresó
+  if (pass) {
+    const { error } = await sb.auth.updateUser({ password: pass });
+    if (error) {
+      btn.innerHTML = 'Guardar cambios';
+      btn.disabled = false;
+      return showA('❌ Error al cambiar contraseña: ' + error.message, 'error');
+    }
+  }
+
+  btn.innerHTML = 'Guardar cambios';
+  btn.disabled = false;
+  showA('✅ Perfil actualizado correctamente.', 'success');
+  setTimeout(() => cerrarPerfil(), 2000);
 }
 
 // ══════════════════════════════════════════
