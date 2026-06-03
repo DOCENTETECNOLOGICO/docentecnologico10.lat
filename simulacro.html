@@ -473,21 +473,47 @@ body { font-family:'DM Sans',sans-serif; background:var(--gris-claro); min-heigh
 <div id="screen-dashboard" class="screen">
   <div class="dash-header">
     <h1>Hola, <span id="dash-nombre">Docente</span> 👋</h1>
-    <p>Bienvenido a tu panel de simulacros</p>
+    <p>Bienvenido a tu plataforma de preparación docente</p>
     <div id="dash-membresia-badge"></div>
   </div>
 
+  <!-- Info oficial MINEDU -->
+  <div style="background:linear-gradient(135deg,var(--azul-oscuro),var(--azul));border-radius:16px;padding:24px 28px;margin-bottom:28px;color:white;position:relative;overflow:hidden">
+    <div style="position:absolute;top:-40px;right:-40px;width:180px;height:180px;background:rgba(201,162,39,0.1);border-radius:50%"></div>
+    <div style="font-size:0.75rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--dorado-claro);margin-bottom:8px;font-weight:700">📋 Estructura oficial MINEDU</div>
+    <div style="display:flex;gap:32px;flex-wrap:wrap">
+      <div><strong style="font-family:'Playfair Display',serif;font-size:1.5rem;color:var(--dorado)">75</strong><div style="font-size:0.78rem;color:rgba(255,255,255,0.65)">Preguntas totales</div></div>
+      <div><strong style="font-family:'Playfair Display',serif;font-size:1.5rem;color:var(--dorado)">200</strong><div style="font-size:0.78rem;color:rgba(255,255,255,0.65)">Puntaje máximo</div></div>
+      <div><strong style="font-family:'Playfair Display',serif;font-size:1.5rem;color:var(--dorado)">110</strong><div style="font-size:0.78rem;color:rgba(255,255,255,0.65)">Puntaje mínimo</div></div>
+      <div><strong style="font-family:'Playfair Display',serif;font-size:1.5rem;color:var(--dorado)">3h 45m</strong><div style="font-size:0.78rem;color:rgba(255,255,255,0.65)">Tiempo total</div></div>
+    </div>
+  </div>
+
   <div class="dash-grid">
-    <!-- Simulacro Nombramiento -->
+    <!-- Simulacro Nombramiento completo -->
     <div class="sim-card">
       <div class="sim-icon">📋</div>
       <h3>Nombramiento Docente</h3>
-      <p>Prepárate para el concurso de nombramiento con preguntas actualizadas y feedback inmediato.</p>
-      <div class="sim-meta">
-        <span>⏱ 45 minutos</span>
-        <span>📝 30 preguntas</span>
+      <p>Simulacro completo con la estructura oficial del MINEDU: 2 subpruebas, 75 preguntas y sistema de puntaje real.</p>
+      <div style="background:var(--gris-claro);border-radius:10px;padding:14px;margin-bottom:16px">
+        <div style="font-size:0.78rem;color:var(--gris);margin-bottom:8px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px">Subpruebas</div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <div style="display:flex;justify-content:space-between;font-size:0.82rem">
+            <span>📖 Habilidades Generales</span>
+            <span style="color:var(--gris)">25 pregs · 2pts c/u · Máx 50</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:0.82rem">
+            <span>🧠 Conocimientos Pedagógicos</span>
+            <span style="color:var(--gris)">50 pregs · 3pts c/u · Mín 84</span>
+          </div>
+        </div>
       </div>
-      <button class="btn-iniciar" id="btn-sim-nombramiento" onclick="iniciarSimulacro('nombramiento')">
+      <div class="sim-meta">
+        <span>⏱ 3h 45min</span>
+        <span>📝 75 preguntas</span>
+        <span>🎯 Mín. 110 pts</span>
+      </div>
+      <button class="btn-iniciar" id="btn-sim-nombramiento" onclick="iniciarSimulacro('nombramiento')" style="margin-top:16px">
         Iniciar simulacro →
       </button>
     </div>
@@ -495,13 +521,27 @@ body { font-family:'DM Sans',sans-serif; background:var(--gris-claro); min-heigh
     <!-- Simulacro Ascenso -->
     <div class="sim-card">
       <div class="sim-icon">🏆</div>
-      <h3>Ascenso Docente</h3>
-      <p>Sube de escala magisterial con simulacros especializados por área y nivel.</p>
-      <div class="sim-meta">
-        <span>⏱ 45 minutos</span>
-        <span>📝 30 preguntas</span>
+      <h3>Ascenso de Escala Magisterial</h3>
+      <p>Prepárate para subir de escala con simulacros especializados alineados a los temarios oficiales del MINEDU.</p>
+      <div style="background:var(--gris-claro);border-radius:10px;padding:14px;margin-bottom:16px">
+        <div style="font-size:0.78rem;color:var(--gris);margin-bottom:8px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px">Subpruebas</div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <div style="display:flex;justify-content:space-between;font-size:0.82rem">
+            <span>📖 Habilidades Generales</span>
+            <span style="color:var(--gris)">25 pregs · 2pts c/u · Máx 50</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:0.82rem">
+            <span>🧠 Conocimientos Pedagógicos</span>
+            <span style="color:var(--gris)">50 pregs · 3pts c/u · Mín 84</span>
+          </div>
+        </div>
       </div>
-      <button class="btn-iniciar" id="btn-sim-ascenso" onclick="iniciarSimulacro('ascenso')">
+      <div class="sim-meta">
+        <span>⏱ 3h 45min</span>
+        <span>📝 75 preguntas</span>
+        <span>🎯 Mín. 110 pts</span>
+      </div>
+      <button class="btn-iniciar" id="btn-sim-ascenso" onclick="iniciarSimulacro('ascenso')" style="margin-top:16px">
         Iniciar simulacro →
       </button>
     </div>
@@ -510,35 +550,61 @@ body { font-family:'DM Sans',sans-serif; background:var(--gris-claro); min-heigh
   <!-- Historial -->
   <div class="historial-section">
     <h2>📊 Mi historial de simulacros</h2>
-    <div id="historial-container">
-      <table class="historial-table">
-        <thead><tr>
-          <th>Simulacro</th><th>Fecha</th><th>Puntaje</th><th>Correctas</th><th>Tiempo</th>
-        </tr></thead>
-        <tbody id="historial-tbody">
-          <tr><td colspan="5" class="sin-historial">Aún no has realizado ningún simulacro</td></tr>
-        </tbody>
-      </table>
-    </div>
+    <table class="historial-table">
+      <thead><tr>
+        <th>Simulacro</th><th>Fecha</th><th>Puntaje total</th><th>Sub. HG</th><th>Sub. CP</th><th>Estado</th><th>Tiempo</th>
+      </tr></thead>
+      <tbody id="historial-tbody">
+        <tr><td colspan="7" class="sin-historial">Aún no has realizado ningún simulacro</td></tr>
+      </tbody>
+    </table>
   </div>
 </div>
 
 <!-- ════════ SCREEN: SIMULACRO ════════ -->
 <div id="screen-simulacro" class="screen">
+  <!-- Header del simulacro -->
   <div class="sim-topbar">
     <div>
       <div class="sim-titulo" id="sim-titulo-texto">Simulacro</div>
-      <div class="sim-prog" id="sim-progreso">Pregunta 1 de 30</div>
+      <div class="sim-prog" id="sim-progreso">Pregunta 1 de 75</div>
     </div>
-    <div class="cronometro" id="cronometro">⏱ 45:00</div>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div id="subprueba-badge" style="padding:6px 14px;border-radius:8px;font-size:0.8rem;font-weight:700;background:rgba(255,255,255,0.15);color:white">📖 Subprueba 1</div>
+      <div class="cronometro" id="cronometro">⏱ 3:45:00</div>
+    </div>
   </div>
 
-  <div class="progress-bar">
-    <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+  <!-- Barra doble de progreso -->
+  <div style="display:grid;grid-template-columns:1fr 2fr;gap:8px;margin-bottom:20px">
+    <div>
+      <div style="font-size:0.72rem;color:var(--gris);margin-bottom:4px;font-weight:600">📖 Habilidades Generales (<span id="prog-hg">0</span>/25)</div>
+      <div class="progress-bar"><div class="progress-fill" id="progress-hg" style="width:0%;background:linear-gradient(90deg,var(--azul),var(--azul-medio))"></div></div>
+    </div>
+    <div>
+      <div style="font-size:0.72rem;color:var(--gris);margin-bottom:4px;font-weight:600">🧠 Conocimientos Pedagógicos (<span id="prog-cp">0</span>/50)</div>
+      <div class="progress-bar"><div class="progress-fill" id="progress-cp" style="width:0%;background:linear-gradient(90deg,var(--dorado-oscuro),var(--dorado))"></div></div>
+    </div>
+  </div>
+
+  <!-- Puntaje en tiempo real -->
+  <div style="display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap">
+    <div style="background:var(--blanco);border-radius:10px;padding:10px 18px;border:1px solid rgba(15,45,138,0.1);font-size:0.83rem">
+      📖 HG: <strong id="pts-hg">0</strong>/50 pts
+    </div>
+    <div style="background:var(--blanco);border-radius:10px;padding:10px 18px;border:1px solid rgba(15,45,138,0.1);font-size:0.83rem">
+      🧠 CP: <strong id="pts-cp">0</strong>/150 pts <span style="color:var(--gris);font-size:0.75rem">(mín. 84)</span>
+    </div>
+    <div style="background:var(--blanco);border-radius:10px;padding:10px 18px;border:1px solid rgba(15,45,138,0.1);font-size:0.83rem">
+      🎯 Total: <strong id="pts-total">0</strong>/200 pts <span style="color:var(--gris);font-size:0.75rem">(mín. 110)</span>
+    </div>
   </div>
 
   <div class="pregunta-card">
-    <div class="pregunta-num" id="pregunta-num">Pregunta 1</div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+      <div class="pregunta-num" id="pregunta-num" style="margin-bottom:0">Pregunta 1</div>
+      <div id="pregunta-tipo-badge" style="padding:3px 10px;border-radius:6px;font-size:0.72rem;font-weight:700;background:rgba(15,45,138,0.08);color:var(--azul)">Habilidades Generales · 2 pts</div>
+    </div>
     <div class="pregunta-texto" id="pregunta-texto"></div>
     <div class="opciones" id="opciones-container"></div>
     <div class="explicacion" id="explicacion-texto"></div>
@@ -552,17 +618,40 @@ body { font-family:'DM Sans',sans-serif; background:var(--gris-claro); min-heigh
 
 <!-- ════════ SCREEN: RESULTADO ════════ -->
 <div id="screen-resultado" class="screen">
-  <div class="resultado-card">
+  <div class="resultado-card" style="max-width:720px">
     <div class="resultado-emoji" id="resultado-emoji">🎉</div>
-    <h2 id="resultado-titulo">¡Buen trabajo!</h2>
+    <h2 id="resultado-titulo">¡Resultado del simulacro!</h2>
     <p class="subtitulo" id="resultado-subtitulo"></p>
-    <div class="puntaje-grande" id="resultado-puntaje">0%</div>
-    <div class="puntaje-label">Puntaje obtenido</div>
+
+    <!-- Estado aprobado/eliminado -->
+    <div id="resultado-estado" style="margin:16px 0 24px;padding:14px 20px;border-radius:12px;font-weight:700;font-size:1rem"></div>
+
+    <!-- Puntaje total -->
+    <div class="puntaje-grande" id="resultado-puntaje">0</div>
+    <div class="puntaje-label">puntos de 200 posibles</div>
+
+    <!-- Detalle por subprueba -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:28px 0">
+      <div style="background:rgba(15,45,138,0.04);border:1.5px solid rgba(15,45,138,0.12);border-radius:14px;padding:20px;text-align:center">
+        <div style="font-size:0.75rem;color:var(--gris);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">📖 Habilidades Generales</div>
+        <div style="font-family:'Playfair Display',serif;font-size:2.2rem;font-weight:900;color:var(--azul)" id="res-hg-pts">0</div>
+        <div style="font-size:0.78rem;color:var(--gris)">de 50 pts · <span id="res-hg-correctas">0</span>/25 correctas</div>
+        <div style="margin-top:8px;font-size:0.75rem;color:var(--gris)">Sin puntaje mínimo</div>
+      </div>
+      <div style="background:rgba(201,162,39,0.05);border:1.5px solid rgba(201,162,39,0.2);border-radius:14px;padding:20px;text-align:center">
+        <div style="font-size:0.75rem;color:var(--gris);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">🧠 Conocimientos Pedagógicos</div>
+        <div style="font-family:'Playfair Display',serif;font-size:2.2rem;font-weight:900;color:var(--dorado-oscuro)" id="res-cp-pts">0</div>
+        <div style="font-size:0.78rem;color:var(--gris)">de 150 pts · <span id="res-cp-correctas">0</span>/50 correctas</div>
+        <div id="res-cp-estado" style="margin-top:8px;font-size:0.75rem;font-weight:700"></div>
+      </div>
+    </div>
+
     <div class="resultado-stats">
-      <div class="rst verde"><strong id="res-correctas">0</strong><span>Correctas</span></div>
+      <div class="rst verde"><strong id="res-correctas">0</strong><span>Total correctas</span></div>
       <div class="rst rojo"><strong id="res-incorrectas">0</strong><span>Incorrectas</span></div>
       <div class="rst azul"><strong id="res-tiempo">0:00</strong><span>Tiempo usado</span></div>
     </div>
+
     <div class="resultado-btns">
       <button class="btn-resultado primary" onclick="repetirSimulacro()">🔄 Repetir simulacro</button>
       <button class="btn-resultado secondary" onclick="irDashboard()">← Volver al panel</button>
@@ -769,7 +858,127 @@ const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 // BANCO DE PREGUNTAS
 // ══════════════════════════════════════════
 const PREGUNTAS = {
+  habilidades_generales: [
+    { p:"Si todos los A son B, y algunos B son C, entonces:", ops:["Todos los A son C","Algunos A pueden ser C","Ningún A es C","Todos los C son A"], r:1, exp:"Si todos los A son B y algunos B son C, es posible que algunos A sean también C, pero no es obligatorio." },
+    { p:"Un tren sale a las 7:45 am y llega a su destino en 3 horas y 25 minutos. ¿A qué hora llega?", ops:["10:55 am","11:05 am","11:10 am","11:15 am"], r:2, exp:"7:45 + 3:25 = 11:10 am" },
+    { p:"Ana es más alta que Beatriz. Carmen es más baja que Beatriz. ¿Quién es la más alta?", ops:["Beatriz","Carmen","Ana","No se puede determinar"], r:2, exp:"Ana > Beatriz > Carmen, por lo tanto Ana es la más alta." },
+    { p:"Si el precio de un libro aumentó un 20% y ahora cuesta S/ 60, ¿cuánto costaba antes?", ops:["S/ 48","S/ 50","S/ 45","S/ 52"], r:1, exp:"Precio original × 1.20 = 60, entonces precio original = 60/1.20 = S/ 50." },
+    { p:"Lee el siguiente texto: 'La lectura desarrolla la empatía porque permite experimentar vivencias ajenas'. ¿Cuál es la idea principal?", ops:["La lectura es aburrida","La lectura fomenta la empatía al vivir experiencias de otros","Todos deben leer libros","Los libros son caros"], r:1, exp:"La idea principal es que la lectura desarrolla empatía al permitir experimentar vivencias de otras personas." },
+    { p:"¿Qué número continúa la serie: 2, 6, 18, 54, ___?", ops:["108","162","216","270"], r:1, exp:"Cada número se multiplica por 3: 2×3=6, 6×3=18, 18×3=54, 54×3=162." },
+    { p:"Si María tiene el doble de edad que Juan, y entre los dos suman 36 años, ¿cuántos años tiene Juan?", ops:["12","14","10","18"], r:0, exp:"J + 2J = 36, entonces 3J = 36, J = 12 años." },
+    { p:"Un texto afirma: 'Todos los estudiantes que estudian aprueban'. Un estudiante estudió pero no aprobó. ¿Qué concluyes?", ops:["El texto es verdadero","El texto es falso","No se puede concluir nada","El estudiante no estudió realmente"], r:1, exp:"Si hay un contraejemplo (estudió y no aprobó), la afirmación universal es falsa." },
+    { p:"¿Cuál es el sinónimo de 'perspicaz'?", ops:["Lento","Agudo","Torpe","Indiferente"], r:1, exp:"Perspicaz significa que tiene agudeza mental para comprender o percibir las cosas." },
+    { p:"Si 5 obreros construyen una pared en 10 días, ¿cuántos días tardarán 10 obreros?", ops:["20 días","5 días","8 días","4 días"], r:1, exp:"Relación inversamente proporcional: 5×10 = 10×X, X = 5 días." },
+    { p:"Identifica la conclusión válida: Todos los docentes son profesionales. Pedro es docente.", ops:["Pedro no es profesional","Pedro es profesional","Todos los profesionales son docentes","No se puede concluir"], r:1, exp:"Por silogismo deductivo: todos los docentes son profesionales y Pedro es docente, por lo tanto Pedro es profesional." },
+    { p:"Un texto expositivo tiene como principal función:", ops:["Entretener al lector","Persuadir al lector","Informar sobre un tema de manera objetiva","Expresar sentimientos del autor"], r:2, exp:"El texto expositivo tiene como función principal informar o explicar un tema de manera objetiva y clara." },
+    { p:"¿Qué figura retórica se usa en: 'Sus ojos son dos luceros'?", ops:["Metáfora","Hipérbole","Personificación","Anáfora"], r:0, exp:"Es una metáfora: se compara los ojos con luceros (estrellas) de forma directa sin usar 'como'." },
+    { p:"Si el 30% de los alumnos son hombres y hay 21 hombres, ¿cuántos alumnos hay en total?", ops:["63","70","75","80"], r:1, exp:"30% = 21, entonces el total = 21 × 100/30 = 70 alumnos." },
+    { p:"¿Cuál es el antónimo de 'efímero'?", ops:["Rápido","Eterno","Breve","Fugaz"], r:1, exp:"Efímero significa pasajero o de corta duración; su antónimo es eterno o permanente." },
+    { p:"Lee: 'El calentamiento global amenaza los ecosistemas'. ¿Qué tipo de texto es este fragmento?", ops:["Narrativo","Descriptivo","Argumentativo","Poético"], r:2, exp:"Es argumentativo porque plantea una tesis (el calentamiento amenaza ecosistemas) que puede ser defendida con argumentos." },
+    { p:"En una reunión de 20 personas, ¿cuántos apretones de mano hay si todos se saludan entre sí?", ops:["190","200","380","400"], r:0, exp:"Combinaciones de 20 en 2: C(20,2) = 20×19/2 = 190 apretones de mano." },
+    { p:"¿Cuál de las siguientes palabras está bien escrita?", ops:["Haber","A ver","Haver","Aver"], r:0, exp:"'Haber' es el verbo auxiliar o el sustantivo; 'a ver' es la preposición más el infinitivo." },
+    { p:"Una secuencia: 1, 4, 9, 16, 25... ¿Qué número sigue?", ops:["30","36","35","49"], r:1, exp:"Son cuadrados perfectos: 1², 2², 3², 4², 5², el siguiente es 6² = 36." },
+    { p:"El texto dice: 'Aunque llovía, los estudiantes asistieron a clases'. ¿Qué relación lógica expresa?", ops:["Causalidad","Concesión","Consecuencia","Condición"], r:1, exp:"'Aunque' introduce una concesión: a pesar de un obstáculo (lluvia), se realizó la acción." },
+    { p:"Si A > B > C y C > D, ¿cuál es el orden de mayor a menor?", ops:["A, B, C, D","B, A, D, C","D, C, B, A","A, C, B, D"], r:0, exp:"A > B > C > D, por lo tanto de mayor a menor: A, B, C, D." },
+    { p:"¿Cuál es el significado de la palabra 'corolario'?", ops:["Proposición que se deduce de otra ya demostrada","Premisa de un argumento","Pregunta retórica","Contradicción lógica"], r:0, exp:"Un corolario es una proposición que se deriva fácilmente de otra ya demostrada sin necesidad de más pruebas." },
+    { p:"Un comerciante compra a S/ 80 y vende a S/ 100. ¿Cuál es su porcentaje de ganancia?", ops:["20%","25%","30%","15%"], r:1, exp:"Ganancia = 20. Porcentaje sobre el costo: 20/80 × 100 = 25%." },
+    { p:"¿Qué elemento NO pertenece al texto argumentativo?", ops:["Tesis","Argumentos","Conclusión","Narrador omnisciente"], r:3, exp:"El narrador omnisciente pertenece al texto narrativo, no al argumentativo que tiene tesis, argumentos y conclusión." },
+    { p:"Si todos los cuadrados son rectángulos, pero no todos los rectángulos son cuadrados, entonces:", ops:["Los cuadrados y rectángulos son iguales","Los cuadrados son un subconjunto de los rectángulos","Los rectángulos son un subconjunto de los cuadrados","No hay relación entre ellos"], r:1, exp:"Los cuadrados son un caso especial de rectángulos, por lo que son un subconjunto de los rectángulos." }
+  ],
   nombramiento: [
+    { p:"¿Cuál es el marco legal que rige la Carrera Pública Magisterial en el Perú?", ops:["Ley N° 24029","Ley N° 29062","Ley N° 30512","Ley N° 28044"], r:1, exp:"La Ley N° 29062 modifica la Ley del Profesorado y rige la Carrera Pública Magisterial." },
+    { p:"¿Qué documento orienta el trabajo pedagógico del docente peruano?", ops:["PEN al 2036","Currículo Nacional de la Educación Básica","PEI de la institución","Reglamento Interno"], r:1, exp:"El Currículo Nacional es el documento de base que orienta la labor pedagógica en la educación básica." },
+    { p:"¿Cuántas escalas tiene la Carrera Pública Magisterial según la Ley N° 29062?", ops:["5 escalas","6 escalas","7 escalas","8 escalas"], r:3, exp:"La CPM tiene 8 escalas magisteriales, siendo la primera la de ingreso a la carrera." },
+    { p:"¿Qué enfoque pedagógico promueve el Currículo Nacional?", ops:["Enfoque conductista","Enfoque por competencias","Enfoque memorístico","Enfoque disciplinar"], r:1, exp:"El CN promueve el desarrollo de competencias como combinación de capacidades para lograr propósitos." },
+    { p:"¿Cuál es el perfil de egreso del Currículo Nacional?", ops:["Conjunto de aprendizajes que todo estudiante peruano debe lograr al terminar la EBR","Lista de cursos que debe aprobar","Objetivos del docente","Metas institucionales"], r:0, exp:"El perfil de egreso es el conjunto de aprendizajes comunes que todos los estudiantes deben lograr al concluir la EBR." },
+    { p:"¿Qué son las competencias en el Currículo Nacional?", ops:["Conocimientos específicos","Facultad de combinar capacidades","Habilidades motoras","Actitudes positivas"], r:1, exp:"Las competencias son la facultad de combinar un conjunto de capacidades para lograr un propósito específico en situaciones diversas." },
+    { p:"¿Qué es una capacidad en el marco del CN?", ops:["Un recurso para actuar de manera competente","Un objetivo de aprendizaje","Una estrategia didáctica","Un instrumento de evaluación"], r:0, exp:"Las capacidades son recursos (conocimientos, habilidades y actitudes) que los estudiantes utilizan para actuar de manera competente." },
+    { p:"¿Qué evalúa principalmente la evaluación formativa?", ops:["Solo los productos finales","El proceso de aprendizaje para retroalimentar","La conducta del estudiante","El desempeño del docente"], r:1, exp:"La evaluación formativa evalúa el proceso de aprendizaje con el fin de retroalimentar oportunamente al estudiante." },
+    { p:"¿Cuántos dominios tiene el Marco del Buen Desempeño Docente?", ops:["2","3","4","5"], r:2, exp:"El MBDD tiene 4 dominios: Preparación para el aprendizaje, Enseñanza para el aprendizaje, Participación en la gestión y Desarrollo profesional." },
+    { p:"¿Qué es el Proyecto Educativo Institucional (PEI)?", ops:["Documento de gestión que orienta la acción educativa de la IE","Plan de sesiones de aprendizaje","Reglamento de la IE","Presupuesto anual"], r:0, exp:"El PEI es un instrumento de gestión de mediano plazo que orienta la acción educativa de la institución educativa." },
+    { p:"¿Cuál es el nivel más alto de la jerarquía curricular en el Perú?", ops:["Diseño Curricular Regional","Proyecto Curricular Institucional","Currículo Nacional","Programación anual"], r:2, exp:"El Currículo Nacional es el nivel más alto, del que se derivan los currículos regionales y los proyectos curriculares institucionales." },
+    { p:"¿Qué son los estándares de aprendizaje?", ops:["Notas mínimas aprobatorias","Descripción del nivel esperado de desarrollo de competencias","Lista de contenidos","Objetivos anuales"], r:1, exp:"Los estándares son descripciones del nivel esperado de desarrollo de las competencias en momentos dados de la escolaridad." },
+    { p:"¿Qué promueve el enfoque inclusivo en educación?", ops:["Aulas especiales para estudiantes con discapacidad","Participación y aprendizaje de todos sin discriminación","Solo atención a estudiantes con discapacidad","Reducir cantidad de estudiantes"], r:1, exp:"El enfoque inclusivo promueve que todos los estudiantes participen y aprendan juntos sin discriminación." },
+    { p:"¿Qué es la retroalimentación formativa?", ops:["Calificación numérica final","Información oportuna para mejorar el aprendizaje","Sanción por bajo rendimiento","Informe a los padres"], r:1, exp:"La retroalimentación formativa es información que se brinda al estudiante para que tome consciencia de su aprendizaje y lo mejore." },
+    { p:"¿Qué ley establece la Ley General de Educación en el Perú?", ops:["Ley N° 29062","Ley N° 28044","Ley N° 30512","Ley N° 27444"], r:1, exp:"La Ley N° 28044 es la Ley General de Educación que establece los lineamientos generales del sistema educativo peruano." },
+    { p:"¿Qué es la planificación curricular inversa?", ops:["Planificar desde las actividades","Planificar desde los resultados esperados de aprendizaje","Copiar sesiones del año anterior","Planificar solo actividades lúdicas"], r:1, exp:"La planificación inversa parte de definir los resultados esperados para luego determinar evidencias y actividades." },
+    { p:"¿Cuál es la función principal del docente según el MBDD?", ops:["Transmitir conocimientos","Facilitar el aprendizaje de los estudiantes","Administrar la institución","Evaluar los libros de texto"], r:1, exp:"El MBDD establece que el docente es un facilitador del aprendizaje que promueve el desarrollo integral del estudiante." },
+    { p:"¿Qué es la diversificación curricular?", ops:["Eliminar contenidos del CN","Adaptar el CN a la realidad regional y local","Crear un nuevo currículo","Copiar el currículo de otro país"], r:1, exp:"La diversificación curricular es el proceso de adaptar y contextualizar el CN a las características del contexto regional y local." },
+    { p:"¿Qué instrumento recoge evidencias del aprendizaje a lo largo del tiempo?", ops:["Examen escrito","Portafolio de aprendizaje","Prueba de entrada","Lista de cotejo"], r:1, exp:"El portafolio de aprendizaje es una colección de evidencias que muestra el progreso del estudiante a lo largo del tiempo." },
+    { p:"¿Cuál es el propósito de la evaluación diagnóstica?", ops:["Calificar al inicio","Conocer los saberes previos para planificar","Sancionar a los que no saben","Comparar estudiantes"], r:1, exp:"La evaluación diagnóstica permite conocer los saberes previos para planificar la enseñanza de manera pertinente." },
+    { p:"¿Qué implica el enfoque por competencias en la práctica docente?", ops:["Solo transmitir conocimientos teóricos","Desarrollar situaciones que permitan actuar competentemente","Enfocarse en los contenidos del libro","Evaluar solo con pruebas escritas"], r:1, exp:"El enfoque por competencias implica diseñar situaciones donde el estudiante movilice sus capacidades de forma integrada." },
+    { p:"¿Cuál es la primera escala de la Carrera Pública Magisterial?", ops:["Escala I","Escala II","Escala III","Escala IV"], r:0, exp:"La Escala I es la de ingreso a la Carrera Pública Magisterial, donde inician los docentes nombrados." },
+    { p:"¿Qué es el aprendizaje significativo según el CN?", ops:["Memorizar muchos datos","Conectar nuevos conocimientos con saberes previos","Aprender solo con tecnología","Reproducir información"], r:1, exp:"El aprendizaje significativo ocurre cuando el estudiante conecta los nuevos conocimientos con sus saberes y experiencias previas." },
+    { p:"¿Qué caracteriza a una buena sesión de aprendizaje según el MBDD?", ops:["Muchos contenidos en poco tiempo","Clima favorable, alta demanda cognitiva y retroalimentación","Examen al final de cada clase","Silencio y disciplina total"], r:1, exp:"Una buena sesión combina clima de respeto, actividades de alta demanda cognitiva y retroalimentación oportuna." },
+    { p:"¿Qué es el Marco del Buen Desempeño Docente?", ops:["Un reglamento sancionador","Una herramienta de gestión institucional","Guía que define dominios, competencias y desempeños docentes","Un manual de convivencia"], r:2, exp:"El MBDD es una guía de referencia que define los dominios, competencias y desempeños que caracterizan la buena docencia." },
+    { p:"¿Cuál es el fin de la educación peruana según la Ley General de Educación?", ops:["Formar técnicos calificados","Desarrollar la personalidad integral del estudiante","Garantizar el empleo","Homogenizar a los estudiantes"], r:1, exp:"La Ley 28044 establece que la educación tiene como fin el desarrollo integral de la persona humana." },
+    { p:"¿Qué es la tutoría en la educación básica regular?", ops:["Reforzamiento de matemáticas","Acompañamiento socioafectivo y cognitivo al estudiante","Sanción de conductas","Solo orientación vocacional"], r:1, exp:"La tutoría es el acompañamiento socioafectivo, cognitivo y pedagógico que brinda el docente para el bienestar integral del estudiante." },
+    { p:"¿Qué implica la convivencia democrática en el aula?", ops:["El docente impone todas las normas","Construir normas participativamente y resolver conflictos pacíficamente","No tener normas","Solo premiar el buen comportamiento"], r:1, exp:"La convivencia democrática implica construir participativamente normas y gestionar conflictos de manera pacífica y formativa." },
+    { p:"¿Qué promueve el enfoque ambiental en educación?", ops:["Estudiar solo ciencias naturales","Desarrollar conciencia y actitudes para el cuidado del ambiente","Eliminar actividades al aire libre","Solo reciclar papel"], r:1, exp:"El enfoque ambiental promueve que los estudiantes desarrollen conciencia, valores y actitudes para cuidar el ambiente." },
+    { p:"¿Qué es la autoevaluación institucional?", ops:["Evaluación externa de la UGEL","Proceso por el cual la IE reflexiona sobre su propia gestión","Solo evaluar a los docentes","Rendir cuentas al ministerio"], r:1, exp:"La autoevaluación institucional es el proceso por el cual la propia IE analiza su funcionamiento para identificar fortalezas y mejorar." },
+    { p:"¿Cuántas preguntas tiene la subprueba de Conocimientos Pedagógicos del examen de Nombramiento MINEDU?", ops:["25 preguntas","40 preguntas","50 preguntas","75 preguntas"], r:2, exp:"La subprueba de Conocimientos Pedagógicos tiene 50 preguntas, cada una vale 3 puntos, con un puntaje máximo de 150." },
+    { p:"¿Cuál es el puntaje mínimo requerido en la subprueba de Conocimientos Pedagógicos para no ser eliminado?", ops:["60 puntos","72 puntos","84 puntos","90 puntos"], r:2, exp:"El MINEDU establece que el puntaje mínimo en la subprueba de Conocimientos Pedagógicos es de 84 puntos." },
+    { p:"¿Qué son las experiencias de aprendizaje en el CN?", ops:["Actividades recreativas","Situaciones desafiantes que movilizan competencias en contextos reales","Exposiciones magistrales","Evaluaciones sumativas"], r:1, exp:"Las experiencias de aprendizaje son situaciones significativas y desafiantes que movilizan las competencias de los estudiantes." },
+    { p:"¿Qué es el enfoque de derechos en educación?", ops:["Solo proteger derechos laborales","Reconocer al estudiante como sujeto de derechos","Exigir deberes sin reconocer derechos","Solo aplicar el código del niño"], r:1, exp:"El enfoque de derechos reconoce al estudiante como sujeto de derechos, promoviendo su dignidad y participación." },
+    { p:"¿Qué caracteriza al aprendizaje basado en proyectos (ABP)?", ops:["Estudio individual de contenidos","Aprendizaje activo mediante resolución de problemas reales","Lectura pasiva de textos","Repetición de ejercicios"], r:1, exp:"El ABP promueve que los estudiantes aprendan desarrollando proyectos que responden a problemas del mundo real." },
+    { p:"¿Qué es la zona de desarrollo próximo de Vygotsky?", ops:["El límite máximo del aprendizaje","Distancia entre lo que el estudiante puede hacer solo y con ayuda","El nivel actual de conocimiento","El espacio físico del aula"], r:1, exp:"La ZDP es la distancia entre el nivel de desarrollo actual y el nivel de desarrollo potencial con la guía de un adulto o par más capaz." },
+    { p:"¿Cuál es el propósito del Plan de Mejora en la IE?", ops:["Sancionar docentes","Establecer acciones para mejorar los resultados de aprendizaje","Aumentar la infraestructura","Reducir el número de estudiantes"], r:1, exp:"El Plan de Mejora busca establecer acciones concretas y priorizadas para mejorar los resultados de aprendizaje." },
+    { p:"¿Qué implica la educación intercultural bilingüe (EIB)?", ops:["Enseñar solo en español","Valorar y desarrollar aprendizajes desde la lengua y cultura originaria junto al castellano","Eliminar las lenguas originarias","Solo enseñar inglés"], r:1, exp:"La EIB implica desarrollar aprendizajes en la lengua materna originaria y el castellano, valorando la identidad cultural." },
+    { p:"¿Qué es la práctica reflexiva docente?", ops:["Hacer lo mismo cada año","Analizar la propia práctica para mejorar continuamente","Seguir el libro sin cambios","Evaluar solo a los estudiantes"], r:1, exp:"La práctica reflexiva implica que el docente analiza críticamente su propia enseñanza para identificar mejoras y crecer profesionalmente." },
+    { p:"¿Qué es la neuroeducación?", ops:["Cirugía cerebral para mejorar notas","Disciplina que aplica hallazgos de neurociencia para mejorar los procesos educativos","Solo estudiar el cerebro","Psicología clínica"], r:1, exp:"La neuroeducación aplica los conocimientos sobre el funcionamiento cerebral para diseñar mejores estrategias de enseñanza." },
+    { p:"¿Cuál es el puntaje total mínimo para aprobar el examen de Nombramiento Docente del MINEDU?", ops:["100 puntos","110 puntos","120 puntos","130 puntos"], r:1, exp:"El MINEDU establece que el puntaje mínimo total requerido para aprobar la Prueba Nacional es de 110 puntos." },
+    { p:"¿Cuánto vale cada pregunta de la subprueba de Habilidades Generales?", ops:["1 punto","2 puntos","3 puntos","4 puntos"], r:1, exp:"Cada pregunta de la subprueba de Habilidades Generales vale 2 puntos, con un total máximo de 50 puntos." },
+    { p:"¿Cuánto dura el examen de Nombramiento Docente del MINEDU?", ops:["2 horas","3 horas","3 horas y 45 minutos","4 horas"], r:2, exp:"Los aspirantes al Nombramiento Docente tienen 3 horas y 45 minutos para completar la Prueba Nacional." },
+    { p:"¿Qué evalúa la subprueba de Habilidades Generales del examen MINEDU?", ops:["Solo matemática","Comprensión de textos, resolución de problemas e inducciones","Solo pedagogía","Historia del Perú"], r:1, exp:"Evalúa la capacidad de análisis y comprensión de textos, construcción de soluciones, resolución de problemas e inducciones." },
+    { p:"¿Qué es el andamiaje pedagógico?", ops:["Construcción de mobiliario escolar","Apoyo temporal del docente para que el estudiante alcance mayor autonomía","Sistema de evaluación","Tipo de planificación"], r:1, exp:"El andamiaje es el apoyo ajustado que brinda el docente para ayudar al estudiante a superar su ZDP y lograr mayor autonomía." },
+    { p:"¿Cuántas preguntas tiene la subprueba de Habilidades Generales del examen de Nombramiento?", ops:["20 preguntas","25 preguntas","30 preguntas","40 preguntas"], r:1, exp:"La subprueba de Habilidades Generales tiene 25 preguntas, cada una vale 2 puntos, con un puntaje máximo de 50." },
+    { p:"¿Qué es la metacognición en el aprendizaje?", ops:["Memorizar fórmulas","Reflexionar sobre el propio proceso de aprendizaje","Copiar estrategias de otros","Evaluar a los compañeros"], r:1, exp:"La metacognición es la capacidad de reflexionar sobre el propio proceso de aprendizaje, reconociendo fortalezas y aspectos a mejorar." },
+    { p:"¿Qué son las competencias digitales docentes?", ops:["Saber usar redes sociales","Capacidades para usar tecnología de forma pedagógica, segura y ética","Tener muchos dispositivos","Solo saber usar Word y Excel"], r:1, exp:"Las competencias digitales docentes incluyen el uso pedagógico, seguro y ético de las tecnologías para mejorar el aprendizaje." },
+    { p:"¿Qué es la evaluación auténtica?", ops:["Exámenes tradicionales memorísticos","Evaluación mediante tareas reales y complejas vinculadas a contextos reales","Calificación por asistencia","Autoevaluación sin criterios"], r:1, exp:"La evaluación auténtica valora las competencias del estudiante mediante tareas complejas conectadas al mundo real." }
+  ],
+  ascenso: [
+    { p:"¿Cuál es el propósito del ascenso en la Carrera Pública Magisterial?", ops:["Aumentar la carga horaria","Reconocer el desarrollo profesional y mejorar la remuneración","Solo cambiar de institución","Obtener más vacaciones"], r:1, exp:"El ascenso reconoce el desarrollo profesional del docente y conlleva mejoras remunerativas en la escala magisterial." },
+    { p:"¿Qué evalúa principalmente el concurso de ascenso de escala?", ops:["Solo la antigüedad","Desempeño, formación y conocimientos pedagógicos","Solo el título profesional","La puntualidad"], r:1, exp:"El concurso de ascenso evalúa el desempeño laboral, formación continua y conocimientos pedagógicos del docente." },
+    { p:"¿Qué es la metacognición en el aprendizaje?", ops:["Memorizar fórmulas","Reflexionar sobre el propio proceso de aprendizaje","Copiar estrategias de otros","Evaluar a los compañeros"], r:1, exp:"La metacognición es la capacidad de reflexionar sobre el propio proceso de aprendizaje reconociendo fortalezas y aspectos a mejorar." },
+    { p:"¿Qué es el aprendizaje colaborativo?", ops:["Trabajar de forma individual","Proceso en que los estudiantes aprenden interactuando entre sí","Competir para obtener mejores notas","Copiar trabajos de compañeros"], r:1, exp:"El aprendizaje colaborativo es un proceso donde los estudiantes trabajan juntos, compartiendo conocimientos y apoyándose mutuamente." },
+    { p:"¿Qué son las estrategias metacognitivas?", ops:["Técnicas para memorizar","Acciones para planificar, monitorear y evaluar el propio aprendizaje","Métodos de castigo","Formas de copiar en exámenes"], r:1, exp:"Las estrategias metacognitivas ayudan al estudiante a planificar, monitorear y evaluar su propio proceso de aprendizaje." },
+    { p:"¿Qué es la zona de desarrollo próximo (ZDP) de Vygotsky?", ops:["El límite máximo del aprendizaje","Distancia entre lo que el estudiante puede hacer solo y con ayuda","El nivel actual de conocimiento","El espacio físico del aula"], r:1, exp:"La ZDP es la distancia entre el nivel de desarrollo actual y el nivel de desarrollo potencial con la guía de un adulto o par más capaz." },
+    { p:"¿Qué es el andamiaje pedagógico?", ops:["Construcción de mobiliario escolar","Apoyo temporal del docente para que el estudiante alcance mayor autonomía","Sistema de evaluación","Tipo de planificación"], r:1, exp:"El andamiaje es el apoyo ajustado que brinda el docente para ayudar al estudiante a superar su ZDP y lograr mayor autonomía." },
+    { p:"¿Qué caracteriza al pensamiento crítico?", ops:["Aceptar todo sin cuestionar","Analizar, evaluar y formar juicios propios sobre la información","Memorizar datos","Seguir instrucciones sin reflexionar"], r:1, exp:"El pensamiento crítico implica analizar, evaluar evidencias y formar juicios propios fundamentados sobre la información recibida." },
+    { p:"¿Qué es la gamificación educativa?", ops:["Jugar en clases sin propósito","Aplicar elementos de juego para motivar y mejorar el aprendizaje","Ver videos de entretenimiento","Competencia entre docentes"], r:1, exp:"La gamificación aplica dinámicas y elementos de juego en contextos educativos para motivar a los estudiantes y potenciar el aprendizaje." },
+    { p:"¿Qué promueve el aprendizaje basado en proyectos (ABP)?", ops:["Estudio individual de contenidos","Aprendizaje activo mediante la resolución de problemas reales","Lectura pasiva de textos","Repetición de ejercicios"], r:1, exp:"El ABP promueve que los estudiantes aprendan desarrollando proyectos que responden a problemas o desafíos del mundo real." },
+    { p:"¿Cuál es la función del docente en el aula invertida (flipped classroom)?", ops:["Explicar contenidos durante toda la clase","Guiar y acompañar mientras los estudiantes aplican lo aprendido en casa","Solo evaluar","Asignar tareas sin explicar"], r:1, exp:"En el aula invertida el docente usa el tiempo de clase para guiar la aplicación de contenidos que el estudiante exploró previamente." },
+    { p:"¿Qué es la evaluación auténtica?", ops:["Exámenes tradicionales memorísticos","Evaluación mediante tareas reales y complejas vinculadas a contextos reales","Calificación por asistencia","Autoevaluación sin criterios"], r:1, exp:"La evaluación auténtica valora las competencias del estudiante mediante tareas complejas conectadas a situaciones del mundo real." },
+    { p:"¿Qué es la diferenciación curricular?", ops:["Dar el mismo trabajo a todos","Adaptar la enseñanza a las necesidades, intereses y estilos de aprendizaje de cada estudiante","Separar a los estudiantes por nivel","Reducir los contenidos"], r:1, exp:"La diferenciación curricular implica adaptar contenidos, procesos y productos para atender las diversas necesidades de los estudiantes." },
+    { p:"¿Qué implica la educación intercultural bilingüe (EIB)?", ops:["Enseñar solo en español","Valorar y desarrollar aprendizajes desde la lengua y cultura originaria junto al castellano","Eliminar las lenguas originarias","Solo enseñar inglés"], r:1, exp:"La EIB implica desarrollar aprendizajes en la lengua materna originaria y el castellano, valorando la identidad cultural del estudiante." },
+    { p:"¿Qué es la inteligencia emocional en el docente?", ops:["Tener un coeficiente intelectual alto","Capacidad de reconocer y gestionar las propias emociones y las de los demás","No mostrar emociones","Solo conocer teorías psicológicas"], r:1, exp:"La inteligencia emocional es la capacidad de identificar, comprender y gestionar las emociones propias y ajenas de manera efectiva." },
+    { p:"¿Qué es la práctica reflexiva docente?", ops:["Hacer lo mismo cada año","Analizar la propia práctica para mejorar continuamente","Seguir el libro de texto sin cambios","Evaluar solo a los estudiantes"], r:1, exp:"La práctica reflexiva implica que el docente analiza críticamente su propia enseñanza para identificar mejoras y crecer profesionalmente." },
+    { p:"¿Cuál es el papel de las TIC en la educación contemporánea?", ops:["Reemplazar al docente","Herramienta para enriquecer y diversificar los procesos de enseñanza-aprendizaje","Solo para entretenimiento","Obligar a los estudiantes a usar pantallas"], r:1, exp:"Las TIC son herramientas que, bien utilizadas, enriquecen y diversifican las experiencias de enseñanza y aprendizaje." },
+    { p:"¿Qué son las competencias digitales docentes?", ops:["Saber usar redes sociales","Capacidades para usar tecnología de forma pedagógica, segura y ética","Tener muchos dispositivos","Solo saber usar Word y Excel"], r:1, exp:"Las competencias digitales docentes incluyen el uso pedagógico, seguro y ético de las tecnologías para mejorar el aprendizaje." },
+    { p:"¿Qué es el liderazgo pedagógico del director?", ops:["Administrar los recursos económicos","Influir en la mejora de la enseñanza y el aprendizaje en la IE","Controlar la asistencia docente","Gestionar la infraestructura"], r:1, exp:"El liderazgo pedagógico del director se enfoca en influir positivamente en la práctica docente para mejorar los aprendizajes." },
+    { p:"¿Qué es una comunidad de aprendizaje profesional (CAP)?", ops:["Club de lectura de docentes","Grupo de docentes que colaboran para mejorar su práctica y los aprendizajes","Reunión de padres de familia","Comité de disciplina"], r:1, exp:"Una CAP es un grupo de docentes que trabajan colaborativamente, compartiendo experiencias y conocimientos para mejorar su práctica." },
+    { p:"¿Qué promueve el enfoque ambiental en la educación?", ops:["Estudiar solo ciencias naturales","Desarrollar conciencia y actitudes para el cuidado del ambiente","Eliminar actividades al aire libre","Solo reciclar papel"], r:1, exp:"El enfoque ambiental promueve que los estudiantes desarrollen conciencia, valores y actitudes para cuidar el ambiente y la sostenibilidad." },
+    { p:"¿Qué es la tutoría en la educación básica regular?", ops:["Reforzamiento de matemáticas","Acompañamiento socioafectivo y cognitivo al estudiante","Sanción de conductas","Solo orientación vocacional"], r:1, exp:"La tutoría es el acompañamiento socioafectivo, cognitivo y pedagógico que brinda el docente para el bienestar integral del estudiante." },
+    { p:"¿Qué implica la convivencia democrática en el aula?", ops:["El docente impone todas las normas","Construir normas participativamente y resolver conflictos pacíficamente","No tener ninguna norma","Solo premiar el buen comportamiento"], r:1, exp:"La convivencia democrática implica construir participativamente normas de convivencia y gestionar conflictos de manera pacífica." },
+    { p:"¿Cuál es el propósito del Plan de Mejora en la IE?", ops:["Sancionar docentes","Establecer acciones para mejorar los resultados de aprendizaje","Aumentar la infraestructura","Reducir el número de estudiantes"], r:1, exp:"El Plan de Mejora busca establecer acciones concretas y priorizadas para mejorar los resultados de aprendizaje en la IE." },
+    { p:"¿Qué es la autoevaluación institucional?", ops:["Evaluación externa de la UGEL","Proceso por el cual la IE reflexiona sobre su propia gestión y resultados","Solo evaluar a los docentes","Rendir cuentas al ministerio"], r:1, exp:"La autoevaluación institucional es el proceso por el cual la propia IE analiza su funcionamiento para identificar fortalezas y mejorar." },
+    { p:"¿Qué es el enfoque de derechos en educación?", ops:["Solo proteger derechos laborales","Reconocer al estudiante como sujeto de derechos","Exigir deberes sin reconocer derechos","Solo aplicar el código del niño"], r:1, exp:"El enfoque de derechos reconoce al estudiante como sujeto de derechos, promoviendo su dignidad, participación y protección." },
+    { p:"¿Qué es la neuroeducación?", ops:["Cirugía cerebral para mejorar notas","Disciplina que aplica hallazgos de neurociencia para mejorar los procesos educativos","Solo estudiar el cerebro","Psicología clínica"], r:1, exp:"La neuroeducación aplica los conocimientos sobre el funcionamiento cerebral para diseñar mejores estrategias de enseñanza y aprendizaje." },
+    { p:"¿Qué caracteriza al docente reflexivo según Schön?", ops:["Sigue rutinas sin cuestionarlas","Reflexiona en y sobre la acción para mejorar su práctica profesional","Solo aplica teorías","Evalúa constantemente a los estudiantes"], r:1, exp:"Según Schön, el docente reflexivo analiza sus propias acciones durante y después de la práctica para aprender de ellas y mejorar." },
+    { p:"¿Cuál es el impacto de las altas expectativas docentes en el aprendizaje?", ops:["No tienen ningún impacto","Mejoran el rendimiento al motivar a los estudiantes (efecto Pigmalión)","Solo aumentan la presión","Generan ansiedad sin beneficio"], r:1, exp:"El efecto Pigmalión demuestra que las altas expectativas del docente influyen positivamente en el rendimiento y motivación de los estudiantes." },
+    { p:"¿Qué es la evaluación por rúbricas?", ops:["Una lista de notas","Instrumento con criterios y niveles de desempeño claramente definidos","Un examen oral","Un registro de asistencia"], r:1, exp:"La rúbrica es un instrumento de evaluación que describe criterios y niveles de desempeño esperados de manera clara y detallada." },
+    { p:"¿Qué implica el enfoque crítico en educación?", ops:["Criticar a los docentes","Desarrollar la capacidad de cuestionar, analizar y transformar la realidad","Memorizar teorías críticas","Rechazar toda autoridad"], r:1, exp:"El enfoque crítico promueve que los estudiantes desarrollen la capacidad de cuestionar, analizar y proponer transformaciones en su realidad." },
+    { p:"¿Qué es el currículo oculto?", ops:["El temario no oficial","Aprendizajes no planificados que se transmiten implícitamente en la escuela","Cursos prohibidos","El reglamento interno"], r:1, exp:"El currículo oculto son los aprendizajes, valores y normas que se transmiten implícitamente a través de las prácticas escolares." },
+    { p:"¿Qué promueve la pedagogía de la liberación de Paulo Freire?", ops:["Educación bancaria donde el docente deposita conocimiento","Educación dialógica y crítica que transforma la realidad social","Memorización de contenidos","Disciplina estricta"], r:1, exp:"Freire propone una educación dialógica y crítica donde el estudiante es sujeto activo que reflexiona y transforma su realidad." },
+    { p:"¿Qué son los mapas mentales como estrategia de aprendizaje?", ops:["Mapas geográficos","Representaciones visuales que organizan ideas de forma radial alrededor de un concepto central","Listas de contenidos","Esquemas lineales"], r:1, exp:"Los mapas mentales son representaciones visuales que organizan ideas y conceptos de forma radial, facilitando la comprensión y memorización." },
+    { p:"¿Qué es el aprendizaje por descubrimiento de Bruner?", ops:["El docente explica todo","El estudiante construye conocimiento explorando y descubriendo por sí mismo","Ver videos educativos","Copiar del pizarrón"], r:1, exp:"Bruner propone que el estudiante aprende mejor cuando descubre y construye el conocimiento activamente a través de la exploración." },
+    { p:"¿Cuántas escalas tiene la Carrera Pública Magisterial?", ops:["5","6","7","8"], r:3, exp:"La Carrera Pública Magisterial tiene 8 escalas magisteriales según la Ley N° 29062." },
+    { p:"¿Qué es la evaluación sumativa?", ops:["Evaluación durante el proceso","Evaluación al final de una etapa para certificar logros","Evaluación de actitudes","Evaluación diagnóstica inicial"], r:1, exp:"La evaluación sumativa se realiza al final de una etapa educativa para certificar los logros alcanzados por el estudiante." },
+    { p:"¿Qué es el aprendizaje situado?", ops:["Aprender solo en el aula","Aprendizaje que ocurre en contextos reales y significativos vinculados a la práctica","Aprender de memoria","Aprender viendo televisión"], r:1, exp:"El aprendizaje situado ocurre en contextos reales y prácticos donde el conocimiento cobra sentido y aplicación concreta." },
+    { p:"¿Qué es la pedagogía diferenciada?", ops:["Enseñar lo mismo a todos de la misma manera","Ajustar la enseñanza a las diversas necesidades, ritmos y estilos de aprendizaje","Separar a los estudiantes por capacidad","Reducir el currículo"], r:1, exp:"La pedagogía diferenciada ajusta la enseñanza a las diversas necesidades, ritmos y estilos de aprendizaje de cada estudiante." },
+    { p:"¿Qué implica la colegialidad docente?", ops:["Competencia entre docentes","Trabajo colaborativo y reflexivo entre docentes para mejorar la práctica educativa","Solo reuniones administrativas","Evaluación de docentes por pares"], r:1, exp:"La colegialidad docente implica trabajo colaborativo y reflexivo entre docentes para mejorar conjuntamente la práctica educativa." }
+  ]
+};
     { p:"¿Cuál es el marco legal que rige la Carrera Pública Magisterial en el Perú?", ops:["Ley N° 24029","Ley N° 29062","Ley N° 30512","Ley N° 28044"], r:1, exp:"La Ley N° 29062 modifica la Ley del Profesorado y rige la Carrera Pública Magisterial." },
     { p:"¿Qué documento orienta el trabajo pedagógico del docente peruano?", ops:["PEN al 2036","Currículo Nacional de la Educación Básica","PEI de la institución","Reglamento Interno"], r:1, exp:"El Currículo Nacional es el documento de base que orienta la labor pedagógica en la educación básica." },
     { p:"¿Cuántas escalas tiene la Carrera Pública Magisterial según la Ley N° 29062?", ops:["5 escalas","6 escalas","7 escalas","8 escalas"], r:3, exp:"La CPM tiene 8 escalas magisteriales, siendo la primera la de ingreso a la carrera." },
@@ -1003,21 +1212,32 @@ async function cargarDashboard() {
 }
 
 // ══════════════════════════════════════════
-// SIMULACRO
+// SIMULACRO — ESTRUCTURA OFICIAL MINEDU
+// 75 preguntas · 3h 45min · Puntaje real
+// Subprueba 1: 25 HG · 2pts · Máx 50
+// Subprueba 2: 50 CP · 3pts · Mín 84
+// Puntaje total mínimo: 110
 // ══════════════════════════════════════════
 function iniciarSimulacro(tipo) {
   if (!currentProfile?.membresia_activa) return;
 
-  const preguntas = [...PREGUNTAS[tipo]].sort(() => Math.random() - 0.5).slice(0, 30);
+  // Mezclar preguntas de cada subprueba
+  const hg = [...PREGUNTAS.habilidades_generales].sort(() => Math.random() - 0.5).slice(0, 25);
+  const cp = tipo === 'nombramiento'
+    ? [...PREGUNTAS.nombramiento].sort(() => Math.random() - 0.5).slice(0, 50)
+    : [...PREGUNTAS.ascenso].sort(() => Math.random() - 0.5).slice(0, 50);
+
+  // Combinar: primero HG (índices 0-24), luego CP (índices 25-74)
+  const preguntas = [...hg, ...cp];
+
   currentSim = {
     tipo,
     preguntas,
     idx: 0,
-    respuestas: new Array(30).fill(null),
-    tiempoInicio: Date.now(),
-    tiempoTotal: 45 * 60,
-    tiempoRestante: 45 * 60,
-    respondida: false
+    respuestas: new Array(75).fill(null),
+    tiempoTotal: 225 * 60, // 3h 45min en segundos
+    tiempoRestante: 225 * 60,
+    timer: null
   };
 
   document.getElementById('sim-titulo-texto').textContent =
@@ -1028,16 +1248,65 @@ function iniciarSimulacro(tipo) {
   iniciarCronometro();
 }
 
+function getPuntos(idx) {
+  return idx < 25 ? 2 : 3; // HG = 2pts, CP = 3pts
+}
+
+function calcularPuntajes() {
+  const { preguntas, respuestas } = currentSim;
+  let ptsHG = 0, correctasHG = 0;
+  let ptsCP = 0, correctasCP = 0;
+
+  for (let i = 0; i < 25; i++) {
+    if (respuestas[i] === preguntas[i].r) { correctasHG++; ptsHG += 2; }
+  }
+  for (let i = 25; i < 75; i++) {
+    if (respuestas[i] === preguntas[i].r) { correctasCP++; ptsCP += 3; }
+  }
+  return { ptsHG, correctasHG, ptsCP, correctasCP, total: ptsHG + ptsCP };
+}
+
+function actualizarPuntajeEnVivo() {
+  const { ptsHG, ptsCP, total } = calcularPuntajes();
+  document.getElementById('pts-hg').textContent = ptsHG;
+  document.getElementById('pts-cp').textContent = ptsCP;
+  document.getElementById('pts-total').textContent = total;
+}
+
 function renderPregunta() {
   const { preguntas, idx, respuestas } = currentSim;
   const q = preguntas[idx];
-  const total = preguntas.length;
+  const total = 75;
   const yaRespondida = respuestas[idx] !== null;
+  const esHG = idx < 25;
+  const pts = getPuntos(idx);
 
-  document.getElementById('pregunta-num').textContent = `Pregunta ${idx + 1}`;
+  // Subprueba badge
+  document.getElementById('subprueba-badge').innerHTML = esHG
+    ? '📖 Subprueba 1: Habilidades Generales'
+    : '🧠 Subprueba 2: Conocimientos Pedagógicos';
+  document.getElementById('subprueba-badge').style.background = esHG
+    ? 'rgba(15,45,138,0.3)' : 'rgba(201,162,39,0.3)';
+
+  document.getElementById('pregunta-num').textContent = `Pregunta ${idx + 1} de ${total}`;
+  document.getElementById('pregunta-tipo-badge').textContent = esHG
+    ? `Habilidades Generales · ${pts} pts`
+    : `Conocimientos Pedagógicos · ${pts} pts`;
+  document.getElementById('pregunta-tipo-badge').style.background = esHG
+    ? 'rgba(15,45,138,0.08)' : 'rgba(201,162,39,0.12)';
+  document.getElementById('pregunta-tipo-badge').style.color = esHG
+    ? 'var(--azul)' : 'var(--dorado-oscuro)';
+
   document.getElementById('pregunta-texto').textContent = q.p;
   document.getElementById('sim-progreso').textContent = `Pregunta ${idx + 1} de ${total}`;
-  document.getElementById('progress-fill').style.width = ((idx + 1) / total * 100) + '%';
+
+  // Progreso barras
+  const idxHG = Math.min(idx + 1, 25);
+  const idxCP = Math.max(0, idx - 24);
+  document.getElementById('prog-hg').textContent = Math.min(idx + 1, 25);
+  document.getElementById('prog-cp').textContent = idx >= 25 ? idx - 24 : 0;
+  document.getElementById('progress-hg').style.width = (idxHG / 25 * 100) + '%';
+  document.getElementById('progress-cp').style.width = (idxCP / 50 * 100) + '%';
 
   // Opciones
   const letras = ['A','B','C','D'];
@@ -1056,90 +1325,127 @@ function renderPregunta() {
 
   // Explicación
   const exp = document.getElementById('explicacion-texto');
-  if (yaRespondida) {
-    exp.textContent = '💡 ' + q.exp;
-    exp.classList.add('visible');
-  } else {
-    exp.classList.remove('visible');
-  }
+  if (yaRespondida) { exp.textContent = '💡 ' + q.exp; exp.classList.add('visible'); }
+  else { exp.classList.remove('visible'); }
 
   // Navegación
   document.getElementById('btn-anterior').style.display = idx > 0 ? 'inline-block' : 'none';
   document.getElementById('btn-siguiente').style.display = idx < total - 1 ? 'inline-block' : 'none';
   document.getElementById('btn-finalizar').style.display = idx === total - 1 ? 'inline-block' : 'none';
 
-  currentSim.respondida = yaRespondida;
+  actualizarPuntajeEnVivo();
 }
 
 function seleccionarOpcion(i) {
   if (currentSim.respuestas[currentSim.idx] !== null) return;
   currentSim.respuestas[currentSim.idx] = i;
-  currentSim.respondida = true;
   renderPregunta();
 }
 
 function siguientePregunta() {
-  if (currentSim.idx < currentSim.preguntas.length - 1) {
-    currentSim.idx++;
-    renderPregunta();
-  }
+  if (currentSim.idx < 74) { currentSim.idx++; renderPregunta(); }
 }
 
 function anteriorPregunta() {
-  if (currentSim.idx > 0) {
-    currentSim.idx--;
-    renderPregunta();
-  }
+  if (currentSim.idx > 0) { currentSim.idx--; renderPregunta(); }
 }
 
 function iniciarCronometro() {
   if (currentSim.timer) clearInterval(currentSim.timer);
   currentSim.timer = setInterval(() => {
     currentSim.tiempoRestante--;
-    const m = Math.floor(currentSim.tiempoRestante / 60);
+    const h = Math.floor(currentSim.tiempoRestante / 3600);
+    const m = Math.floor((currentSim.tiempoRestante % 3600) / 60);
     const s = currentSim.tiempoRestante % 60;
     const el = document.getElementById('cronometro');
-    el.textContent = `⏱ ${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-    el.className = 'cronometro' + (currentSim.tiempoRestante < 300 ? ' warning' : '');
+    el.textContent = h > 0
+      ? `⏱ ${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`
+      : `⏱ ${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    el.className = 'cronometro' + (currentSim.tiempoRestante < 600 ? ' warning' : '');
     if (currentSim.tiempoRestante <= 0) finalizarSimulacro();
   }, 1000);
 }
 
 async function finalizarSimulacro() {
   clearInterval(currentSim.timer);
-  const { preguntas, respuestas, tiempoTotal, tiempoRestante, tipo } = currentSim;
-  const correctas = respuestas.filter((r, i) => r === preguntas[i].r).length;
-  const total = preguntas.length;
-  const pct = Math.round((correctas / total) * 100);
+  const { tiempoTotal, tiempoRestante, tipo } = currentSim;
+  const { ptsHG, correctasHG, ptsCP, correctasCP, total } = calcularPuntajes();
   const tiempoUsado = tiempoTotal - tiempoRestante;
-  const mins = Math.floor(tiempoUsado / 60);
-  const segs = tiempoUsado % 60;
-  const tiempoStr = `${mins}:${String(segs).padStart(2,'0')}`;
+  const h = Math.floor(tiempoUsado / 3600);
+  const m = Math.floor((tiempoUsado % 3600) / 60);
+  const s = tiempoUsado % 60;
+  const tiempoStr = h > 0 ? `${h}h ${m}m ${s}s` : `${m}:${String(s).padStart(2,'0')}`;
+
+  // Determinar si aprobó
+  const aproboCP = ptsCP >= 84;
+  const aproboTotal = total >= 110;
+  const aprobado = aproboCP && aproboTotal;
 
   // Guardar en Supabase
   await sb.from('historial_simulacros').insert({
     user_id: currentUser.id,
     tipo,
-    correctas,
-    total,
-    puntaje: pct,
+    correctas: correctasHG + correctasCP,
+    total: 75,
+    puntaje: total,
+    puntaje_hg: ptsHG,
+    puntaje_cp: ptsCP,
+    correctas_hg: correctasHG,
+    correctas_cp: correctasCP,
+    aprobado,
     tiempo_usado: tiempoStr
   });
 
   // Mostrar resultado
   showScreen('resultado');
-  const cls = pct >= 70 ? 'alto' : pct >= 50 ? 'medio' : 'bajo';
-  const emoji = pct >= 70 ? '🎉' : pct >= 50 ? '💪' : '📚';
-  const titulo = pct >= 70 ? '¡Excelente resultado!' : pct >= 50 ? '¡Buen esfuerzo!' : 'Sigue practicando';
-  const sub = pct >= 70 ? 'Estás muy bien preparado/a' : pct >= 50 ? 'Puedes mejorar con más práctica' : 'Revisa los temas y vuelve a intentarlo';
+
+  const emoji = aprobado ? '🎉' : ptsCP < 84 ? '❌' : '📚';
+  const titulo = aprobado ? '¡Felicitaciones, aprobaste!' : '¡Sigue practicando!';
+  const subtitulo = aprobado
+    ? 'Superaste el puntaje mínimo requerido por el MINEDU'
+    : ptsCP < 84
+    ? 'No alcanzaste el puntaje mínimo en Conocimientos Pedagógicos (84 pts)'
+    : 'No alcanzaste el puntaje mínimo total (110 pts)';
 
   document.getElementById('resultado-emoji').textContent = emoji;
   document.getElementById('resultado-titulo').textContent = titulo;
-  document.getElementById('resultado-subtitulo').textContent = sub;
-  document.getElementById('resultado-puntaje').textContent = pct + '%';
-  document.getElementById('resultado-puntaje').className = 'puntaje-grande ' + cls;
-  document.getElementById('res-correctas').textContent = correctas;
-  document.getElementById('res-incorrectas').textContent = total - correctas;
+  document.getElementById('resultado-subtitulo').textContent = subtitulo;
+  document.getElementById('resultado-puntaje').textContent = total;
+  document.getElementById('resultado-puntaje').className = 'puntaje-grande ' + (aprobado ? 'alto' : 'bajo');
+
+  // Estado aprobado/eliminado
+  const estadoEl = document.getElementById('resultado-estado');
+  if (aprobado) {
+    estadoEl.style.background = 'rgba(34,197,94,0.1)';
+    estadoEl.style.border = '1.5px solid rgba(34,197,94,0.3)';
+    estadoEl.style.color = '#16a34a';
+    estadoEl.textContent = '✅ APROBADO — Clasificarías a la siguiente etapa del concurso';
+  } else {
+    estadoEl.style.background = 'rgba(239,68,68,0.08)';
+    estadoEl.style.border = '1.5px solid rgba(239,68,68,0.25)';
+    estadoEl.style.color = 'var(--error)';
+    estadoEl.textContent = ptsCP < 84
+      ? '❌ ELIMINADO — Puntaje mínimo en Conocimientos Pedagógicos no alcanzado (necesitas 84, obtuviste ' + ptsCP + ')'
+      : '❌ NO APROBADO — Puntaje total insuficiente (necesitas 110, obtuviste ' + total + ')';
+  }
+
+  // Detalle subpruebas
+  document.getElementById('res-hg-pts').textContent = ptsHG;
+  document.getElementById('res-hg-correctas').textContent = correctasHG;
+  document.getElementById('res-cp-pts').textContent = ptsCP;
+  document.getElementById('res-cp-correctas').textContent = correctasCP;
+
+  const cpEstado = document.getElementById('res-cp-estado');
+  if (aproboCP) {
+    cpEstado.style.color = '#16a34a';
+    cpEstado.textContent = '✅ Supera el mínimo de 84 pts';
+  } else {
+    cpEstado.style.color = 'var(--error)';
+    cpEstado.textContent = '❌ No alcanza el mínimo de 84 pts';
+  }
+
+  document.getElementById('res-correctas').textContent = correctasHG + correctasCP;
+  document.getElementById('res-incorrectas').textContent = 75 - (correctasHG + correctasCP);
   document.getElementById('res-tiempo').textContent = tiempoStr;
 }
 
