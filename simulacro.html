@@ -673,6 +673,7 @@ body { font-family:'DM Sans',sans-serif; background:var(--gris-claro); min-heigh
     <button class="admin-tab" onclick="adminTab('crear')">➕ Crear Usuario</button>
     <button class="admin-tab" onclick="adminTab('historial')">📊 Historial</button>
     <button class="admin-tab" onclick="adminTab('stats')">📈 Estadísticas</button>
+    <button class="admin-tab" onclick="adminTab('preguntas')">❓ Preguntas</button>
   </div>
 
   <!-- ── TAB: USUARIOS ── -->
@@ -809,7 +810,233 @@ body { font-family:'DM Sans',sans-serif; background:var(--gris-claro); min-heigh
 
 </div>
 
-<!-- MODAL EDITAR USUARIO -->
+  <!-- ── TAB: PREGUNTAS ── -->
+  <div id="admin-tab-preguntas" class="admin-tab-content" style="display:none">
+
+    <!-- Sub-tabs -->
+    <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap">
+      <button class="admin-tab active" id="ptab-btn-nueva" onclick="preguntaTab('nueva')" style="font-size:0.82rem;padding:8px 16px">➕ Nueva pregunta</button>
+      <button class="admin-tab" id="ptab-btn-excel" onclick="preguntaTab('excel')" style="font-size:0.82rem;padding:8px 16px">📊 Subir Excel</button>
+      <button class="admin-tab" id="ptab-btn-lista" onclick="preguntaTab('lista');cargarPreguntas()" style="font-size:0.82rem;padding:8px 16px">📋 Ver y editar preguntas</button>
+    </div>
+
+    <!-- ── NUEVA PREGUNTA ── -->
+    <div id="ptab-nueva" class="admin-form-card">
+      <h3 style="font-family:'Playfair Display',serif;color:var(--azul-oscuro);margin-bottom:6px;font-size:1.2rem">➕ Agregar nueva pregunta</h3>
+      <p style="color:var(--gris);font-size:0.83rem;margin-bottom:20px">La pregunta se guardará en Supabase y aparecerá en los simulacros automáticamente</p>
+
+      <div id="alerta-pregunta" class="alerta"></div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+        <div class="form-group" style="margin-bottom:0">
+          <label>Tipo de simulacro</label>
+          <select id="np-tipo" style="width:100%;padding:11px 14px;border:1.5px solid rgba(15,45,138,0.15);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.88rem;background:var(--gris-claro);outline:none">
+            <option value="nombramiento">📋 Nombramiento Docente</option>
+            <option value="ascenso">🏆 Ascenso Docente</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label>Subprueba</label>
+          <select id="np-subprueba" style="width:100%;padding:11px 14px;border:1.5px solid rgba(15,45,138,0.15);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.88rem;background:var(--gris-claro);outline:none">
+            <option value="hg">📖 Habilidades Generales (2 pts)</option>
+            <option value="cp">🧠 Conocimientos Pedagógicos (3 pts)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Pregunta</label>
+        <textarea id="np-pregunta" rows="3" placeholder="Escribe aquí la pregunta..." style="width:100%;padding:12px 14px;border:1.5px solid rgba(15,45,138,0.15);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.88rem;background:var(--gris-claro);outline:none;resize:vertical"></textarea>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+        <div class="form-group">
+          <label>🅐 Opción A</label>
+          <input type="text" id="np-a" placeholder="Primera opción">
+        </div>
+        <div class="form-group">
+          <label>🅑 Opción B</label>
+          <input type="text" id="np-b" placeholder="Segunda opción">
+        </div>
+        <div class="form-group">
+          <label>🅒 Opción C</label>
+          <input type="text" id="np-c" placeholder="Tercera opción">
+        </div>
+        <div class="form-group">
+          <label>🅓 Opción D</label>
+          <input type="text" id="np-d" placeholder="Cuarta opción">
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 2fr;gap:14px">
+        <div class="form-group">
+          <label>✅ Respuesta correcta</label>
+          <select id="np-respuesta" style="width:100%;padding:11px 14px;border:1.5px solid rgba(15,45,138,0.15);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.88rem;background:var(--gris-claro);outline:none">
+            <option value="0">A</option>
+            <option value="1">B</option>
+            <option value="2">C</option>
+            <option value="3">D</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>💡 Explicación (por qué es correcta)</label>
+          <input type="text" id="np-explicacion" placeholder="Explica brevemente por qué esa es la respuesta correcta">
+        </div>
+      </div>
+
+      <button onclick="guardarPregunta()" id="btn-guardar-pregunta" style="padding:12px 28px;background:linear-gradient(135deg,var(--azul),var(--azul-medio));color:white;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.92rem;font-weight:700;cursor:pointer;transition:all 0.2s">
+        💾 Guardar pregunta
+      </button>
+    </div>
+
+    <!-- ── SUBIR EXCEL ── -->
+    <div id="ptab-excel" class="admin-form-card" style="display:none">
+      <h3 style="font-family:'Playfair Display',serif;color:var(--azul-oscuro);margin-bottom:6px;font-size:1.2rem">📊 Subir preguntas desde Excel</h3>
+      <p style="color:var(--gris);font-size:0.83rem;margin-bottom:20px">Carga cientos de preguntas de una sola vez</p>
+
+      <!-- Formato requerido -->
+      <div style="background:rgba(15,45,138,0.04);border:1.5px solid rgba(15,45,138,0.12);border-radius:12px;padding:20px;margin-bottom:20px">
+        <div style="font-size:0.82rem;font-weight:700;color:var(--azul-oscuro);margin-bottom:10px">📌 Formato requerido del Excel:</div>
+        <div style="overflow-x:auto">
+          <table style="font-size:0.75rem;border-collapse:collapse;width:100%">
+            <thead>
+              <tr style="background:var(--azul-oscuro);color:white">
+                <th style="padding:6px 10px;text-align:left">tipo</th>
+                <th style="padding:6px 10px;text-align:left">subprueba</th>
+                <th style="padding:6px 10px;text-align:left">pregunta</th>
+                <th style="padding:6px 10px;text-align:left">opcion_a</th>
+                <th style="padding:6px 10px;text-align:left">opcion_b</th>
+                <th style="padding:6px 10px;text-align:left">opcion_c</th>
+                <th style="padding:6px 10px;text-align:left">opcion_d</th>
+                <th style="padding:6px 10px;text-align:left">respuesta</th>
+                <th style="padding:6px 10px;text-align:left">explicacion</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="background:white">
+                <td style="padding:6px 10px;border:1px solid rgba(15,45,138,0.1)">nombramiento</td>
+                <td style="padding:6px 10px;border:1px solid rgba(15,45,138,0.1)">cp</td>
+                <td style="padding:6px 10px;border:1px solid rgba(15,45,138,0.1)">¿Qué es...?</td>
+                <td style="padding:6px 10px;border:1px solid rgba(15,45,138,0.1)">Opción 1</td>
+                <td style="padding:6px 10px;border:1px solid rgba(15,45,138,0.1)">Opción 2</td>
+                <td style="padding:6px 10px;border:1px solid rgba(15,45,138,0.1)">Opción 3</td>
+                <td style="padding:6px 10px;border:1px solid rgba(15,45,138,0.1)">Opción 4</td>
+                <td style="padding:6px 10px;border:1px solid rgba(15,45,138,0.1)">B</td>
+                <td style="padding:6px 10px;border:1px solid rgba(15,45,138,0.1)">Porque...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="margin-top:10px;font-size:0.75rem;color:var(--gris)">
+          <strong>tipo:</strong> nombramiento | ascenso &nbsp;·&nbsp;
+          <strong>subprueba:</strong> hg (Habilidades Generales) | cp (Conocimientos Pedagógicos) &nbsp;·&nbsp;
+          <strong>respuesta:</strong> A | B | C | D
+        </div>
+      </div>
+
+      <!-- Descargar plantilla -->
+      <button onclick="descargarPlantilla()" style="margin-bottom:20px;padding:10px 20px;background:rgba(34,197,94,0.1);color:#16a34a;border:1.5px solid rgba(34,197,94,0.3);border-radius:9px;font-family:'DM Sans',sans-serif;font-size:0.85rem;font-weight:700;cursor:pointer">
+        📥 Descargar plantilla Excel
+      </button>
+
+      <!-- Upload -->
+      <div id="drop-zone" style="border:2px dashed rgba(15,45,138,0.25);border-radius:14px;padding:40px;text-align:center;cursor:pointer;transition:all 0.2s;background:var(--blanco)"
+        onclick="document.getElementById('excel-input').click()"
+        ondragover="event.preventDefault();this.style.borderColor='var(--azul)';this.style.background='rgba(15,45,138,0.04)'"
+        ondragleave="this.style.borderColor='rgba(15,45,138,0.25)';this.style.background='var(--blanco)'"
+        ondrop="handleExcelDrop(event)">
+        <div style="font-size:2.5rem;margin-bottom:10px">📊</div>
+        <div style="font-size:0.95rem;font-weight:600;color:var(--azul-oscuro);margin-bottom:4px">Arrastra tu Excel aquí</div>
+        <div style="font-size:0.82rem;color:var(--gris)">o haz clic para seleccionar el archivo (.xlsx, .xls, .csv)</div>
+        <input type="file" id="excel-input" accept=".xlsx,.xls,.csv" style="display:none" onchange="procesarExcel(this.files[0])">
+      </div>
+
+      <div id="excel-preview" style="display:none;margin-top:20px">
+        <div id="alerta-excel" class="alerta"></div>
+        <div style="font-size:0.88rem;font-weight:600;color:var(--azul-oscuro);margin-bottom:10px" id="excel-resumen"></div>
+        <table class="usuarios-table" id="excel-tabla">
+          <thead><tr><th>#</th><th>Tipo</th><th>Subprueba</th><th>Pregunta</th><th>Respuesta</th><th>Estado</th></tr></thead>
+          <tbody id="excel-tbody"></tbody>
+        </table>
+        <button onclick="importarExcel()" id="btn-importar" style="margin-top:16px;padding:12px 28px;background:linear-gradient(135deg,var(--azul),var(--azul-medio));color:white;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.92rem;font-weight:700;cursor:pointer">
+          ⬆️ Importar todas las preguntas a Supabase
+        </button>
+      </div>
+    </div>
+
+    <!-- ── LISTA DE PREGUNTAS ── -->
+    <div id="ptab-lista" style="display:none">
+      <div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;align-items:center">
+        <select id="filtro-tipo-p" onchange="cargarPreguntas()" style="padding:10px 14px;border:1.5px solid rgba(15,45,138,0.15);border-radius:9px;font-family:'DM Sans',sans-serif;font-size:0.85rem;outline:none;background:var(--blanco)">
+          <option value="">Todos los tipos</option>
+          <option value="nombramiento">📋 Nombramiento</option>
+          <option value="ascenso">🏆 Ascenso</option>
+        </select>
+        <select id="filtro-sub-p" onchange="cargarPreguntas()" style="padding:10px 14px;border:1.5px solid rgba(15,45,138,0.15);border-radius:9px;font-family:'DM Sans',sans-serif;font-size:0.85rem;outline:none;background:var(--blanco)">
+          <option value="">Todas las subpruebas</option>
+          <option value="hg">📖 Habilidades Generales</option>
+          <option value="cp">🧠 Conocimientos Pedagógicos</option>
+        </select>
+        <div id="contador-preguntas" style="font-size:0.83rem;color:var(--gris);margin-left:auto"></div>
+      </div>
+
+      <table class="usuarios-table">
+        <thead><tr><th>#</th><th>Tipo</th><th>Sub.</th><th>Pregunta</th><th>Resp.</th><th>Acciones</th></tr></thead>
+        <tbody id="preguntas-tbody">
+          <tr><td colspan="6" class="sin-historial">Cargando preguntas...</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+<!-- MODAL EDITAR PREGUNTA -->
+<div id="modal-pregunta" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:300;align-items:center;justify-content:center;padding:20px">
+  <div style="background:var(--blanco);border-radius:16px;padding:32px;max-width:600px;width:100%;box-shadow:0 24px 60px rgba(0,0,0,0.2);max-height:90vh;overflow-y:auto">
+    <h3 style="font-family:'Playfair Display',serif;color:var(--azul-oscuro);margin-bottom:20px">✏️ Editar pregunta</h3>
+    <input type="hidden" id="ep-id">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+      <div class="form-group" style="margin-bottom:0">
+        <label>Tipo</label>
+        <select id="ep-tipo" style="width:100%;padding:10px 14px;border:1.5px solid rgba(15,45,138,0.15);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.85rem;background:var(--gris-claro);outline:none">
+          <option value="nombramiento">📋 Nombramiento</option>
+          <option value="ascenso">🏆 Ascenso</option>
+        </select>
+      </div>
+      <div class="form-group" style="margin-bottom:0">
+        <label>Subprueba</label>
+        <select id="ep-subprueba" style="width:100%;padding:10px 14px;border:1.5px solid rgba(15,45,138,0.15);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.85rem;background:var(--gris-claro);outline:none">
+          <option value="hg">📖 Habilidades Generales</option>
+          <option value="cp">🧠 Conocimientos Pedagógicos</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Pregunta</label>
+      <textarea id="ep-pregunta" rows="3" style="width:100%;padding:10px 14px;border:1.5px solid rgba(15,45,138,0.15);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.85rem;background:var(--gris-claro);outline:none;resize:vertical"></textarea>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="form-group"><label>Opción A</label><input type="text" id="ep-a"></div>
+      <div class="form-group"><label>Opción B</label><input type="text" id="ep-b"></div>
+      <div class="form-group"><label>Opción C</label><input type="text" id="ep-c"></div>
+      <div class="form-group"><label>Opción D</label><input type="text" id="ep-d"></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 2fr;gap:12px">
+      <div class="form-group">
+        <label>Respuesta correcta</label>
+        <select id="ep-respuesta" style="width:100%;padding:10px 14px;border:1.5px solid rgba(15,45,138,0.15);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.85rem;background:var(--gris-claro);outline:none">
+          <option value="0">A</option><option value="1">B</option><option value="2">C</option><option value="3">D</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Explicación</label><input type="text" id="ep-explicacion"></div>
+    </div>
+    <div style="display:flex;gap:12px;margin-top:8px">
+      <button onclick="actualizarPregunta()" style="flex:1;padding:11px;background:linear-gradient(135deg,var(--azul),var(--azul-medio));color:white;border:none;border-radius:9px;font-family:'DM Sans',sans-serif;font-weight:700;cursor:pointer">Guardar cambios</button>
+      <button onclick="cerrarModalPregunta()" style="padding:11px 20px;background:var(--gris-claro);color:var(--gris);border:none;border-radius:9px;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer">Cancelar</button>
+    </div>
+  </div>
+</div>
+
 <div id="modal-editar" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;display:none;align-items:center;justify-content:center;padding:20px">
   <div style="background:var(--blanco);border-radius:16px;padding:32px;max-width:440px;width:100%;box-shadow:0 24px 60px rgba(0,0,0,0.2)">
     <h3 style="font-family:'Playfair Display',serif;color:var(--azul-oscuro);margin-bottom:20px">✏️ Editar usuario</h3>
@@ -1698,6 +1925,257 @@ async function cargarStats() {
       <td>${r.max}%</td>
     </tr>`;
   }).join('');
+}
+
+// ══════════════════════════════════════════
+// GESTIÓN DE PREGUNTAS
+// ══════════════════════════════════════════
+let preguntasExcel = [];
+
+function preguntaTab(tab) {
+  ['nueva','excel','lista'].forEach(t => {
+    const el = document.getElementById('ptab-' + t);
+    const btn = document.getElementById('ptab-btn-' + t);
+    if (el) el.style.display = t === tab ? 'block' : 'none';
+    if (btn) btn.classList.toggle('active', t === tab);
+  });
+}
+
+async function guardarPregunta() {
+  const tipo = document.getElementById('np-tipo').value;
+  const subprueba = document.getElementById('np-subprueba').value;
+  const pregunta = document.getElementById('np-pregunta').value.trim();
+  const a = document.getElementById('np-a').value.trim();
+  const b = document.getElementById('np-b').value.trim();
+  const c = document.getElementById('np-c').value.trim();
+  const d = document.getElementById('np-d').value.trim();
+  const respuesta = parseInt(document.getElementById('np-respuesta').value);
+  const explicacion = document.getElementById('np-explicacion').value.trim();
+
+  if (!pregunta || !a || !b || !c || !d) {
+    return showAlertaPregunta('⚠️ Completa todos los campos obligatorios.', 'error');
+  }
+
+  const btn = document.getElementById('btn-guardar-pregunta');
+  btn.innerHTML = '<span class="spinner"></span> Guardando...';
+  btn.disabled = true;
+
+  const { error } = await sb.from('preguntas').insert({
+    tipo, subprueba, pregunta,
+    opciones: [a, b, c, d],
+    respuesta_correcta: respuesta,
+    explicacion, activa: true
+  });
+
+  btn.innerHTML = '💾 Guardar pregunta';
+  btn.disabled = false;
+
+  if (error) return showAlertaPregunta('❌ Error: ' + error.message, 'error');
+
+  showAlertaPregunta('✅ Pregunta guardada correctamente.', 'success');
+  document.getElementById('np-pregunta').value = '';
+  document.getElementById('np-a').value = '';
+  document.getElementById('np-b').value = '';
+  document.getElementById('np-c').value = '';
+  document.getElementById('np-d').value = '';
+  document.getElementById('np-explicacion').value = '';
+}
+
+function showAlertaPregunta(msg, tipo) {
+  const el = document.getElementById('alerta-pregunta');
+  el.textContent = msg;
+  el.className = 'alerta ' + tipo;
+  el.style.display = 'block';
+  if (tipo !== 'success') setTimeout(() => el.style.display = 'none', 4000);
+}
+
+async function cargarPreguntas() {
+  const tipo = document.getElementById('filtro-tipo-p').value;
+  const sub = document.getElementById('filtro-sub-p').value;
+
+  let query = sb.from('preguntas').select('*').order('created_at', { ascending: false });
+  if (tipo) query = query.eq('tipo', tipo);
+  if (sub) query = query.eq('subprueba', sub);
+
+  const { data } = await query;
+  const tbody = document.getElementById('preguntas-tbody');
+  const letras = ['A','B','C','D'];
+
+  document.getElementById('contador-preguntas').textContent =
+    `Total: ${data?.length || 0} preguntas`;
+
+  if (!data || !data.length) {
+    tbody.innerHTML = '<tr><td colspan="6" class="sin-historial">No hay preguntas. ¡Agrega la primera!</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = data.map((p, i) => `<tr>
+    <td style="color:var(--gris);font-size:0.78rem">${i+1}</td>
+    <td>${p.tipo === 'nombramiento' ? '📋' : '🏆'} ${p.tipo}</td>
+    <td>${p.subprueba === 'hg' ? '📖 HG' : '🧠 CP'}</td>
+    <td style="font-size:0.82rem;max-width:300px">${p.pregunta.substring(0,80)}${p.pregunta.length>80?'...':''}</td>
+    <td><strong>${letras[p.respuesta_correcta]}</strong></td>
+    <td>
+      <button class="btn-editar" onclick="abrirEditarPregunta(${JSON.stringify(p).replace(/"/g,'&quot;')})">✏️</button>
+      <button onclick="eliminarPregunta('${p.id}')" style="padding:5px 10px;border-radius:7px;font-size:0.78rem;font-weight:600;cursor:pointer;border:1.5px solid rgba(239,68,68,0.3);background:rgba(239,68,68,0.08);color:var(--error);font-family:'DM Sans',sans-serif">🗑️</button>
+    </td>
+  </tr>`).join('');
+}
+
+function abrirEditarPregunta(p) {
+  document.getElementById('ep-id').value = p.id;
+  document.getElementById('ep-tipo').value = p.tipo;
+  document.getElementById('ep-subprueba').value = p.subprueba;
+  document.getElementById('ep-pregunta').value = p.pregunta;
+  document.getElementById('ep-a').value = p.opciones[0] || '';
+  document.getElementById('ep-b').value = p.opciones[1] || '';
+  document.getElementById('ep-c').value = p.opciones[2] || '';
+  document.getElementById('ep-d').value = p.opciones[3] || '';
+  document.getElementById('ep-respuesta').value = p.respuesta_correcta;
+  document.getElementById('ep-explicacion').value = p.explicacion || '';
+  const modal = document.getElementById('modal-pregunta');
+  modal.style.display = 'flex';
+}
+
+function cerrarModalPregunta() {
+  document.getElementById('modal-pregunta').style.display = 'none';
+}
+
+async function actualizarPregunta() {
+  const id = document.getElementById('ep-id').value;
+  const { error } = await sb.from('preguntas').update({
+    tipo: document.getElementById('ep-tipo').value,
+    subprueba: document.getElementById('ep-subprueba').value,
+    pregunta: document.getElementById('ep-pregunta').value.trim(),
+    opciones: [
+      document.getElementById('ep-a').value.trim(),
+      document.getElementById('ep-b').value.trim(),
+      document.getElementById('ep-c').value.trim(),
+      document.getElementById('ep-d').value.trim()
+    ],
+    respuesta_correcta: parseInt(document.getElementById('ep-respuesta').value),
+    explicacion: document.getElementById('ep-explicacion').value.trim()
+  }).eq('id', id);
+
+  if (error) return alert('Error: ' + error.message);
+  cerrarModalPregunta();
+  cargarPreguntas();
+}
+
+async function eliminarPregunta(id) {
+  if (!confirm('¿Seguro que deseas eliminar esta pregunta?')) return;
+  await sb.from('preguntas').delete().eq('id', id);
+  cargarPreguntas();
+}
+
+// ── EXCEL ──
+function descargarPlantilla() {
+  const csv = 'tipo,subprueba,pregunta,opcion_a,opcion_b,opcion_c,opcion_d,respuesta,explicacion\nnombramiento,cp,¿Qué es el Currículo Nacional?,Un documento administrativo,El marco curricular oficial del Perú,Una lista de contenidos,Un reglamento interno,B,El CN es el marco curricular oficial que orienta la educación básica en el Perú.\nnombramiento,hg,Si todos los A son B y algunos B son C entonces,Todos los A son C,Algunos A pueden ser C,Ningún A es C,Todos los C son A,B,Por lógica deductiva algunos A podrían ser C pero no es obligatorio.';
+  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'plantilla_preguntas.csv';
+  a.click();
+}
+
+function handleExcelDrop(e) {
+  e.preventDefault();
+  document.getElementById('drop-zone').style.borderColor = 'rgba(15,45,138,0.25)';
+  document.getElementById('drop-zone').style.background = 'var(--blanco)';
+  const file = e.dataTransfer.files[0];
+  if (file) procesarExcel(file);
+}
+
+async function procesarExcel(file) {
+  if (!file) return;
+  const text = await file.text();
+  const lineas = text.split('\n').filter(l => l.trim());
+  const headers = lineas[0].toLowerCase().split(',').map(h => h.trim().replace(/"/g,''));
+
+  preguntasExcel = [];
+  const errores = [];
+
+  for (let i = 1; i < lineas.length; i++) {
+    const cols = lineas[i].split(',').map(c => c.trim().replace(/"/g,''));
+    if (cols.length < 8) continue;
+
+    const idx = (k) => cols[headers.indexOf(k)] || '';
+    const tipo = idx('tipo').toLowerCase();
+    const sub = idx('subprueba').toLowerCase();
+    const preg = idx('pregunta');
+    const a = idx('opcion_a');
+    const b = idx('opcion_b');
+    const c = idx('opcion_c');
+    const d = idx('opcion_d');
+    const resp = idx('respuesta').toUpperCase();
+    const exp = idx('explicacion');
+    const respNum = ['A','B','C','D'].indexOf(resp);
+
+    if (!['nombramiento','ascenso'].includes(tipo)) {
+      errores.push(`Fila ${i+1}: tipo inválido ("${tipo}")`);
+      continue;
+    }
+    if (!['hg','cp'].includes(sub)) {
+      errores.push(`Fila ${i+1}: subprueba inválida ("${sub}")`);
+      continue;
+    }
+    if (!preg || !a || !b || !c || !d) {
+      errores.push(`Fila ${i+1}: faltan campos`);
+      continue;
+    }
+    if (respNum === -1) {
+      errores.push(`Fila ${i+1}: respuesta inválida ("${resp}")`);
+      continue;
+    }
+
+    preguntasExcel.push({ tipo, subprueba: sub, pregunta: preg, opciones: [a,b,c,d], respuesta_correcta: respNum, explicacion: exp, activa: true });
+  }
+
+  // Mostrar preview
+  document.getElementById('excel-preview').style.display = 'block';
+  document.getElementById('excel-resumen').textContent =
+    `✅ ${preguntasExcel.length} preguntas válidas encontradas${errores.length ? ` · ⚠️ ${errores.length} filas con errores` : ''}`;
+
+  const tbody = document.getElementById('excel-tbody');
+  tbody.innerHTML = preguntasExcel.slice(0,10).map((p,i) => `<tr>
+    <td>${i+1}</td>
+    <td>${p.tipo}</td>
+    <td>${p.subprueba === 'hg' ? '📖 HG' : '🧠 CP'}</td>
+    <td style="font-size:0.78rem">${p.pregunta.substring(0,60)}...</td>
+    <td>${['A','B','C','D'][p.respuesta_correcta]}</td>
+    <td><span style="color:#16a34a;font-weight:700">✅ OK</span></td>
+  </tr>`).join('') + (preguntasExcel.length > 10 ? `<tr><td colspan="6" style="text-align:center;color:var(--gris);font-size:0.78rem;padding:10px">... y ${preguntasExcel.length - 10} más</td></tr>` : '');
+
+  const alertaEl = document.getElementById('alerta-excel');
+  if (errores.length) {
+    alertaEl.textContent = '⚠️ ' + errores.slice(0,3).join(' | ');
+    alertaEl.className = 'alerta warning';
+    alertaEl.style.display = 'block';
+  } else {
+    alertaEl.style.display = 'none';
+  }
+}
+
+async function importarExcel() {
+  if (!preguntasExcel.length) return;
+  const btn = document.getElementById('btn-importar');
+  btn.innerHTML = '<span class="spinner"></span> Importando...';
+  btn.disabled = true;
+
+  const BATCH = 50;
+  for (let i = 0; i < preguntasExcel.length; i += BATCH) {
+    await sb.from('preguntas').insert(preguntasExcel.slice(i, i + BATCH));
+  }
+
+  btn.innerHTML = `✅ ¡${preguntasExcel.length} preguntas importadas!`;
+  btn.style.background = 'linear-gradient(135deg,#16a34a,#22c55e)';
+  setTimeout(() => {
+    btn.innerHTML = '⬆️ Importar todas las preguntas a Supabase';
+    btn.style.background = '';
+    btn.disabled = false;
+    preguntasExcel = [];
+    document.getElementById('excel-preview').style.display = 'none';
+  }, 3000);
 }
 
 // Iniciar
