@@ -312,6 +312,8 @@ body { font-family:'DM Sans',sans-serif; background:var(--gris-claro); min-heigh
 .btn-resultado.primary { background:linear-gradient(135deg,var(--azul),var(--azul-medio));color:var(--blanco); }
 .btn-resultado.primary:hover { transform:translateY(-2px);box-shadow:0 6px 18px rgba(15,45,138,0.25); }
 .btn-resultado.secondary { background:var(--gris-claro);color:var(--azul);border:1.5px solid rgba(15,45,138,0.2); }
+.btn-resultado.dorado { background:linear-gradient(135deg,#92400e,#b45309);color:white; }
+.btn-resultado.dorado:hover { transform:translateY(-2px);box-shadow:0 6px 18px rgba(146,64,14,0.3); }
 
 /* ── ADMIN ── */
 #screen-admin { padding:36px 5%; }
@@ -376,11 +378,40 @@ body { font-family:'DM Sans',sans-serif; background:var(--gris-claro); min-heigh
 .admin-form-card { background:var(--blanco);border-radius:16px;padding:32px;border:1px solid rgba(15,45,138,0.08);max-width:700px; }
 
 /* Responsive */
+/* ── Tablet: 601px – 900px ── */
+@media(min-width:601px) and (max-width:900px){
+  .dashboard-grid { grid-template-columns: 1fr 1fr; gap:16px; }
+  .sim-cards { grid-template-columns: 1fr; gap:16px; }
+  .usuarios-table { font-size:0.78rem; }
+  .usuarios-table th, .usuarios-table td { padding:8px 10px; }
+  .admin-tabs { flex-wrap:wrap; gap:6px; }
+  .admin-tab { font-size:0.8rem; padding:8px 14px; }
+  .stats-grid { grid-template-columns: 1fr 1fr; }
+  .pregunta-nav { flex-wrap:wrap; gap:8px; }
+  .resultado-grid { grid-template-columns: 1fr 1fr; }
+  .login-box { max-width:480px; padding:40px 32px; }
+  .screen { padding:20px 16px; }
+  #screen-admin { padding:16px; }
+}
+
+/* ── Mobile: hasta 600px ── */
 @media(max-width:600px){
   .sim-topbar { flex-direction:column;gap:12px;align-items:flex-start; }
   .pregunta-card { padding:24px 18px; }
   .resultado-card { padding:32px 20px; }
   .login-box { padding:36px 24px; }
+  .dashboard-grid { grid-template-columns:1fr; }
+  .sim-cards { grid-template-columns:1fr; }
+  .stats-grid { grid-template-columns:1fr 1fr; }
+  .topbar { padding:0 16px; }
+  .topbar-brand span:last-child { font-size:0.9rem; }
+  .usuarios-table { display:block; overflow-x:auto; white-space:nowrap; }
+  .admin-tabs { flex-wrap:wrap; gap:6px; }
+  .admin-tab { font-size:0.78rem; padding:7px 12px; }
+  .resultado-grid { grid-template-columns:1fr 1fr; }
+  .screen { padding:16px 12px; }
+  #screen-admin { padding:12px; }
+  .modal-crear, .modal-editar { padding:24px 16px !important; }
 }
 
 /* Loading spinner */
@@ -447,6 +478,56 @@ body { font-family:'DM Sans',sans-serif; background:var(--gris-claro); min-heigh
   </div>
 </div>
 
+<!-- MODAL RECUPERAR CONTRASEÑA -->
+<div id="modal-recuperar" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:500;align-items:center;justify-content:center;padding:20px">
+  <div style="background:var(--blanco);border-radius:16px;padding:32px;max-width:380px;width:100%;box-shadow:0 24px 60px rgba(0,0,0,0.2)">
+    <div style="text-align:center;margin-bottom:20px">
+      <div style="font-size:2.5rem;margin-bottom:8px">🔑</div>
+      <h3 style="font-family:'Playfair Display',serif;color:var(--azul-oscuro);margin:0 0 6px">Recuperar contraseña</h3>
+      <p style="color:var(--gris);font-size:0.83rem;margin:0">Ingresa tu correo y te enviaremos un enlace para restablecer tu contraseña.</p>
+    </div>
+
+    <div id="alerta-recuperar" class="alerta" style="display:none"></div>
+
+    <div class="form-group">
+      <label>Correo electrónico</label>
+      <div class="input-wrap"><span class="ico">✉️</span>
+        <input type="email" id="recuperar-email" placeholder="tucorreo@gmail.com" onkeydown="if(event.key==='Enter')enviarRecuperacion()">
+      </div>
+    </div>
+
+    <div style="display:flex;gap:12px;margin-top:8px">
+      <button onclick="enviarRecuperacion()" id="btn-recuperar" style="flex:1;padding:12px;background:linear-gradient(135deg,var(--azul),var(--azul-medio));color:white;border:none;border-radius:9px;font-family:'DM Sans',sans-serif;font-weight:700;cursor:pointer;font-size:0.9rem">Enviar enlace</button>
+      <button onclick="cerrarRecuperarPass()" style="padding:12px 18px;background:var(--gris-claro);color:var(--gris);border:none;border-radius:9px;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL NUEVA CONTRASEÑA (tras link de recuperación) -->
+<div id="modal-nueva-pass" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:600;align-items:center;justify-content:center;padding:20px">
+  <div style="background:var(--blanco);border-radius:16px;padding:32px;max-width:380px;width:100%;box-shadow:0 24px 60px rgba(0,0,0,0.2)">
+    <div style="text-align:center;margin-bottom:20px">
+      <div style="font-size:2.5rem;margin-bottom:8px">🔐</div>
+      <h3 style="font-family:'Playfair Display',serif;color:var(--azul-oscuro);margin:0 0 6px">Nueva contraseña</h3>
+      <p style="color:var(--gris);font-size:0.83rem;margin:0">Elige una nueva contraseña para tu cuenta.</p>
+    </div>
+    <div id="alerta-nueva-pass" class="alerta" style="display:none"></div>
+    <div class="form-group">
+      <label>Nueva contraseña</label>
+      <div class="input-wrap"><span class="ico">🔒</span>
+        <input type="password" id="nueva-pass" placeholder="Mínimo 8 caracteres">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Confirmar contraseña</label>
+      <div class="input-wrap"><span class="ico">🔒</span>
+        <input type="password" id="nueva-pass2" placeholder="Repite la contraseña">
+      </div>
+    </div>
+    <button onclick="guardarNuevaPass()" id="btn-nueva-pass" style="width:100%;padding:12px;background:linear-gradient(135deg,var(--azul),var(--azul-medio));color:white;border:none;border-radius:9px;font-family:'DM Sans',sans-serif;font-weight:700;cursor:pointer;font-size:0.9rem">Guardar nueva contraseña</button>
+  </div>
+</div>
+
 <!-- ════════ SCREEN: LOGIN ════════ -->
 <div id="screen-login" class="screen active">
   <div class="login-box">
@@ -479,6 +560,9 @@ body { font-family:'DM Sans',sans-serif; background:var(--gris-claro); min-heigh
         </div>
       </div>
       <button class="btn-primary" onclick="doLogin()" id="btn-login-submit">Ingresar a mi cuenta</button>
+      <div style="text-align:center;margin-top:12px">
+        <button onclick="abrirRecuperarPass()" style="background:none;border:none;color:var(--azul);font-size:0.83rem;font-family:'DM Sans',sans-serif;cursor:pointer;text-decoration:underline;padding:0">¿Olvidaste tu contraseña?</button>
+      </div>
     </div>
 
     <!-- Panel registro -->
@@ -516,10 +600,23 @@ body { font-family:'DM Sans',sans-serif; background:var(--gris-claro); min-heigh
 
 <!-- ════════ SCREEN: DASHBOARD ════════ -->
 <div id="screen-dashboard" class="screen">
+  <!-- Banner alerta vencimiento -->
+  <div id="banner-vencimiento" style="display:none;background:linear-gradient(135deg,#92400e,#b45309);color:white;border-radius:12px;padding:14px 20px;margin-bottom:20px;display:none;align-items:center;gap:14px">
+    <span style="font-size:1.6rem">⚠️</span>
+    <div style="flex:1">
+      <strong id="banner-vencimiento-titulo" style="font-size:0.95rem">Tu membresía vence pronto</strong>
+      <div id="banner-vencimiento-texto" style="font-size:0.82rem;opacity:0.9;margin-top:2px"></div>
+    </div>
+    <a href="https://wa.me/51922573625?text=Hola%2C%20quiero%20renovar%20mi%20membresia" target="_blank" style="background:white;color:#92400e;font-weight:700;font-size:0.82rem;padding:8px 16px;border-radius:8px;text-decoration:none;white-space:nowrap;font-family:'DM Sans',sans-serif">Renovar ahora</a>
+  </div>
+
   <div class="dash-header">
     <h1>Hola, <span id="dash-nombre">Docente</span> 👋</h1>
     <p>Bienvenido a tu plataforma de preparación docente</p>
-    <div id="dash-membresia-badge"></div>
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:6px">
+      <div id="dash-membresia-badge"></div>
+      <div id="dash-especialidad-badge"></div>
+    </div>
   </div>
 
   <!-- Info oficial MINEDU -->
@@ -699,8 +796,71 @@ body { font-family:'DM Sans',sans-serif; background:var(--gris-claro); min-heigh
 
     <div class="resultado-btns">
       <button class="btn-resultado primary" onclick="repetirSimulacro()">🔄 Repetir simulacro</button>
+      <button class="btn-resultado dorado" onclick="iniciarRepaso()" id="btn-repaso" style="display:none">📖 Repasar mis errores</button>
       <button class="btn-resultado secondary" onclick="irDashboard()">← Volver al panel</button>
     </div>
+  </div>
+</div>
+
+<!-- ════════ SCREEN: REPASO ════════ -->
+<div id="screen-repaso" class="screen">
+  <div style="max-width:780px;margin:0 auto">
+
+    <!-- Header repaso -->
+    <div style="background:linear-gradient(135deg,var(--azul-oscuro),var(--azul));border-radius:16px;padding:24px 28px;margin-bottom:24px;color:white;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+      <div>
+        <div style="font-size:0.75rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--dorado-claro);margin-bottom:4px">Modo repaso</div>
+        <h2 style="margin:0;font-family:'Playfair Display',serif;font-size:1.4rem">📖 Revisando mis errores</h2>
+        <div id="repaso-contador" style="font-size:0.85rem;color:rgba(255,255,255,0.75);margin-top:4px"></div>
+      </div>
+      <button onclick="irDashboard()" style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);color:white;padding:10px 20px;border-radius:9px;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer;font-size:0.88rem">← Volver al panel</button>
+    </div>
+
+    <!-- Navegación rápida errores -->
+    <div style="background:var(--blanco);border-radius:12px;border:1px solid rgba(15,45,138,0.08);padding:16px 20px;margin-bottom:20px">
+      <div style="font-size:0.75rem;font-weight:700;color:var(--gris);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Preguntas falladas</div>
+      <div id="repaso-nav-dots" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+    </div>
+
+    <!-- Tarjeta de pregunta -->
+    <div class="pregunta-card" id="repaso-card">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap">
+        <div id="repaso-num" style="background:var(--error);color:white;padding:4px 12px;border-radius:20px;font-size:0.78rem;font-weight:700"></div>
+        <div id="repaso-tipo-badge" style="padding:3px 10px;border-radius:6px;font-size:0.72rem;font-weight:700;background:rgba(15,45,138,0.08);color:var(--azul)"></div>
+        <div style="margin-left:auto;font-size:0.78rem;color:var(--gris)" id="repaso-pos"></div>
+      </div>
+
+      <div class="pregunta-texto" id="repaso-pregunta-texto"></div>
+
+      <div id="repaso-opciones" style="display:flex;flex-direction:column;gap:10px;margin:20px 0"></div>
+
+      <!-- Explicación siempre visible en repaso -->
+      <div id="repaso-explicacion" style="background:linear-gradient(135deg,rgba(34,197,94,0.08),rgba(34,197,94,0.04));border:1.5px solid rgba(34,197,94,0.25);border-radius:12px;padding:16px 20px;margin-top:16px">
+        <div style="font-size:0.72rem;font-weight:700;color:#16a34a;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">💡 Explicación</div>
+        <div id="repaso-explicacion-texto" style="font-size:0.88rem;color:var(--azul-oscuro);line-height:1.6"></div>
+      </div>
+
+      <!-- Navegación -->
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:20px;flex-wrap:wrap;gap:10px">
+        <button onclick="repasoAnterior()" id="btn-repaso-ant" style="padding:10px 22px;border-radius:9px;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer;border:1.5px solid rgba(15,45,138,0.15);background:var(--gris-claro);color:var(--azul-oscuro);font-size:0.88rem">← Anterior</button>
+        <div id="repaso-progreso-bar" style="flex:1;margin:0 16px;background:rgba(15,45,138,0.08);border-radius:6px;height:6px;min-width:60px">
+          <div id="repaso-barra" style="background:var(--azul);height:100%;border-radius:6px;transition:width 0.3s"></div>
+        </div>
+        <button onclick="repasoSiguiente()" id="btn-repaso-sig" style="padding:10px 22px;border-radius:9px;font-family:'DM Sans',sans-serif;font-weight:700;cursor:pointer;border:none;background:linear-gradient(135deg,var(--azul),var(--azul-medio));color:white;font-size:0.88rem">Siguiente →</button>
+      </div>
+    </div>
+
+    <!-- Fin del repaso -->
+    <div id="repaso-fin" style="display:none;text-align:center;background:var(--blanco);border-radius:16px;padding:40px;border:1px solid rgba(15,45,138,0.08)">
+      <div style="font-size:3rem;margin-bottom:12px">✅</div>
+      <h3 style="font-family:'Playfair Display',serif;color:var(--azul-oscuro);margin-bottom:8px">¡Repaso completado!</h3>
+      <p style="color:var(--gris);margin-bottom:24px">Revisaste todas las preguntas que fallaste. ¡Sigue practicando!</p>
+      <div style="display:flex;justify-content:center;gap:12px;flex-wrap:wrap">
+        <button onclick="repetirSimulacro()" style="padding:12px 24px;background:linear-gradient(135deg,var(--azul),var(--azul-medio));color:white;border:none;border-radius:9px;font-family:'DM Sans',sans-serif;font-weight:700;cursor:pointer">🔄 Nuevo simulacro</button>
+        <button onclick="irDashboard()" style="padding:12px 24px;background:var(--gris-claro);color:var(--azul-oscuro);border:none;border-radius:9px;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer">← Volver al panel</button>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -718,6 +878,7 @@ body { font-family:'DM Sans',sans-serif; background:var(--gris-claro); min-heigh
     <button class="admin-tab" onclick="adminTab('crear')">➕ Crear Usuario</button>
     <button class="admin-tab" onclick="adminTab('historial')">📊 Historial</button>
     <button class="admin-tab" onclick="adminTab('stats')">📈 Estadísticas</button>
+    <button class="admin-tab" onclick="adminTab('dificiles')">🎯 Preguntas difíciles</button>
     <button class="admin-tab" onclick="adminTab('preguntas')">❓ Preguntas</button>
   </div>
 
@@ -739,10 +900,10 @@ body { font-family:'DM Sans',sans-serif; background:var(--gris-claro); min-heigh
 
     <table class="usuarios-table">
       <thead><tr>
-        <th>Nombre</th><th>Correo</th><th>Plan</th><th>Vencimiento</th><th>Registro</th><th>Membresía</th><th>Acciones</th>
+        <th>Nombre</th><th>Correo</th><th>Tipo Examen</th><th>Especialidad</th><th>Plan</th><th>Vencimiento</th><th>Membresía</th><th>Acciones</th>
       </tr></thead>
       <tbody id="admin-tbody">
-        <tr><td colspan="7" class="sin-historial">Cargando usuarios...</td></tr>
+        <tr><td colspan="8" class="sin-historial">Cargando usuarios...</td></tr>
       </tbody>
     </table>
   </div>
@@ -772,6 +933,24 @@ body { font-family:'DM Sans',sans-serif; background:var(--gris-claro); min-heigh
           <label>Contraseña temporal</label>
           <div class="input-wrap"><span class="ico">🔒</span>
             <input type="text" id="new-pass" placeholder="Min. 8 caracteres">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Tipo de examen</label>
+          <div class="input-wrap"><span class="ico">🎯</span>
+            <select id="new-tipo-examen" style="width:100%;padding:12px 14px 12px 40px;border:1.5px solid rgba(15,45,138,0.15);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.9rem;background:var(--gris-claro);outline:none;color:var(--azul-oscuro)">
+              <option value="nombramiento">📋 Nombramiento Docente</option>
+              <option value="ascenso">🏆 Ascenso Docente</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Especialidad</label>
+          <div class="input-wrap"><span class="ico">🏫</span>
+            <select id="new-especialidad" style="width:100%;padding:12px 14px 12px 40px;border:1.5px solid rgba(15,45,138,0.15);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.9rem;background:var(--gris-claro);outline:none;color:var(--azul-oscuro)">
+              <option value="inicial">🧒 Educación Inicial</option>
+              <option value="primaria">📚 Educación Primaria</option>
+            </select>
           </div>
         </div>
         <div class="form-group">
@@ -855,6 +1034,65 @@ body { font-family:'DM Sans',sans-serif; background:var(--gris-claro); min-heigh
 
 </div>
 
+  <!-- ── TAB: PREGUNTAS DIFÍCILES ── -->
+  <div id="admin-tab-dificiles" class="admin-tab-content" style="display:none">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px">
+      <div>
+        <h3 style="font-family:'Playfair Display',serif;color:var(--azul-oscuro);margin:0 0 4px">🎯 Preguntas más falladas</h3>
+        <p style="color:var(--gris);font-size:0.83rem;margin:0">Ranking de preguntas con mayor tasa de error entre todos los docentes</p>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <select id="filtro-dif-sub" onchange="cargarPreguntasDificiles()" style="padding:9px 14px;border:1.5px solid rgba(15,45,138,0.15);border-radius:9px;font-family:'DM Sans',sans-serif;font-size:0.83rem;outline:none;background:var(--blanco)">
+          <option value="">Todas las subpruebas</option>
+          <option value="hg">📖 Habilidades Generales</option>
+          <option value="cp">🧠 Conocimientos Pedagógicos</option>
+        </select>
+        <select id="filtro-dif-esp" onchange="cargarPreguntasDificiles()" style="padding:9px 14px;border:1.5px solid rgba(15,45,138,0.15);border-radius:9px;font-family:'DM Sans',sans-serif;font-size:0.83rem;outline:none;background:var(--blanco)">
+          <option value="">Todas las especialidades</option>
+          <option value="general">🌐 General</option>
+          <option value="inicial">🧒 Inicial</option>
+          <option value="primaria">📚 Primaria</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Resumen rápido -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:24px">
+      <div class="admin-stat-card" style="padding:20px;text-align:left">
+        <div style="font-size:0.72rem;color:var(--gris);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Respuestas analizadas</div>
+        <div style="font-family:'Playfair Display',serif;font-size:2rem;color:var(--azul);font-weight:900" id="dif-total-resp">—</div>
+      </div>
+      <div class="admin-stat-card" style="padding:20px;text-align:left">
+        <div style="font-size:0.72rem;color:var(--gris);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Tasa de error promedio</div>
+        <div style="font-family:'Playfair Display',serif;font-size:2rem;color:var(--error);font-weight:900" id="dif-tasa-error">—</div>
+      </div>
+      <div class="admin-stat-card" style="padding:20px;text-align:left">
+        <div style="font-size:0.72rem;color:var(--gris);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Pregunta más fallada</div>
+        <div style="font-size:0.85rem;color:var(--azul-oscuro);font-weight:700;line-height:1.3;margin-top:4px" id="dif-peor-pregunta">—</div>
+      </div>
+    </div>
+
+    <!-- Tabla ranking -->
+    <div style="background:var(--blanco);border-radius:14px;border:1px solid rgba(15,45,138,0.08);overflow:hidden">
+      <table class="usuarios-table">
+        <thead><tr>
+          <th>#</th>
+          <th>Pregunta</th>
+          <th>Subprueba</th>
+          <th>Especialidad</th>
+          <th>Veces respondida</th>
+          <th>Tasa de error</th>
+          <th>Barra</th>
+        </tr></thead>
+        <tbody id="dificiles-tbody">
+          <tr><td colspan="7" class="sin-historial">Cargando estadísticas...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
   <!-- ── TAB: PREGUNTAS ── -->
   <div id="admin-tab-preguntas" class="admin-tab-content" style="display:none">
 
@@ -872,7 +1110,7 @@ body { font-family:'DM Sans',sans-serif; background:var(--gris-claro); min-heigh
 
       <div id="alerta-pregunta" class="alerta"></div>
 
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:14px">
         <div class="form-group" style="margin-bottom:0">
           <label>Tipo de simulacro</label>
           <select id="np-tipo" style="width:100%;padding:11px 14px;border:1.5px solid rgba(15,45,138,0.15);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.88rem;background:var(--gris-claro);outline:none">
@@ -885,6 +1123,14 @@ body { font-family:'DM Sans',sans-serif; background:var(--gris-claro); min-heigh
           <select id="np-subprueba" style="width:100%;padding:11px 14px;border:1.5px solid rgba(15,45,138,0.15);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.88rem;background:var(--gris-claro);outline:none">
             <option value="hg">📖 Habilidades Generales (2 pts)</option>
             <option value="cp">🧠 Conocimientos Pedagógicos (3 pts)</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label>Especialidad</label>
+          <select id="np-especialidad" style="width:100%;padding:11px 14px;border:1.5px solid rgba(15,45,138,0.15);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.88rem;background:var(--gris-claro);outline:none">
+            <option value="general">🌐 General (HG)</option>
+            <option value="inicial">🧒 Educación Inicial</option>
+            <option value="primaria">📚 Educación Primaria</option>
           </select>
         </div>
       </div>
@@ -948,6 +1194,7 @@ body { font-family:'DM Sans',sans-serif; background:var(--gris-claro); min-heigh
               <tr style="background:var(--azul-oscuro);color:white">
                 <th style="padding:6px 10px;text-align:left">tipo</th>
                 <th style="padding:6px 10px;text-align:left">subprueba</th>
+                <th style="padding:6px 10px;text-align:left">especialidad</th>
                 <th style="padding:6px 10px;text-align:left">pregunta</th>
                 <th style="padding:6px 10px;text-align:left">opcion_a</th>
                 <th style="padding:6px 10px;text-align:left">opcion_b</th>
@@ -961,6 +1208,7 @@ body { font-family:'DM Sans',sans-serif; background:var(--gris-claro); min-heigh
               <tr style="background:white">
                 <td style="padding:6px 10px;border:1px solid rgba(15,45,138,0.1)">nombramiento</td>
                 <td style="padding:6px 10px;border:1px solid rgba(15,45,138,0.1)">cp</td>
+                <td style="padding:6px 10px;border:1px solid rgba(15,45,138,0.1)">inicial</td>
                 <td style="padding:6px 10px;border:1px solid rgba(15,45,138,0.1)">¿Qué es...?</td>
                 <td style="padding:6px 10px;border:1px solid rgba(15,45,138,0.1)">Opción 1</td>
                 <td style="padding:6px 10px;border:1px solid rgba(15,45,138,0.1)">Opción 2</td>
@@ -975,6 +1223,7 @@ body { font-family:'DM Sans',sans-serif; background:var(--gris-claro); min-heigh
         <div style="margin-top:10px;font-size:0.75rem;color:var(--gris)">
           <strong>tipo:</strong> nombramiento | ascenso &nbsp;·&nbsp;
           <strong>subprueba:</strong> hg (Habilidades Generales) | cp (Conocimientos Pedagógicos) &nbsp;·&nbsp;
+          <strong>especialidad:</strong> inicial | primaria &nbsp;·&nbsp; <em style="color:#92400e">(hg no necesita especialidad, usar "general")</em> &nbsp;·&nbsp;
           <strong>respuesta:</strong> A | B | C | D
         </div>
       </div>
@@ -1000,7 +1249,7 @@ body { font-family:'DM Sans',sans-serif; background:var(--gris-claro); min-heigh
         <div id="alerta-excel" class="alerta"></div>
         <div style="font-size:0.88rem;font-weight:600;color:var(--azul-oscuro);margin-bottom:10px" id="excel-resumen"></div>
         <table class="usuarios-table" id="excel-tabla">
-          <thead><tr><th>#</th><th>Tipo</th><th>Subprueba</th><th>Pregunta</th><th>Respuesta</th><th>Estado</th></tr></thead>
+          <thead><tr><th>#</th><th>Tipo</th><th>Subprueba</th><th>Especialidad</th><th>Pregunta</th><th>Respuesta</th><th>Estado</th></tr></thead>
           <tbody id="excel-tbody"></tbody>
         </table>
         <button onclick="importarExcel()" id="btn-importar" style="margin-top:16px;padding:12px 28px;background:linear-gradient(135deg,var(--azul),var(--azul-medio));color:white;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.92rem;font-weight:700;cursor:pointer">
@@ -1022,11 +1271,17 @@ body { font-family:'DM Sans',sans-serif; background:var(--gris-claro); min-heigh
           <option value="hg">📖 Habilidades Generales</option>
           <option value="cp">🧠 Conocimientos Pedagógicos</option>
         </select>
+        <select id="filtro-esp-p" onchange="cargarPreguntas()" style="padding:10px 14px;border:1.5px solid rgba(15,45,138,0.15);border-radius:9px;font-family:'DM Sans',sans-serif;font-size:0.85rem;outline:none;background:var(--blanco)">
+          <option value="">Todas las especialidades</option>
+          <option value="general">🌐 General (HG)</option>
+          <option value="inicial">🧒 Inicial</option>
+          <option value="primaria">📚 Primaria</option>
+        </select>
         <div id="contador-preguntas" style="font-size:0.83rem;color:var(--gris);margin-left:auto"></div>
       </div>
 
       <table class="usuarios-table">
-        <thead><tr><th>#</th><th>Tipo</th><th>Sub.</th><th>Pregunta</th><th>Resp.</th><th>Acciones</th></tr></thead>
+        <thead><tr><th>#</th><th>Tipo</th><th>Sub.</th><th>Especialidad</th><th>Pregunta</th><th>Resp.</th><th>Acciones</th></tr></thead>
         <tbody id="preguntas-tbody">
           <tr><td colspan="6" class="sin-historial">Cargando preguntas...</td></tr>
         </tbody>
@@ -1040,7 +1295,7 @@ body { font-family:'DM Sans',sans-serif; background:var(--gris-claro); min-heigh
   <div style="background:var(--blanco);border-radius:16px;padding:32px;max-width:600px;width:100%;box-shadow:0 24px 60px rgba(0,0,0,0.2);max-height:90vh;overflow-y:auto">
     <h3 style="font-family:'Playfair Display',serif;color:var(--azul-oscuro);margin-bottom:20px">✏️ Editar pregunta</h3>
     <input type="hidden" id="ep-id">
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px">
       <div class="form-group" style="margin-bottom:0">
         <label>Tipo</label>
         <select id="ep-tipo" style="width:100%;padding:10px 14px;border:1.5px solid rgba(15,45,138,0.15);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.85rem;background:var(--gris-claro);outline:none">
@@ -1053,6 +1308,14 @@ body { font-family:'DM Sans',sans-serif; background:var(--gris-claro); min-heigh
         <select id="ep-subprueba" style="width:100%;padding:10px 14px;border:1.5px solid rgba(15,45,138,0.15);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.85rem;background:var(--gris-claro);outline:none">
           <option value="hg">📖 Habilidades Generales</option>
           <option value="cp">🧠 Conocimientos Pedagógicos</option>
+        </select>
+      </div>
+      <div class="form-group" style="margin-bottom:0">
+        <label>Especialidad</label>
+        <select id="ep-especialidad" style="width:100%;padding:10px 14px;border:1.5px solid rgba(15,45,138,0.15);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.85rem;background:var(--gris-claro);outline:none">
+          <option value="general">🌐 General (HG)</option>
+          <option value="inicial">🧒 Inicial</option>
+          <option value="primaria">📚 Primaria</option>
         </select>
       </div>
     </div>
@@ -1091,6 +1354,24 @@ body { font-family:'DM Sans',sans-serif; background:var(--gris-claro); min-heigh
       <div class="input-wrap"><span class="ico">👤</span><input type="text" id="edit-nombre"></div>
     </div>
     <div class="form-group">
+      <label>Tipo de examen</label>
+      <div class="input-wrap"><span class="ico">🎯</span>
+        <select id="edit-tipo-examen" style="width:100%;padding:12px 14px 12px 40px;border:1.5px solid rgba(15,45,138,0.15);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.9rem;background:var(--gris-claro);outline:none">
+          <option value="nombramiento">📋 Nombramiento Docente</option>
+          <option value="ascenso">🏆 Ascenso Docente</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Especialidad</label>
+      <div class="input-wrap"><span class="ico">🏫</span>
+        <select id="edit-especialidad" style="width:100%;padding:12px 14px 12px 40px;border:1.5px solid rgba(15,45,138,0.15);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.9rem;background:var(--gris-claro);outline:none">
+          <option value="inicial">🧒 Educación Inicial</option>
+          <option value="primaria">📚 Educación Primaria</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
       <label>Plan</label>
       <div class="input-wrap"><span class="ico">💳</span>
         <select id="edit-plan" style="width:100%;padding:12px 14px 12px 40px;border:1.5px solid rgba(15,45,138,0.15);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.9rem;background:var(--gris-claro);outline:none">
@@ -1121,198 +1402,11 @@ body { font-family:'DM Sans',sans-serif; background:var(--gris-claro); min-heigh
 // ══════════════════════════════════════════
 const SUPABASE_URL = 'https://potlcmhbwrxjjligowof.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBvdGxjbWhid3J4ampsaWdvd29mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0MjQ1NzAsImV4cCI6MjA5NjAwMDU3MH0.gwqHYzmbqRNsL03-i6zjw235YmEExyGadjlBe5xF2sA';
-const ADMIN_EMAIL = 'retodocenteimparable2026@gmail.com'; // Tu correo para acceder al panel admin
+// El rol admin se verifica desde Supabase (columna rol en perfiles)
 
 const { createClient } = supabase;
 const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// ══════════════════════════════════════════
-// BANCO DE PREGUNTAS
-// ══════════════════════════════════════════
-const PREGUNTAS = {
-  habilidades_generales: [
-    { p:"Si todos los A son B, y algunos B son C, entonces:", ops:["Todos los A son C","Algunos A pueden ser C","Ningún A es C","Todos los C son A"], r:1, exp:"Si todos los A son B y algunos B son C, es posible que algunos A sean también C, pero no es obligatorio." },
-    { p:"Un tren sale a las 7:45 am y llega a su destino en 3 horas y 25 minutos. ¿A qué hora llega?", ops:["10:55 am","11:05 am","11:10 am","11:15 am"], r:2, exp:"7:45 + 3:25 = 11:10 am" },
-    { p:"Ana es más alta que Beatriz. Carmen es más baja que Beatriz. ¿Quién es la más alta?", ops:["Beatriz","Carmen","Ana","No se puede determinar"], r:2, exp:"Ana > Beatriz > Carmen, por lo tanto Ana es la más alta." },
-    { p:"Si el precio de un libro aumentó un 20% y ahora cuesta S/ 60, ¿cuánto costaba antes?", ops:["S/ 48","S/ 50","S/ 45","S/ 52"], r:1, exp:"Precio original × 1.20 = 60, entonces precio original = 60/1.20 = S/ 50." },
-    { p:"Lee el siguiente texto: 'La lectura desarrolla la empatía porque permite experimentar vivencias ajenas'. ¿Cuál es la idea principal?", ops:["La lectura es aburrida","La lectura fomenta la empatía al vivir experiencias de otros","Todos deben leer libros","Los libros son caros"], r:1, exp:"La idea principal es que la lectura desarrolla empatía al permitir experimentar vivencias de otras personas." },
-    { p:"¿Qué número continúa la serie: 2, 6, 18, 54, ___?", ops:["108","162","216","270"], r:1, exp:"Cada número se multiplica por 3: 2×3=6, 6×3=18, 18×3=54, 54×3=162." },
-    { p:"Si María tiene el doble de edad que Juan, y entre los dos suman 36 años, ¿cuántos años tiene Juan?", ops:["12","14","10","18"], r:0, exp:"J + 2J = 36, entonces 3J = 36, J = 12 años." },
-    { p:"Un texto afirma: 'Todos los estudiantes que estudian aprueban'. Un estudiante estudió pero no aprobó. ¿Qué concluyes?", ops:["El texto es verdadero","El texto es falso","No se puede concluir nada","El estudiante no estudió realmente"], r:1, exp:"Si hay un contraejemplo (estudió y no aprobó), la afirmación universal es falsa." },
-    { p:"¿Cuál es el sinónimo de 'perspicaz'?", ops:["Lento","Agudo","Torpe","Indiferente"], r:1, exp:"Perspicaz significa que tiene agudeza mental para comprender o percibir las cosas." },
-    { p:"Si 5 obreros construyen una pared en 10 días, ¿cuántos días tardarán 10 obreros?", ops:["20 días","5 días","8 días","4 días"], r:1, exp:"Relación inversamente proporcional: 5×10 = 10×X, X = 5 días." },
-    { p:"Identifica la conclusión válida: Todos los docentes son profesionales. Pedro es docente.", ops:["Pedro no es profesional","Pedro es profesional","Todos los profesionales son docentes","No se puede concluir"], r:1, exp:"Por silogismo deductivo: todos los docentes son profesionales y Pedro es docente, por lo tanto Pedro es profesional." },
-    { p:"Un texto expositivo tiene como principal función:", ops:["Entretener al lector","Persuadir al lector","Informar sobre un tema de manera objetiva","Expresar sentimientos del autor"], r:2, exp:"El texto expositivo tiene como función principal informar o explicar un tema de manera objetiva y clara." },
-    { p:"¿Qué figura retórica se usa en: 'Sus ojos son dos luceros'?", ops:["Metáfora","Hipérbole","Personificación","Anáfora"], r:0, exp:"Es una metáfora: se compara los ojos con luceros (estrellas) de forma directa sin usar 'como'." },
-    { p:"Si el 30% de los alumnos son hombres y hay 21 hombres, ¿cuántos alumnos hay en total?", ops:["63","70","75","80"], r:1, exp:"30% = 21, entonces el total = 21 × 100/30 = 70 alumnos." },
-    { p:"¿Cuál es el antónimo de 'efímero'?", ops:["Rápido","Eterno","Breve","Fugaz"], r:1, exp:"Efímero significa pasajero o de corta duración; su antónimo es eterno o permanente." },
-    { p:"Lee: 'El calentamiento global amenaza los ecosistemas'. ¿Qué tipo de texto es este fragmento?", ops:["Narrativo","Descriptivo","Argumentativo","Poético"], r:2, exp:"Es argumentativo porque plantea una tesis (el calentamiento amenaza ecosistemas) que puede ser defendida con argumentos." },
-    { p:"En una reunión de 20 personas, ¿cuántos apretones de mano hay si todos se saludan entre sí?", ops:["190","200","380","400"], r:0, exp:"Combinaciones de 20 en 2: C(20,2) = 20×19/2 = 190 apretones de mano." },
-    { p:"¿Cuál de las siguientes palabras está bien escrita?", ops:["Haber","A ver","Haver","Aver"], r:0, exp:"'Haber' es el verbo auxiliar o el sustantivo; 'a ver' es la preposición más el infinitivo." },
-    { p:"Una secuencia: 1, 4, 9, 16, 25... ¿Qué número sigue?", ops:["30","36","35","49"], r:1, exp:"Son cuadrados perfectos: 1², 2², 3², 4², 5², el siguiente es 6² = 36." },
-    { p:"El texto dice: 'Aunque llovía, los estudiantes asistieron a clases'. ¿Qué relación lógica expresa?", ops:["Causalidad","Concesión","Consecuencia","Condición"], r:1, exp:"'Aunque' introduce una concesión: a pesar de un obstáculo (lluvia), se realizó la acción." },
-    { p:"Si A > B > C y C > D, ¿cuál es el orden de mayor a menor?", ops:["A, B, C, D","B, A, D, C","D, C, B, A","A, C, B, D"], r:0, exp:"A > B > C > D, por lo tanto de mayor a menor: A, B, C, D." },
-    { p:"¿Cuál es el significado de la palabra 'corolario'?", ops:["Proposición que se deduce de otra ya demostrada","Premisa de un argumento","Pregunta retórica","Contradicción lógica"], r:0, exp:"Un corolario es una proposición que se deriva fácilmente de otra ya demostrada sin necesidad de más pruebas." },
-    { p:"Un comerciante compra a S/ 80 y vende a S/ 100. ¿Cuál es su porcentaje de ganancia?", ops:["20%","25%","30%","15%"], r:1, exp:"Ganancia = 20. Porcentaje sobre el costo: 20/80 × 100 = 25%." },
-    { p:"¿Qué elemento NO pertenece al texto argumentativo?", ops:["Tesis","Argumentos","Conclusión","Narrador omnisciente"], r:3, exp:"El narrador omnisciente pertenece al texto narrativo, no al argumentativo que tiene tesis, argumentos y conclusión." },
-    { p:"Si todos los cuadrados son rectángulos, pero no todos los rectángulos son cuadrados, entonces:", ops:["Los cuadrados y rectángulos son iguales","Los cuadrados son un subconjunto de los rectángulos","Los rectángulos son un subconjunto de los cuadrados","No hay relación entre ellos"], r:1, exp:"Los cuadrados son un caso especial de rectángulos, por lo que son un subconjunto de los rectángulos." }
-  ],
-  nombramiento: [
-    { p:"¿Cuál es el marco legal que rige la Carrera Pública Magisterial en el Perú?", ops:["Ley N° 24029","Ley N° 29062","Ley N° 30512","Ley N° 28044"], r:1, exp:"La Ley N° 29062 modifica la Ley del Profesorado y rige la Carrera Pública Magisterial." },
-    { p:"¿Qué documento orienta el trabajo pedagógico del docente peruano?", ops:["PEN al 2036","Currículo Nacional de la Educación Básica","PEI de la institución","Reglamento Interno"], r:1, exp:"El Currículo Nacional es el documento de base que orienta la labor pedagógica en la educación básica." },
-    { p:"¿Cuántas escalas tiene la Carrera Pública Magisterial según la Ley N° 29062?", ops:["5 escalas","6 escalas","7 escalas","8 escalas"], r:3, exp:"La CPM tiene 8 escalas magisteriales, siendo la primera la de ingreso a la carrera." },
-    { p:"¿Qué enfoque pedagógico promueve el Currículo Nacional?", ops:["Enfoque conductista","Enfoque por competencias","Enfoque memorístico","Enfoque disciplinar"], r:1, exp:"El CN promueve el desarrollo de competencias como combinación de capacidades para lograr propósitos." },
-    { p:"¿Cuál es el perfil de egreso del Currículo Nacional?", ops:["Conjunto de aprendizajes que todo estudiante peruano debe lograr al terminar la EBR","Lista de cursos que debe aprobar","Objetivos del docente","Metas institucionales"], r:0, exp:"El perfil de egreso es el conjunto de aprendizajes comunes que todos los estudiantes deben lograr al concluir la EBR." },
-    { p:"¿Qué son las competencias en el Currículo Nacional?", ops:["Conocimientos específicos","Facultad de combinar capacidades","Habilidades motoras","Actitudes positivas"], r:1, exp:"Las competencias son la facultad de combinar un conjunto de capacidades para lograr un propósito específico en situaciones diversas." },
-    { p:"¿Qué es una capacidad en el marco del CN?", ops:["Un recurso para actuar de manera competente","Un objetivo de aprendizaje","Una estrategia didáctica","Un instrumento de evaluación"], r:0, exp:"Las capacidades son recursos (conocimientos, habilidades y actitudes) que los estudiantes utilizan para actuar de manera competente." },
-    { p:"¿Qué evalúa principalmente la evaluación formativa?", ops:["Solo los productos finales","El proceso de aprendizaje para retroalimentar","La conducta del estudiante","El desempeño del docente"], r:1, exp:"La evaluación formativa evalúa el proceso de aprendizaje con el fin de retroalimentar oportunamente al estudiante." },
-    { p:"¿Cuántos dominios tiene el Marco del Buen Desempeño Docente?", ops:["2","3","4","5"], r:2, exp:"El MBDD tiene 4 dominios: Preparación para el aprendizaje, Enseñanza para el aprendizaje, Participación en la gestión y Desarrollo profesional." },
-    { p:"¿Qué es el Proyecto Educativo Institucional (PEI)?", ops:["Documento de gestión que orienta la acción educativa de la IE","Plan de sesiones de aprendizaje","Reglamento de la IE","Presupuesto anual"], r:0, exp:"El PEI es un instrumento de gestión de mediano plazo que orienta la acción educativa de la institución educativa." },
-    { p:"¿Cuál es el nivel más alto de la jerarquía curricular en el Perú?", ops:["Diseño Curricular Regional","Proyecto Curricular Institucional","Currículo Nacional","Programación anual"], r:2, exp:"El Currículo Nacional es el nivel más alto, del que se derivan los currículos regionales y los proyectos curriculares institucionales." },
-    { p:"¿Qué son los estándares de aprendizaje?", ops:["Notas mínimas aprobatorias","Descripción del nivel esperado de desarrollo de competencias","Lista de contenidos","Objetivos anuales"], r:1, exp:"Los estándares son descripciones del nivel esperado de desarrollo de las competencias en momentos dados de la escolaridad." },
-    { p:"¿Qué promueve el enfoque inclusivo en educación?", ops:["Aulas especiales para estudiantes con discapacidad","Participación y aprendizaje de todos sin discriminación","Solo atención a estudiantes con discapacidad","Reducir cantidad de estudiantes"], r:1, exp:"El enfoque inclusivo promueve que todos los estudiantes participen y aprendan juntos sin discriminación." },
-    { p:"¿Qué es la retroalimentación formativa?", ops:["Calificación numérica final","Información oportuna para mejorar el aprendizaje","Sanción por bajo rendimiento","Informe a los padres"], r:1, exp:"La retroalimentación formativa es información que se brinda al estudiante para que tome consciencia de su aprendizaje y lo mejore." },
-    { p:"¿Qué ley establece la Ley General de Educación en el Perú?", ops:["Ley N° 29062","Ley N° 28044","Ley N° 30512","Ley N° 27444"], r:1, exp:"La Ley N° 28044 es la Ley General de Educación que establece los lineamientos generales del sistema educativo peruano." },
-    { p:"¿Qué es la planificación curricular inversa?", ops:["Planificar desde las actividades","Planificar desde los resultados esperados de aprendizaje","Copiar sesiones del año anterior","Planificar solo actividades lúdicas"], r:1, exp:"La planificación inversa parte de definir los resultados esperados para luego determinar evidencias y actividades." },
-    { p:"¿Cuál es la función principal del docente según el MBDD?", ops:["Transmitir conocimientos","Facilitar el aprendizaje de los estudiantes","Administrar la institución","Evaluar los libros de texto"], r:1, exp:"El MBDD establece que el docente es un facilitador del aprendizaje que promueve el desarrollo integral del estudiante." },
-    { p:"¿Qué es la diversificación curricular?", ops:["Eliminar contenidos del CN","Adaptar el CN a la realidad regional y local","Crear un nuevo currículo","Copiar el currículo de otro país"], r:1, exp:"La diversificación curricular es el proceso de adaptar y contextualizar el CN a las características del contexto regional y local." },
-    { p:"¿Qué instrumento recoge evidencias del aprendizaje a lo largo del tiempo?", ops:["Examen escrito","Portafolio de aprendizaje","Prueba de entrada","Lista de cotejo"], r:1, exp:"El portafolio de aprendizaje es una colección de evidencias que muestra el progreso del estudiante a lo largo del tiempo." },
-    { p:"¿Cuál es el propósito de la evaluación diagnóstica?", ops:["Calificar al inicio","Conocer los saberes previos para planificar","Sancionar a los que no saben","Comparar estudiantes"], r:1, exp:"La evaluación diagnóstica permite conocer los saberes previos para planificar la enseñanza de manera pertinente." },
-    { p:"¿Qué implica el enfoque por competencias en la práctica docente?", ops:["Solo transmitir conocimientos teóricos","Desarrollar situaciones que permitan actuar competentemente","Enfocarse en los contenidos del libro","Evaluar solo con pruebas escritas"], r:1, exp:"El enfoque por competencias implica diseñar situaciones donde el estudiante movilice sus capacidades de forma integrada." },
-    { p:"¿Cuál es la primera escala de la Carrera Pública Magisterial?", ops:["Escala I","Escala II","Escala III","Escala IV"], r:0, exp:"La Escala I es la de ingreso a la Carrera Pública Magisterial, donde inician los docentes nombrados." },
-    { p:"¿Qué es el aprendizaje significativo según el CN?", ops:["Memorizar muchos datos","Conectar nuevos conocimientos con saberes previos","Aprender solo con tecnología","Reproducir información"], r:1, exp:"El aprendizaje significativo ocurre cuando el estudiante conecta los nuevos conocimientos con sus saberes y experiencias previas." },
-    { p:"¿Qué caracteriza a una buena sesión de aprendizaje según el MBDD?", ops:["Muchos contenidos en poco tiempo","Clima favorable, alta demanda cognitiva y retroalimentación","Examen al final de cada clase","Silencio y disciplina total"], r:1, exp:"Una buena sesión combina clima de respeto, actividades de alta demanda cognitiva y retroalimentación oportuna." },
-    { p:"¿Qué es el Marco del Buen Desempeño Docente?", ops:["Un reglamento sancionador","Una herramienta de gestión institucional","Guía que define dominios, competencias y desempeños docentes","Un manual de convivencia"], r:2, exp:"El MBDD es una guía de referencia que define los dominios, competencias y desempeños que caracterizan la buena docencia." },
-    { p:"¿Cuál es el fin de la educación peruana según la Ley General de Educación?", ops:["Formar técnicos calificados","Desarrollar la personalidad integral del estudiante","Garantizar el empleo","Homogenizar a los estudiantes"], r:1, exp:"La Ley 28044 establece que la educación tiene como fin el desarrollo integral de la persona humana." },
-    { p:"¿Qué es la tutoría en la educación básica regular?", ops:["Reforzamiento de matemáticas","Acompañamiento socioafectivo y cognitivo al estudiante","Sanción de conductas","Solo orientación vocacional"], r:1, exp:"La tutoría es el acompañamiento socioafectivo, cognitivo y pedagógico que brinda el docente para el bienestar integral del estudiante." },
-    { p:"¿Qué implica la convivencia democrática en el aula?", ops:["El docente impone todas las normas","Construir normas participativamente y resolver conflictos pacíficamente","No tener normas","Solo premiar el buen comportamiento"], r:1, exp:"La convivencia democrática implica construir participativamente normas y gestionar conflictos de manera pacífica y formativa." },
-    { p:"¿Qué promueve el enfoque ambiental en educación?", ops:["Estudiar solo ciencias naturales","Desarrollar conciencia y actitudes para el cuidado del ambiente","Eliminar actividades al aire libre","Solo reciclar papel"], r:1, exp:"El enfoque ambiental promueve que los estudiantes desarrollen conciencia, valores y actitudes para cuidar el ambiente." },
-    { p:"¿Qué es la autoevaluación institucional?", ops:["Evaluación externa de la UGEL","Proceso por el cual la IE reflexiona sobre su propia gestión","Solo evaluar a los docentes","Rendir cuentas al ministerio"], r:1, exp:"La autoevaluación institucional es el proceso por el cual la propia IE analiza su funcionamiento para identificar fortalezas y mejorar." },
-    { p:"¿Cuántas preguntas tiene la subprueba de Conocimientos Pedagógicos del examen de Nombramiento MINEDU?", ops:["25 preguntas","40 preguntas","50 preguntas","75 preguntas"], r:2, exp:"La subprueba de Conocimientos Pedagógicos tiene 50 preguntas, cada una vale 3 puntos, con un puntaje máximo de 150." },
-    { p:"¿Cuál es el puntaje mínimo requerido en la subprueba de Conocimientos Pedagógicos para no ser eliminado?", ops:["60 puntos","72 puntos","84 puntos","90 puntos"], r:2, exp:"El MINEDU establece que el puntaje mínimo en la subprueba de Conocimientos Pedagógicos es de 84 puntos." },
-    { p:"¿Qué son las experiencias de aprendizaje en el CN?", ops:["Actividades recreativas","Situaciones desafiantes que movilizan competencias en contextos reales","Exposiciones magistrales","Evaluaciones sumativas"], r:1, exp:"Las experiencias de aprendizaje son situaciones significativas y desafiantes que movilizan las competencias de los estudiantes." },
-    { p:"¿Qué es el enfoque de derechos en educación?", ops:["Solo proteger derechos laborales","Reconocer al estudiante como sujeto de derechos","Exigir deberes sin reconocer derechos","Solo aplicar el código del niño"], r:1, exp:"El enfoque de derechos reconoce al estudiante como sujeto de derechos, promoviendo su dignidad y participación." },
-    { p:"¿Qué caracteriza al aprendizaje basado en proyectos (ABP)?", ops:["Estudio individual de contenidos","Aprendizaje activo mediante resolución de problemas reales","Lectura pasiva de textos","Repetición de ejercicios"], r:1, exp:"El ABP promueve que los estudiantes aprendan desarrollando proyectos que responden a problemas del mundo real." },
-    { p:"¿Qué es la zona de desarrollo próximo de Vygotsky?", ops:["El límite máximo del aprendizaje","Distancia entre lo que el estudiante puede hacer solo y con ayuda","El nivel actual de conocimiento","El espacio físico del aula"], r:1, exp:"La ZDP es la distancia entre el nivel de desarrollo actual y el nivel de desarrollo potencial con la guía de un adulto o par más capaz." },
-    { p:"¿Cuál es el propósito del Plan de Mejora en la IE?", ops:["Sancionar docentes","Establecer acciones para mejorar los resultados de aprendizaje","Aumentar la infraestructura","Reducir el número de estudiantes"], r:1, exp:"El Plan de Mejora busca establecer acciones concretas y priorizadas para mejorar los resultados de aprendizaje." },
-    { p:"¿Qué implica la educación intercultural bilingüe (EIB)?", ops:["Enseñar solo en español","Valorar y desarrollar aprendizajes desde la lengua y cultura originaria junto al castellano","Eliminar las lenguas originarias","Solo enseñar inglés"], r:1, exp:"La EIB implica desarrollar aprendizajes en la lengua materna originaria y el castellano, valorando la identidad cultural." },
-    { p:"¿Qué es la práctica reflexiva docente?", ops:["Hacer lo mismo cada año","Analizar la propia práctica para mejorar continuamente","Seguir el libro sin cambios","Evaluar solo a los estudiantes"], r:1, exp:"La práctica reflexiva implica que el docente analiza críticamente su propia enseñanza para identificar mejoras y crecer profesionalmente." },
-    { p:"¿Qué es la neuroeducación?", ops:["Cirugía cerebral para mejorar notas","Disciplina que aplica hallazgos de neurociencia para mejorar los procesos educativos","Solo estudiar el cerebro","Psicología clínica"], r:1, exp:"La neuroeducación aplica los conocimientos sobre el funcionamiento cerebral para diseñar mejores estrategias de enseñanza." },
-    { p:"¿Cuál es el puntaje total mínimo para aprobar el examen de Nombramiento Docente del MINEDU?", ops:["100 puntos","110 puntos","120 puntos","130 puntos"], r:1, exp:"El MINEDU establece que el puntaje mínimo total requerido para aprobar la Prueba Nacional es de 110 puntos." },
-    { p:"¿Cuánto vale cada pregunta de la subprueba de Habilidades Generales?", ops:["1 punto","2 puntos","3 puntos","4 puntos"], r:1, exp:"Cada pregunta de la subprueba de Habilidades Generales vale 2 puntos, con un total máximo de 50 puntos." },
-    { p:"¿Cuánto dura el examen de Nombramiento Docente del MINEDU?", ops:["2 horas","3 horas","3 horas y 45 minutos","4 horas"], r:2, exp:"Los aspirantes al Nombramiento Docente tienen 3 horas y 45 minutos para completar la Prueba Nacional." },
-    { p:"¿Qué evalúa la subprueba de Habilidades Generales del examen MINEDU?", ops:["Solo matemática","Comprensión de textos, resolución de problemas e inducciones","Solo pedagogía","Historia del Perú"], r:1, exp:"Evalúa la capacidad de análisis y comprensión de textos, construcción de soluciones, resolución de problemas e inducciones." },
-    { p:"¿Qué es el andamiaje pedagógico?", ops:["Construcción de mobiliario escolar","Apoyo temporal del docente para que el estudiante alcance mayor autonomía","Sistema de evaluación","Tipo de planificación"], r:1, exp:"El andamiaje es el apoyo ajustado que brinda el docente para ayudar al estudiante a superar su ZDP y lograr mayor autonomía." },
-    { p:"¿Cuántas preguntas tiene la subprueba de Habilidades Generales del examen de Nombramiento?", ops:["20 preguntas","25 preguntas","30 preguntas","40 preguntas"], r:1, exp:"La subprueba de Habilidades Generales tiene 25 preguntas, cada una vale 2 puntos, con un puntaje máximo de 50." },
-    { p:"¿Qué es la metacognición en el aprendizaje?", ops:["Memorizar fórmulas","Reflexionar sobre el propio proceso de aprendizaje","Copiar estrategias de otros","Evaluar a los compañeros"], r:1, exp:"La metacognición es la capacidad de reflexionar sobre el propio proceso de aprendizaje, reconociendo fortalezas y aspectos a mejorar." },
-    { p:"¿Qué son las competencias digitales docentes?", ops:["Saber usar redes sociales","Capacidades para usar tecnología de forma pedagógica, segura y ética","Tener muchos dispositivos","Solo saber usar Word y Excel"], r:1, exp:"Las competencias digitales docentes incluyen el uso pedagógico, seguro y ético de las tecnologías para mejorar el aprendizaje." },
-    { p:"¿Qué es la evaluación auténtica?", ops:["Exámenes tradicionales memorísticos","Evaluación mediante tareas reales y complejas vinculadas a contextos reales","Calificación por asistencia","Autoevaluación sin criterios"], r:1, exp:"La evaluación auténtica valora las competencias del estudiante mediante tareas complejas conectadas al mundo real." }
-  ],
-  ascenso: [
-    { p:"¿Cuál es el propósito del ascenso en la Carrera Pública Magisterial?", ops:["Aumentar la carga horaria","Reconocer el desarrollo profesional y mejorar la remuneración","Solo cambiar de institución","Obtener más vacaciones"], r:1, exp:"El ascenso reconoce el desarrollo profesional del docente y conlleva mejoras remunerativas en la escala magisterial." },
-    { p:"¿Qué evalúa principalmente el concurso de ascenso de escala?", ops:["Solo la antigüedad","Desempeño, formación y conocimientos pedagógicos","Solo el título profesional","La puntualidad"], r:1, exp:"El concurso de ascenso evalúa el desempeño laboral, formación continua y conocimientos pedagógicos del docente." },
-    { p:"¿Qué es la metacognición en el aprendizaje?", ops:["Memorizar fórmulas","Reflexionar sobre el propio proceso de aprendizaje","Copiar estrategias de otros","Evaluar a los compañeros"], r:1, exp:"La metacognición es la capacidad de reflexionar sobre el propio proceso de aprendizaje reconociendo fortalezas y aspectos a mejorar." },
-    { p:"¿Qué es el aprendizaje colaborativo?", ops:["Trabajar de forma individual","Proceso en que los estudiantes aprenden interactuando entre sí","Competir para obtener mejores notas","Copiar trabajos de compañeros"], r:1, exp:"El aprendizaje colaborativo es un proceso donde los estudiantes trabajan juntos, compartiendo conocimientos y apoyándose mutuamente." },
-    { p:"¿Qué son las estrategias metacognitivas?", ops:["Técnicas para memorizar","Acciones para planificar, monitorear y evaluar el propio aprendizaje","Métodos de castigo","Formas de copiar en exámenes"], r:1, exp:"Las estrategias metacognitivas ayudan al estudiante a planificar, monitorear y evaluar su propio proceso de aprendizaje." },
-    { p:"¿Qué es la zona de desarrollo próximo (ZDP) de Vygotsky?", ops:["El límite máximo del aprendizaje","Distancia entre lo que el estudiante puede hacer solo y con ayuda","El nivel actual de conocimiento","El espacio físico del aula"], r:1, exp:"La ZDP es la distancia entre el nivel de desarrollo actual y el nivel de desarrollo potencial con la guía de un adulto o par más capaz." },
-    { p:"¿Qué es el andamiaje pedagógico?", ops:["Construcción de mobiliario escolar","Apoyo temporal del docente para que el estudiante alcance mayor autonomía","Sistema de evaluación","Tipo de planificación"], r:1, exp:"El andamiaje es el apoyo ajustado que brinda el docente para ayudar al estudiante a superar su ZDP y lograr mayor autonomía." },
-    { p:"¿Qué caracteriza al pensamiento crítico?", ops:["Aceptar todo sin cuestionar","Analizar, evaluar y formar juicios propios sobre la información","Memorizar datos","Seguir instrucciones sin reflexionar"], r:1, exp:"El pensamiento crítico implica analizar, evaluar evidencias y formar juicios propios fundamentados sobre la información recibida." },
-    { p:"¿Qué es la gamificación educativa?", ops:["Jugar en clases sin propósito","Aplicar elementos de juego para motivar y mejorar el aprendizaje","Ver videos de entretenimiento","Competencia entre docentes"], r:1, exp:"La gamificación aplica dinámicas y elementos de juego en contextos educativos para motivar a los estudiantes y potenciar el aprendizaje." },
-    { p:"¿Qué promueve el aprendizaje basado en proyectos (ABP)?", ops:["Estudio individual de contenidos","Aprendizaje activo mediante la resolución de problemas reales","Lectura pasiva de textos","Repetición de ejercicios"], r:1, exp:"El ABP promueve que los estudiantes aprendan desarrollando proyectos que responden a problemas o desafíos del mundo real." },
-    { p:"¿Cuál es la función del docente en el aula invertida (flipped classroom)?", ops:["Explicar contenidos durante toda la clase","Guiar y acompañar mientras los estudiantes aplican lo aprendido en casa","Solo evaluar","Asignar tareas sin explicar"], r:1, exp:"En el aula invertida el docente usa el tiempo de clase para guiar la aplicación de contenidos que el estudiante exploró previamente." },
-    { p:"¿Qué es la evaluación auténtica?", ops:["Exámenes tradicionales memorísticos","Evaluación mediante tareas reales y complejas vinculadas a contextos reales","Calificación por asistencia","Autoevaluación sin criterios"], r:1, exp:"La evaluación auténtica valora las competencias del estudiante mediante tareas complejas conectadas a situaciones del mundo real." },
-    { p:"¿Qué es la diferenciación curricular?", ops:["Dar el mismo trabajo a todos","Adaptar la enseñanza a las necesidades, intereses y estilos de aprendizaje de cada estudiante","Separar a los estudiantes por nivel","Reducir los contenidos"], r:1, exp:"La diferenciación curricular implica adaptar contenidos, procesos y productos para atender las diversas necesidades de los estudiantes." },
-    { p:"¿Qué implica la educación intercultural bilingüe (EIB)?", ops:["Enseñar solo en español","Valorar y desarrollar aprendizajes desde la lengua y cultura originaria junto al castellano","Eliminar las lenguas originarias","Solo enseñar inglés"], r:1, exp:"La EIB implica desarrollar aprendizajes en la lengua materna originaria y el castellano, valorando la identidad cultural del estudiante." },
-    { p:"¿Qué es la inteligencia emocional en el docente?", ops:["Tener un coeficiente intelectual alto","Capacidad de reconocer y gestionar las propias emociones y las de los demás","No mostrar emociones","Solo conocer teorías psicológicas"], r:1, exp:"La inteligencia emocional es la capacidad de identificar, comprender y gestionar las emociones propias y ajenas de manera efectiva." },
-    { p:"¿Qué es la práctica reflexiva docente?", ops:["Hacer lo mismo cada año","Analizar la propia práctica para mejorar continuamente","Seguir el libro de texto sin cambios","Evaluar solo a los estudiantes"], r:1, exp:"La práctica reflexiva implica que el docente analiza críticamente su propia enseñanza para identificar mejoras y crecer profesionalmente." },
-    { p:"¿Cuál es el papel de las TIC en la educación contemporánea?", ops:["Reemplazar al docente","Herramienta para enriquecer y diversificar los procesos de enseñanza-aprendizaje","Solo para entretenimiento","Obligar a los estudiantes a usar pantallas"], r:1, exp:"Las TIC son herramientas que, bien utilizadas, enriquecen y diversifican las experiencias de enseñanza y aprendizaje." },
-    { p:"¿Qué son las competencias digitales docentes?", ops:["Saber usar redes sociales","Capacidades para usar tecnología de forma pedagógica, segura y ética","Tener muchos dispositivos","Solo saber usar Word y Excel"], r:1, exp:"Las competencias digitales docentes incluyen el uso pedagógico, seguro y ético de las tecnologías para mejorar el aprendizaje." },
-    { p:"¿Qué es el liderazgo pedagógico del director?", ops:["Administrar los recursos económicos","Influir en la mejora de la enseñanza y el aprendizaje en la IE","Controlar la asistencia docente","Gestionar la infraestructura"], r:1, exp:"El liderazgo pedagógico del director se enfoca en influir positivamente en la práctica docente para mejorar los aprendizajes." },
-    { p:"¿Qué es una comunidad de aprendizaje profesional (CAP)?", ops:["Club de lectura de docentes","Grupo de docentes que colaboran para mejorar su práctica y los aprendizajes","Reunión de padres de familia","Comité de disciplina"], r:1, exp:"Una CAP es un grupo de docentes que trabajan colaborativamente, compartiendo experiencias y conocimientos para mejorar su práctica." },
-    { p:"¿Qué promueve el enfoque ambiental en la educación?", ops:["Estudiar solo ciencias naturales","Desarrollar conciencia y actitudes para el cuidado del ambiente","Eliminar actividades al aire libre","Solo reciclar papel"], r:1, exp:"El enfoque ambiental promueve que los estudiantes desarrollen conciencia, valores y actitudes para cuidar el ambiente y la sostenibilidad." },
-    { p:"¿Qué es la tutoría en la educación básica regular?", ops:["Reforzamiento de matemáticas","Acompañamiento socioafectivo y cognitivo al estudiante","Sanción de conductas","Solo orientación vocacional"], r:1, exp:"La tutoría es el acompañamiento socioafectivo, cognitivo y pedagógico que brinda el docente para el bienestar integral del estudiante." },
-    { p:"¿Qué implica la convivencia democrática en el aula?", ops:["El docente impone todas las normas","Construir normas participativamente y resolver conflictos pacíficamente","No tener ninguna norma","Solo premiar el buen comportamiento"], r:1, exp:"La convivencia democrática implica construir participativamente normas de convivencia y gestionar conflictos de manera pacífica." },
-    { p:"¿Cuál es el propósito del Plan de Mejora en la IE?", ops:["Sancionar docentes","Establecer acciones para mejorar los resultados de aprendizaje","Aumentar la infraestructura","Reducir el número de estudiantes"], r:1, exp:"El Plan de Mejora busca establecer acciones concretas y priorizadas para mejorar los resultados de aprendizaje en la IE." },
-    { p:"¿Qué es la autoevaluación institucional?", ops:["Evaluación externa de la UGEL","Proceso por el cual la IE reflexiona sobre su propia gestión y resultados","Solo evaluar a los docentes","Rendir cuentas al ministerio"], r:1, exp:"La autoevaluación institucional es el proceso por el cual la propia IE analiza su funcionamiento para identificar fortalezas y mejorar." },
-    { p:"¿Qué es el enfoque de derechos en educación?", ops:["Solo proteger derechos laborales","Reconocer al estudiante como sujeto de derechos","Exigir deberes sin reconocer derechos","Solo aplicar el código del niño"], r:1, exp:"El enfoque de derechos reconoce al estudiante como sujeto de derechos, promoviendo su dignidad, participación y protección." },
-    { p:"¿Qué es la neuroeducación?", ops:["Cirugía cerebral para mejorar notas","Disciplina que aplica hallazgos de neurociencia para mejorar los procesos educativos","Solo estudiar el cerebro","Psicología clínica"], r:1, exp:"La neuroeducación aplica los conocimientos sobre el funcionamiento cerebral para diseñar mejores estrategias de enseñanza y aprendizaje." },
-    { p:"¿Qué caracteriza al docente reflexivo según Schön?", ops:["Sigue rutinas sin cuestionarlas","Reflexiona en y sobre la acción para mejorar su práctica profesional","Solo aplica teorías","Evalúa constantemente a los estudiantes"], r:1, exp:"Según Schön, el docente reflexivo analiza sus propias acciones durante y después de la práctica para aprender de ellas y mejorar." },
-    { p:"¿Cuál es el impacto de las altas expectativas docentes en el aprendizaje?", ops:["No tienen ningún impacto","Mejoran el rendimiento al motivar a los estudiantes (efecto Pigmalión)","Solo aumentan la presión","Generan ansiedad sin beneficio"], r:1, exp:"El efecto Pigmalión demuestra que las altas expectativas del docente influyen positivamente en el rendimiento y motivación de los estudiantes." },
-    { p:"¿Qué es la evaluación por rúbricas?", ops:["Una lista de notas","Instrumento con criterios y niveles de desempeño claramente definidos","Un examen oral","Un registro de asistencia"], r:1, exp:"La rúbrica es un instrumento de evaluación que describe criterios y niveles de desempeño esperados de manera clara y detallada." },
-    { p:"¿Qué implica el enfoque crítico en educación?", ops:["Criticar a los docentes","Desarrollar la capacidad de cuestionar, analizar y transformar la realidad","Memorizar teorías críticas","Rechazar toda autoridad"], r:1, exp:"El enfoque crítico promueve que los estudiantes desarrollen la capacidad de cuestionar, analizar y proponer transformaciones en su realidad." },
-    { p:"¿Qué es el currículo oculto?", ops:["El temario no oficial","Aprendizajes no planificados que se transmiten implícitamente en la escuela","Cursos prohibidos","El reglamento interno"], r:1, exp:"El currículo oculto son los aprendizajes, valores y normas que se transmiten implícitamente a través de las prácticas escolares." },
-    { p:"¿Qué promueve la pedagogía de la liberación de Paulo Freire?", ops:["Educación bancaria donde el docente deposita conocimiento","Educación dialógica y crítica que transforma la realidad social","Memorización de contenidos","Disciplina estricta"], r:1, exp:"Freire propone una educación dialógica y crítica donde el estudiante es sujeto activo que reflexiona y transforma su realidad." },
-    { p:"¿Qué son los mapas mentales como estrategia de aprendizaje?", ops:["Mapas geográficos","Representaciones visuales que organizan ideas de forma radial alrededor de un concepto central","Listas de contenidos","Esquemas lineales"], r:1, exp:"Los mapas mentales son representaciones visuales que organizan ideas y conceptos de forma radial, facilitando la comprensión y memorización." },
-    { p:"¿Qué es el aprendizaje por descubrimiento de Bruner?", ops:["El docente explica todo","El estudiante construye conocimiento explorando y descubriendo por sí mismo","Ver videos educativos","Copiar del pizarrón"], r:1, exp:"Bruner propone que el estudiante aprende mejor cuando descubre y construye el conocimiento activamente a través de la exploración." },
-    { p:"¿Cuántas escalas tiene la Carrera Pública Magisterial?", ops:["5","6","7","8"], r:3, exp:"La Carrera Pública Magisterial tiene 8 escalas magisteriales según la Ley N° 29062." },
-    { p:"¿Qué es la evaluación sumativa?", ops:["Evaluación durante el proceso","Evaluación al final de una etapa para certificar logros","Evaluación de actitudes","Evaluación diagnóstica inicial"], r:1, exp:"La evaluación sumativa se realiza al final de una etapa educativa para certificar los logros alcanzados por el estudiante." },
-    { p:"¿Qué es el aprendizaje situado?", ops:["Aprender solo en el aula","Aprendizaje que ocurre en contextos reales y significativos vinculados a la práctica","Aprender de memoria","Aprender viendo televisión"], r:1, exp:"El aprendizaje situado ocurre en contextos reales y prácticos donde el conocimiento cobra sentido y aplicación concreta." },
-    { p:"¿Qué es la pedagogía diferenciada?", ops:["Enseñar lo mismo a todos de la misma manera","Ajustar la enseñanza a las diversas necesidades, ritmos y estilos de aprendizaje","Separar a los estudiantes por capacidad","Reducir el currículo"], r:1, exp:"La pedagogía diferenciada ajusta la enseñanza a las diversas necesidades, ritmos y estilos de aprendizaje de cada estudiante." },
-    { p:"¿Qué implica la colegialidad docente?", ops:["Competencia entre docentes","Trabajo colaborativo y reflexivo entre docentes para mejorar la práctica educativa","Solo reuniones administrativas","Evaluación de docentes por pares"], r:1, exp:"La colegialidad docente implica trabajo colaborativo y reflexivo entre docentes para mejorar conjuntamente la práctica educativa." }
-  ],
-  ascenso_extra: [
-    { p:"¿Cuál es el marco legal que rige la Carrera Pública Magisterial en el Perú?", ops:["Ley N° 24029","Ley N° 29062","Ley N° 30512","Ley N° 28044"], r:1, exp:"La Ley N° 29062 modifica la Ley del Profesorado y rige la Carrera Pública Magisterial." },
-    { p:"¿Qué documento orienta el trabajo pedagógico del docente peruano?", ops:["PEN al 2036","Currículo Nacional de la Educación Básica","PEI de la institución","Reglamento Interno"], r:1, exp:"El Currículo Nacional es el documento de base que orienta la labor pedagógica en la educación básica." },
-    { p:"¿Cuántas escalas tiene la Carrera Pública Magisterial según la Ley N° 29062?", ops:["5 escalas","6 escalas","7 escalas","8 escalas"], r:3, exp:"La CPM tiene 8 escalas magisteriales, siendo la primera la de ingreso a la carrera." },
-    { p:"¿Qué enfoque pedagógico promueve el Currículo Nacional?", ops:["Enfoque conductista","Enfoque por competencias","Enfoque memorístico","Enfoque disciplinar"], r:1, exp:"El CN promueve el desarrollo de competencias, entendidas como la combinación de capacidades para lograr propósitos." },
-    { p:"¿Cuál es el perfil de egreso del Currículo Nacional?", ops:["Conjunto de aprendizajes que todo estudiante peruano debe lograr al terminar la EBR","Lista de cursos que debe aprobar","Objetivos del docente","Metas institucionales"], r:0, exp:"El perfil de egreso es el conjunto de aprendizajes comunes que deben lograr todos los estudiantes al concluir la EBR." },
-    { p:"¿Qué son las competencias en el Currículo Nacional?", ops:["Conocimientos específicos","Facultad de combinar capacidades","Habilidades motoras","Actitudes positivas"], r:1, exp:"Las competencias son la facultad de combinar un conjunto de capacidades para lograr un propósito específico en situaciones diversas." },
-    { p:"¿Qué es una capacidad en el marco del CN?", ops:["Un recurso para actuar de manera competente","Un objetivo de aprendizaje","Una estrategia didáctica","Un instrumento de evaluación"], r:0, exp:"Las capacidades son recursos (conocimientos, habilidades y actitudes) que los estudiantes utilizan para actuar de manera competente." },
-    { p:"¿Qué evalúa principalmente la evaluación formativa?", ops:["Solo los productos finales","El proceso de aprendizaje para retroalimentar","La conducta del estudiante","El desempeño del docente"], r:1, exp:"La evaluación formativa evalúa el proceso de aprendizaje con el fin de retroalimentar oportunamente al estudiante." },
-    { p:"¿Qué instrumento se usa para planificar las sesiones de aprendizaje?", ops:["El proyecto de aprendizaje","La sesión de aprendizaje","La unidad didáctica","El portafolio"], r:2, exp:"La unidad didáctica es la herramienta que organiza las secuencias de sesiones de aprendizaje hacia un propósito." },
-    { p:"¿Qué ley establece la Ley General de Educación en el Perú?", ops:["Ley N° 29062","Ley N° 28044","Ley N° 30512","Ley N° 27444"], r:1, exp:"La Ley N° 28044 es la Ley General de Educación que establece los lineamientos generales del sistema educativo peruano." },
-    { p:"¿Cuál es la función principal del docente según el marco del Buen Desempeño Docente?", ops:["Transmitir conocimientos","Facilitar el aprendizaje de los estudiantes","Administrar la institución","Evaluar los libros de texto"], r:1, exp:"El MBDD establece que el docente es un facilitador del aprendizaje que promueve el desarrollo integral del estudiante." },
-    { p:"¿Qué es el Marco del Buen Desempeño Docente?", ops:["Un reglamento sancionador","Una herramienta de gestión institucional","Una guía que define dominios, competencias y desempeños docentes","Un manual de convivencia"], r:2, exp:"El MBDD es una guía de referencia que define los dominios, competencias y desempeños que caracterizan la buena docencia." },
-    { p:"¿Cuántos dominios tiene el Marco del Buen Desempeño Docente?", ops:["2","3","4","5"], r:2, exp:"El MBDD tiene 4 dominios: Preparación para el aprendizaje, Enseñanza para el aprendizaje, Participación en la gestión y Desarrollo profesional." },
-    { p:"¿Qué es el Proyecto Educativo Institucional (PEI)?", ops:["Un documento de gestión que orienta la acción educativa de la IE","Un plan de sesiones de aprendizaje","El reglamento de la IE","El presupuesto anual"], r:0, exp:"El PEI es un instrumento de gestión de mediano plazo que orienta la acción educativa de la institución educativa." },
-    { p:"¿Cuál es el nivel más alto de la jerarquía curricular en el Perú?", ops:["Diseño Curricular Regional","Proyecto Curricular Institucional","Currículo Nacional","Programación anual"], r:2, exp:"El Currículo Nacional es el nivel más alto, del que se derivan los currículos regionales y los proyectos curriculares institucionales." },
-    { p:"¿Qué son los estándares de aprendizaje?", ops:["Notas mínimas aprobatorias","Descripción del nivel esperado de desarrollo de competencias","Lista de contenidos","Objetivos anuales"], r:1, exp:"Los estándares son descripciones del nivel esperado de desarrollo de las competencias en momentos dados de la escolaridad." },
-    { p:"¿Qué es la planificación curricular inversa o 'backward design'?", ops:["Planificar desde las actividades","Planificar desde los resultados esperados de aprendizaje","Copiar sesiones del año anterior","Planificar solo actividades lúdicas"], r:1, exp:"La planificación inversa parte de definir los resultados esperados (competencias) para luego determinar evidencias y actividades." },
-    { p:"¿Qué promueve el enfoque inclusivo en educación?", ops:["Aulas especiales para estudiantes con discapacidad","Participación y aprendizaje de todos sin discriminación","Solo atención a estudiantes con discapacidad","Reducir la cantidad de estudiantes por aula"], r:1, exp:"El enfoque inclusivo promueve que todos los estudiantes, independientemente de sus condiciones, participen y aprendan juntos." },
-    { p:"¿Cuál es la primera escala de la Carrera Pública Magisterial?", ops:["Escala I","Escala II","Escala III","Escala IV"], r:0, exp:"La Escala I es la de ingreso a la Carrera Pública Magisterial, donde inician los docentes nombrados." },
-    { p:"¿Qué es la retroalimentación formativa?", ops:["Calificación numérica final","Información oportuna para mejorar el aprendizaje","Sanción por bajo rendimiento","Informe a los padres de familia"], r:1, exp:"La retroalimentación formativa es la información que se brinda al estudiante para que tome consciencia de su aprendizaje y lo mejore." },
-    { p:"¿Qué rol cumple el docente en la evaluación formativa?", ops:["Juez que califica","Mediador que retroalimenta para mejorar","Administrador de exámenes","Calificador de conducta"], r:1, exp:"En la evaluación formativa el docente actúa como mediador que usa la información para brindar retroalimentación y ajustar su enseñanza." },
-    { p:"¿Cuál es el fin de la educación peruana según la Ley General de Educación?", ops:["Formar técnicos calificados","Desarrollar la personalidad integral del estudiante","Garantizar el empleo de los egresados","Homogenizar a los estudiantes"], r:1, exp:"La Ley 28044 establece que la educación peruana tiene como fin el desarrollo integral de la persona humana." },
-    { p:"¿Qué son las Rutas de Aprendizaje?", ops:["Documentos vigentes del CN","Orientaciones pedagógicas previas al CN para apoyar a los docentes","Mapas de contenidos","Evaluaciones estandarizadas"], r:1, exp:"Las Rutas de Aprendizaje fueron orientaciones pedagógicas que antecedieron al Currículo Nacional y apoyaban el trabajo docente." },
-    { p:"¿Qué tipo de gestión promueve el MBDD en su tercer dominio?", ops:["Gestión administrativa","Gestión comunitaria y participativa","Gestión de recursos económicos","Gestión del tiempo libre"], r:1, exp:"El tercer dominio del MBDD se enfoca en la participación en la gestión de la IE articulada a la comunidad." },
-    { p:"¿Qué es la diversificación curricular?", ops:["Eliminar contenidos del CN","Adaptar el CN a la realidad regional y local","Crear un nuevo currículo","Copiar el currículo de otro país"], r:1, exp:"La diversificación curricular es el proceso de adaptar y contextualizar el CN a las características y necesidades del contexto regional y local." },
-    { p:"¿Qué instrumento recoge evidencias del aprendizaje del estudiante a lo largo del tiempo?", ops:["Examen escrito","Portafolio de aprendizaje","Prueba de entrada","Lista de cotejo"], r:1, exp:"El portafolio de aprendizaje es una colección de evidencias que muestra el progreso del estudiante a lo largo del tiempo." },
-    { p:"¿Cuál es el propósito de la evaluación diagnóstica?", ops:["Calificar al inicio","Conocer los saberes previos para planificar","Sancionar a los que no saben","Comparar estudiantes"], r:1, exp:"La evaluación diagnóstica permite conocer los saberes previos de los estudiantes para planificar la enseñanza de manera pertinente." },
-    { p:"¿Qué entiende el CN por 'aprendizaje significativo'?", ops:["Memorizar muchos datos","Conectar nuevos conocimientos con saberes previos","Aprender solo con tecnología","Reproducir información"], r:1, exp:"El aprendizaje significativo ocurre cuando el estudiante conecta los nuevos conocimientos con sus saberes y experiencias previas." },
-    { p:"¿Qué caracteriza a una buena sesión de aprendizaje según el MBDD?", ops:["Muchos contenidos en poco tiempo","Clima favorable, alta demanda cognitiva y retroalimentación","Examen al final de cada clase","Silencio y disciplina total"], r:1, exp:"Una buena sesión combina clima de respeto, actividades de alta demanda cognitiva y retroalimentación oportuna al estudiante." },
-    { p:"¿Qué implica el enfoque por competencias en la práctica docente?", ops:["Solo transmitir conocimientos teóricos","Desarrollar situaciones que permitan actuar competentemente","Enfocarse en los contenidos del libro","Evaluar solo con pruebas escritas"], r:1, exp:"El enfoque por competencias implica diseñar situaciones de aprendizaje que permitan al estudiante movilizar sus capacidades de forma integrada." },
-    { p:"¿Cuál es el propósito del ascenso en la Carrera Pública Magisterial?", ops:["Aumentar la carga horaria","Reconocer el desarrollo profesional y mejorar la remuneración","Solo cambiar de institución","Obtener más vacaciones"], r:1, exp:"El ascenso reconoce el desarrollo profesional del docente y conlleva mejoras remunerativas en la escala magisterial." },
-    { p:"¿Qué evalúa principalmente el concurso de ascenso de escala?", ops:["Solo la antigüedad","Desempeño, formación y conocimientos pedagógicos","Solo el título profesional","La puntualidad"], r:1, exp:"El concurso de ascenso evalúa el desempeño laboral, formación continua y conocimientos pedagógicos del docente." },
-    { p:"¿Qué es la metacognición en el aprendizaje?", ops:["Memorizar fórmulas","Reflexionar sobre el propio proceso de aprendizaje","Copiar estrategias de otros","Evaluar a los compañeros"], r:1, exp:"La metacognición es la capacidad de reflexionar sobre el propio proceso de aprendizaje, reconociendo fortalezas y aspectos por mejorar." },
-    { p:"¿Cuál es la diferencia entre enseñanza y aprendizaje?", ops:["Son lo mismo","La enseñanza es la acción del docente; el aprendizaje el proceso del estudiante","Solo cambia el nombre","El aprendizaje es responsabilidad del docente"], r:1, exp:"La enseñanza es la acción intencional del docente para facilitar aprendizajes; el aprendizaje es el proceso interno del estudiante." },
-    { p:"¿Qué es el aprendizaje colaborativo?", ops:["Trabajar de forma individual","Proceso en que los estudiantes aprenden interactuando entre sí","Competir para obtener mejores notas","Copiar trabajos de compañeros"], r:1, exp:"El aprendizaje colaborativo es un proceso donde los estudiantes trabajan juntos, compartiendo conocimientos y apoyándose mutuamente." },
-    { p:"¿Qué son las estrategias metacognitivas?", ops:["Técnicas para memorizar","Acciones para planificar, monitorear y evaluar el propio aprendizaje","Métodos de castigo","Formas de copiar en exámenes"], r:1, exp:"Las estrategias metacognitivas ayudan al estudiante a planificar, monitorear y evaluar su propio proceso de aprendizaje." },
-    { p:"¿Qué es la zona de desarrollo próximo (ZDP) de Vygotsky?", ops:["El límite máximo del aprendizaje","Distancia entre lo que el estudiante puede hacer solo y con ayuda","El nivel actual de conocimiento","El espacio físico del aula"], r:1, exp:"La ZDP es la distancia entre el nivel de desarrollo actual y el nivel de desarrollo potencial con la guía de un adulto o par más capaz." },
-    { p:"¿Qué es el andamiaje pedagógico?", ops:["Construcción de mobiliario escolar","Apoyo temporal del docente para que el estudiante alcance mayor autonomía","Sistema de evaluación","Tipo de planificación"], r:1, exp:"El andamiaje es el apoyo ajustado que brinda el docente para ayudar al estudiante a superar su ZDP y lograr mayor autonomía." },
-    { p:"¿Qué caracteriza al pensamiento crítico?", ops:["Aceptar todo sin cuestionar","Analizar, evaluar y formar juicios propios sobre la información","Memorizar datos","Seguir instrucciones sin reflexionar"], r:1, exp:"El pensamiento crítico implica analizar, evaluar evidencias y formar juicios propios fundamentados sobre la información recibida." },
-    { p:"¿Qué es la gamificación educativa?", ops:["Jugar en clases sin propósito","Aplicar elementos de juego para motivar y mejorar el aprendizaje","Ver videos de entretenimiento","Competencia entre docentes"], r:1, exp:"La gamificación aplica dinámicas y elementos de juego en contextos educativos para motivar a los estudiantes y potenciar el aprendizaje." },
-    { p:"¿Qué promueve el aprendizaje basado en proyectos (ABP)?", ops:["Estudio individual de contenidos","Aprendizaje activo mediante la resolución de problemas reales","Lectura pasiva de textos","Repetición de ejercicios"], r:1, exp:"El ABP promueve que los estudiantes aprendan desarrollando proyectos que responden a problemas o desafíos del mundo real." },
-    { p:"¿Cuál es la función del docente en el aula invertida (flipped classroom)?", ops:["Explicar contenidos durante toda la clase","Guiar y acompañar mientras los estudiantes aplican lo aprendido en casa","Solo evaluar","Asignar tareas sin explicar"], r:1, exp:"En el aula invertida el docente usa el tiempo de clase para guiar la aplicación de contenidos que el estudiante exploró previamente." },
-    { p:"¿Qué es la evaluación auténtica?", ops:["Exámenes tradicionales con preguntas memorísticas","Evaluación mediante tareas reales y complejas vinculadas a contextos reales","Calificación por asistencia","Autoevaluación sin criterios"], r:1, exp:"La evaluación auténtica valora las competencias del estudiante mediante tareas complejas conectadas a situaciones del mundo real." },
-    { p:"¿Qué es la diferenciación curricular?", ops:["Dar el mismo trabajo a todos","Adaptar la enseñanza a las necesidades, intereses y estilos de aprendizaje de cada estudiante","Separar a los estudiantes por nivel","Reducir los contenidos"], r:1, exp:"La diferenciación curricular implica adaptar contenidos, procesos y productos para atender las diversas necesidades de los estudiantes." },
-    { p:"¿Qué implica la educación intercultural bilingüe (EIB)?", ops:["Enseñar solo en español","Valorar y desarrollar aprendizajes desde la lengua y cultura originaria junto al castellano","Eliminar las lenguas originarias","Solo enseñar inglés"], r:1, exp:"La EIB implica desarrollar aprendizajes en la lengua materna originaria y el castellano, valorando la identidad cultural del estudiante." },
-    { p:"¿Qué es la inteligencia emocional en el docente?", ops:["Tener un coeficiente intelectual alto","Capacidad de reconocer y gestionar las propias emociones y las de los demás","No mostrar emociones","Solo conocer teorías psicológicas"], r:1, exp:"La inteligencia emocional es la capacidad de identificar, comprender y gestionar las emociones propias y ajenas de manera efectiva." },
-    { p:"¿Qué es la práctica reflexiva docente?", ops:["Hacer lo mismo cada año","Analizar la propia práctica para mejorar continuamente","Seguir el libro de texto sin cambios","Evaluar solo a los estudiantes"], r:1, exp:"La práctica reflexiva implica que el docente analiza críticamente su propia enseñanza para identificar mejoras y crecer profesionalmente." },
-    { p:"¿Cuál es el papel de las TIC en la educación contemporánea?", ops:["Reemplazar al docente","Herramienta para enriquecer y diversificar los procesos de enseñanza-aprendizaje","Solo para entretenimiento","Obligar a los estudiantes a usar pantallas"], r:1, exp:"Las TIC son herramientas que, bien utilizadas, enriquecen y diversifican las experiencias de enseñanza y aprendizaje." },
-    { p:"¿Qué son las competencias digitales docentes?", ops:["Saber usar redes sociales","Capacidades para usar tecnología de forma pedagógica, segura y ética","Tener muchos dispositivos","Solo saber usar Word y Excel"], r:1, exp:"Las competencias digitales docentes incluyen el uso pedagógico, seguro y ético de las tecnologías para mejorar el aprendizaje." },
-    { p:"¿Qué es el liderazgo pedagógico del director?", ops:["Administrar los recursos económicos","Influir en la mejora de la enseñanza y el aprendizaje en la IE","Controlar la asistencia docente","Gestionar la infraestructura"], r:1, exp:"El liderazgo pedagógico del director se enfoca en influir positivamente en la práctica docente para mejorar los aprendizajes." },
-    { p:"¿Qué es la comunidad de aprendizaje profesional (CAP)?", ops:["Club de lectura de docentes","Grupo de docentes que colaboran para mejorar su práctica y los aprendizajes","Reunión de padres de familia","Comité de disciplina"], r:1, exp:"Una CAP es un grupo de docentes que trabajan colaborativamente, compartiendo experiencias y conocimientos para mejorar su práctica." },
-    { p:"¿Qué promueve el enfoque ambiental en la educación?", ops:["Estudiar solo ciencias naturales","Desarrollar conciencia y actitudes para el cuidado del ambiente","Eliminar actividades al aire libre","Solo reciclar papel"], r:1, exp:"El enfoque ambiental promueve que los estudiantes desarrollen conciencia, valores y actitudes para cuidar el ambiente y la sostenibilidad." },
-    { p:"¿Qué es la tutoría en la educación básica regular?", ops:["Reforzamiento de matemáticas","Acompañamiento socioafectivo y cognitivo al estudiante","Sanción de conductas","Solo orientación vocacional"], r:1, exp:"La tutoría es el acompañamiento socioafectivo, cognitivo y pedagógico que brinda el docente para el bienestar integral del estudiante." },
-    { p:"¿Qué implica la convivencia democrática en el aula?", ops:["El docente impone todas las normas","Construir normas participativamente y resolver conflictos pacíficamente","No tener ninguna norma","Solo premiar el buen comportamiento"], r:1, exp:"La convivencia democrática implica construir participativamente normas de convivencia y gestionar conflictos de manera pacífica y formativa." },
-    { p:"¿Cuál es el propósito del Plan de Mejora en la IE?", ops:["Sancionar docentes de bajo desempeño","Establecer acciones para mejorar los resultados de aprendizaje","Aumentar la infraestructura","Reducir el número de estudiantes"], r:1, exp:"El Plan de Mejora busca establecer acciones concretas y priorizadas para mejorar los resultados de aprendizaje en la IE." },
-    { p:"¿Qué es la autoevaluación institucional?", ops:["Evaluación externa de la UGEL","Proceso por el cual la IE reflexiona sobre su propia gestión y resultados","Solo evaluar a los docentes","Rendir cuentas al ministerio"], r:1, exp:"La autoevaluación institucional es el proceso por el cual la propia IE analiza su funcionamiento para identificar fortalezas y mejorar." },
-    { p:"¿Qué es el enfoque de derechos en educación?", ops:["Solo proteger derechos laborales docentes","Reconocer al estudiante como sujeto de derechos que debe ser respetado y protegido","Exigir deberes sin reconocer derechos","Solo aplicar el código del niño"], r:1, exp:"El enfoque de derechos reconoce al estudiante como sujeto de derechos, promoviendo su dignidad, participación y protección." },
-    { p:"¿Qué es la neuroeducación?", ops:["Cirugía cerebral para mejorar notas","Disciplina que aplica hallazgos de neurociencia para mejorar los procesos educativos","Solo estudiar el cerebro","Psicología clínica"], r:1, exp:"La neuroeducación aplica los conocimientos sobre el funcionamiento cerebral para diseñar mejores estrategias de enseñanza y aprendizaje." },
-    { p:"¿Qué caracteriza al docente reflexivo según Schön?", ops:["Sigue rutinas sin cuestionarlas","Reflexiona en y sobre la acción para mejorar su práctica profesional","Solo aplica teorías","Evalúa constantemente a los estudiantes"], r:1, exp:"Según Schön, el docente reflexivo analiza sus propias acciones durante y después de la práctica para aprender de ellas y mejorar." },
-    { p:"¿Cuál es el impacto de las altas expectativas docentes en el aprendizaje?", ops:["No tienen ningún impacto","Mejoran el rendimiento al motivar a los estudiantes (efecto Pigmalión)","Solo aumentan la presión","Generan ansiedad sin beneficio"], r:1, exp:"El efecto Pigmalión demuestra que las altas expectativas del docente influyen positivamente en el rendimiento y motivación de los estudiantes." }
-  ]
-};
 
 // ══════════════════════════════════════════
 // ESTADO DE LA APP
@@ -1325,39 +1419,61 @@ let currentSim = null; // { tipo, preguntas, idx, respuestas, tiempoInicio, time
 // INICIALIZACIÓN
 // ══════════════════════════════════════════
 async function init() {
-  const { data: { session } } = await sb.auth.getSession();
-  if (session) {
-    currentUser = session.user;
-    await loadProfile();
-  } else {
+  // Detectar si viene del enlace de recuperación de contraseña
+  const hash = window.location.hash;
+  if (hash.includes('type=recovery')) {
+    // Supabase ya tiene la sesión cargada desde el hash
+    const { data: { session } } = await sb.auth.getSession();
+    if (session) {
+      currentUser = session.user;
+      mostrarModalCambioPass();
+      return;
+    }
+  }
+
+  try {
+    const { data: { session } } = await sb.auth.getSession();
+    if (session) {
+      currentUser = session.user;
+      await loadProfile();
+    } else {
+      showScreen('login');
+    }
+  } catch (e) {
+    console.error('Error al iniciar:', e);
     showScreen('login');
   }
 }
 
 async function loadProfile() {
-  const { data } = await sb.from('perfiles').select('*').eq('id', currentUser.id).single();
-  currentProfile = data;
+  try {
+    const { data, error } = await sb.from('perfiles').select('*').eq('id', currentUser.id).single();
+    if (error) throw error;
+    currentProfile = data;
 
-  // Verificar vencimiento automático
-  if (currentProfile?.membresia_activa && currentProfile?.vencimiento) {
-    const vence = new Date(currentProfile.vencimiento);
-    const ahora = new Date();
-    if (ahora > vence) {
-      // Desactivar automáticamente
-      await sb.from('perfiles').update({ membresia_activa: false }).eq('id', currentUser.id);
-      currentProfile.membresia_activa = false;
+    // Verificar vencimiento automático
+    if (currentProfile?.membresia_activa && currentProfile?.vencimiento) {
+      const vence = new Date(currentProfile.vencimiento);
+      if (new Date() > vence) {
+        await sb.from('perfiles').update({ membresia_activa: false }).eq('id', currentUser.id);
+        currentProfile.membresia_activa = false;
+      }
     }
-  }
 
-  document.getElementById('topbar').style.display = 'flex';
-  document.getElementById('topbar-nombre').textContent = currentProfile?.nombre || currentUser.email;
+    document.getElementById('topbar').style.display = 'flex';
+    document.getElementById('topbar-nombre').textContent = currentProfile?.nombre || currentUser.email;
 
-  if (currentUser.email === ADMIN_EMAIL) {
-    showScreen('admin');
-    cargarAdmin();
-  } else {
-    showScreen('dashboard');
-    cargarDashboard();
+    if (currentProfile?.rol === 'admin') {
+      showScreen('admin');
+      cargarAdmin();
+    } else {
+      showScreen('dashboard');
+      cargarDashboard();
+    }
+  } catch (e) {
+    console.error('Error cargando perfil:', e);
+    showScreen('login');
+    showAlerta('❌ Error al cargar tu perfil. Intenta de nuevo.', 'error');
   }
 }
 
@@ -1365,6 +1481,11 @@ async function loadProfile() {
 // NAVEGACIÓN
 // ══════════════════════════════════════════
 function showScreen(name) {
+  // Bloquear acceso directo a pantalla admin sin rol
+  if (name === 'admin' && currentProfile?.rol !== 'admin') {
+    console.warn('Acceso denegado a pantalla admin.');
+    name = currentUser ? 'dashboard' : 'login';
+  }
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById('screen-' + name).classList.add('active');
   if (name === 'login') document.getElementById('topbar').style.display = 'none';
@@ -1398,24 +1519,22 @@ async function doLogin() {
   btn.innerHTML = '<span class="spinner"></span> Ingresando...';
   btn.disabled = true;
 
-  const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
-  btn.innerHTML = 'Ingresar a mi cuenta';
-  btn.disabled = false;
-
-  if (error) {
-    // Mostrar mensaje claro según el tipo de error
-    if (error.message.includes('Email not confirmed')) {
-      return showAlerta('⚠️ Debes confirmar tu correo electrónico antes de ingresar. Revisa tu bandeja de entrada.', 'warning');
+  try {
+    const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
+    if (error) {
+      if (error.message.includes('Email not confirmed'))
+        return showAlerta('⚠️ Debes confirmar tu correo antes de ingresar. Revisa tu bandeja.', 'warning');
+      return showAlerta('❌ Correo o contraseña incorrectos.', 'error');
     }
-    return showAlerta('❌ Correo o contraseña incorrectos.', 'error');
+    if (!data.session) return showAlerta('⚠️ No se pudo iniciar sesión. Confirma tu correo primero.', 'warning');
+    currentUser = data.session.user;
+    await loadProfile();
+  } catch (e) {
+    showAlerta('❌ Error de conexión. Verifica tu internet e intenta de nuevo.', 'error');
+  } finally {
+    btn.innerHTML = 'Ingresar a mi cuenta';
+    btn.disabled = false;
   }
-
-  if (!data.session) {
-    return showAlerta('⚠️ No se pudo iniciar sesión. Si recién creaste tu cuenta, confirma tu correo primero.', 'warning');
-  }
-
-  currentUser = data.session.user;
-  await loadProfile();
 }
 
 async function doRegistro() {
@@ -1431,25 +1550,112 @@ async function doRegistro() {
   btn.innerHTML = '<span class="spinner"></span> Creando cuenta...';
   btn.disabled = true;
 
-  const { data, error } = await sb.auth.signUp({ email, password: pass });
-  btn.innerHTML = 'Crear mi cuenta gratis';
-  btn.disabled = false;
+  try {
+    const { data, error } = await sb.auth.signUp({ email, password: pass });
+    if (error) return showAlerta('❌ ' + error.message, 'error');
+    await sb.from('perfiles').insert({
+      id: data.user.id,
+      nombre: nombre + ' ' + apellido,
+      email,
+      membresia_activa: false
+    });
+    showAlerta('✅ ¡Cuenta creada! Confirma tu correo y luego inicia sesión.', 'success');
+  } catch (e) {
+    showAlerta('❌ Error de conexión. Verifica tu internet e intenta de nuevo.', 'error');
+  } finally {
+    btn.innerHTML = 'Crear mi cuenta gratis';
+    btn.disabled = false;
+  }
+}
 
-  if (error) return showAlerta('❌ ' + error.message, 'error');
+// ── NUEVA CONTRASEÑA (desde enlace de recuperación) ──
+function mostrarModalCambioPass() {
+  showScreen('login');
+  document.getElementById('modal-nueva-pass').style.display = 'flex';
+}
 
-  // Crear perfil
-  await sb.from('perfiles').insert({
-    id: data.user.id,
-    nombre: nombre + ' ' + apellido,
-    email,
-    membresia_activa: false
-  });
+async function guardarNuevaPass() {
+  const pass  = document.getElementById('nueva-pass').value;
+  const pass2 = document.getElementById('nueva-pass2').value;
+  const alertaEl = document.getElementById('alerta-nueva-pass');
+  const mostrar = (msg, tipo) => {
+    alertaEl.textContent = msg;
+    alertaEl.className = 'alerta ' + tipo;
+    alertaEl.style.display = 'block';
+  };
 
-  showAlerta('✅ ¡Cuenta creada! Confirma tu correo y luego inicia sesión.', 'success');
+  if (pass.length < 8) return mostrar('⚠️ La contraseña debe tener al menos 8 caracteres.', 'error');
+  if (pass !== pass2)  return mostrar('⚠️ Las contraseñas no coinciden.', 'error');
+
+  const btn = document.getElementById('btn-nueva-pass');
+  btn.innerHTML = '<span class="spinner"></span> Guardando...';
+  btn.disabled = true;
+
+  try {
+    const { error } = await sb.auth.updateUser({ password: pass });
+    if (error) throw error;
+    mostrar('✅ ¡Contraseña actualizada! Ya puedes iniciar sesión.', 'success');
+    btn.innerHTML = '✅ Guardado';
+    // Limpiar el hash de la URL
+    history.replaceState(null, '', window.location.pathname);
+    setTimeout(() => {
+      document.getElementById('modal-nueva-pass').style.display = 'none';
+      showScreen('login');
+    }, 2500);
+  } catch (e) {
+    console.error('Error actualizando contraseña:', e);
+    mostrar('❌ No se pudo actualizar la contraseña. El enlace puede haber expirado.', 'error');
+    btn.innerHTML = 'Guardar nueva contraseña';
+    btn.disabled = false;
+  }
+}
+
+// ── RECUPERAR CONTRASEÑA ──
+function abrirRecuperarPass() {
+  document.getElementById('recuperar-email').value = document.getElementById('li-email').value || '';
+  document.getElementById('alerta-recuperar').style.display = 'none';
+  document.getElementById('btn-recuperar').innerHTML = 'Enviar enlace';
+  document.getElementById('btn-recuperar').disabled = false;
+  document.getElementById('modal-recuperar').style.display = 'flex';
+}
+
+function cerrarRecuperarPass() {
+  document.getElementById('modal-recuperar').style.display = 'none';
+}
+
+async function enviarRecuperacion() {
+  const email = document.getElementById('recuperar-email').value.trim();
+  const alertaEl = document.getElementById('alerta-recuperar');
+  const mostrar = (msg, tipo) => {
+    alertaEl.textContent = msg;
+    alertaEl.className = 'alerta ' + tipo;
+    alertaEl.style.display = 'block';
+  };
+
+  if (!email) return mostrar('⚠️ Ingresa tu correo electrónico.', 'error');
+
+  const btn = document.getElementById('btn-recuperar');
+  btn.innerHTML = '<span class="spinner"></span> Enviando...';
+  btn.disabled = true;
+
+  try {
+    const { error } = await sb.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.origin + window.location.pathname
+    });
+    if (error) throw error;
+    mostrar('✅ ¡Enlace enviado! Revisa tu bandeja de entrada (y la carpeta de spam).', 'success');
+    btn.innerHTML = '✅ Enviado';
+    setTimeout(() => cerrarRecuperarPass(), 4000);
+  } catch (e) {
+    console.error('Error enviando recuperación:', e);
+    mostrar('❌ No se pudo enviar el correo. Verifica la dirección e intenta de nuevo.', 'error');
+    btn.innerHTML = 'Enviar enlace';
+    btn.disabled = false;
+  }
 }
 
 async function logout() {
-  await sb.auth.signOut();
+  try { await sb.auth.signOut(); } catch (e) { console.error('Error al cerrar sesión:', e); }
   currentUser = null;
   currentProfile = null;
   document.getElementById('topbar').style.display = 'none';
@@ -1463,11 +1669,44 @@ async function cargarDashboard() {
   const nombre = (currentProfile?.nombre || currentUser.email).split(' ')[0];
   document.getElementById('dash-nombre').textContent = nombre;
 
-  const activa = currentProfile?.membresia_activa;
+  const activa    = currentProfile?.membresia_activa;
+  const vencimiento = currentProfile?.vencimiento ? new Date(currentProfile.vencimiento) : null;
+  const hoy       = new Date();
+
+  // Badge membresía
   const badge = document.getElementById('dash-membresia-badge');
   badge.innerHTML = activa
     ? '<span class="membresia-badge activa">✅ Membresía Activa</span>'
     : '<span class="membresia-badge inactiva">🔒 Sin membresía — <a href="https://wa.me/51922573625?text=Hola%2C%20quiero%20adquirir%20una%20membresia" target="_blank" style="color:inherit;font-weight:700">Adquirir aquí</a></span>';
+
+  // Badge especialidad
+  const espBadge = document.getElementById('dash-especialidad-badge');
+  const esp = currentProfile?.especialidad;
+  const tipoExamen = currentProfile?.tipo_examen;
+  if (esp && esp !== 'general') {
+    const espLabel = esp === 'inicial' ? '🧒 Educación Inicial' : '📚 Educación Primaria';
+    const tipoLabel = tipoExamen === 'ascenso' ? '🏆 Ascenso' : '📋 Nombramiento';
+    espBadge.innerHTML = `<span style="background:rgba(15,45,138,0.08);border:1.5px solid rgba(15,45,138,0.15);padding:5px 12px;border-radius:8px;font-size:0.82rem;font-weight:600;color:var(--azul-oscuro)">${tipoLabel} · ${espLabel}</span>`;
+  }
+
+  // Banner de vencimiento próximo (menos de 7 días)
+  const banner = document.getElementById('banner-vencimiento');
+  if (activa && vencimiento) {
+    const diasRestantes = Math.ceil((vencimiento - hoy) / (1000 * 60 * 60 * 24));
+    if (diasRestantes <= 7 && diasRestantes > 0) {
+      document.getElementById('banner-vencimiento-titulo').textContent =
+        diasRestantes === 1 ? '⚠️ Tu membresía vence mañana' : `⚠️ Tu membresía vence en ${diasRestantes} días`;
+      document.getElementById('banner-vencimiento-texto').textContent =
+        `Vencimiento: ${vencimiento.toLocaleDateString('es-PE', { weekday:'long', day:'numeric', month:'long' })}. Renueva ahora para seguir practicando sin interrupciones.`;
+      banner.style.display = 'flex';
+    } else if (diasRestantes <= 0) {
+      banner.style.display = 'none'; // Ya se desactivó automáticamente
+    } else {
+      banner.style.display = 'none';
+    }
+  } else {
+    banner.style.display = 'none';
+  }
 
   // Bloquear botones si no tiene membresía
   ['btn-sim-nombramiento','btn-sim-ascenso'].forEach(id => {
@@ -1480,27 +1719,33 @@ async function cargarDashboard() {
   });
 
   // Cargar historial
-  const { data: hist } = await sb.from('historial_simulacros')
-    .select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false }).limit(10);
+  try {
+    const { data: hist, error } = await sb.from('historial_simulacros')
+      .select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false }).limit(10);
+    if (error) throw error;
 
-  const tbody = document.getElementById('historial-tbody');
-  if (!hist || hist.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="5" class="sin-historial">Aún no has realizado ningún simulacro</td></tr>';
-    return;
+    const tbody = document.getElementById('historial-tbody');
+    if (!hist || hist.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="5" class="sin-historial">Aún no has realizado ningún simulacro</td></tr>';
+      return;
+    }
+    tbody.innerHTML = hist.map(h => {
+      const pct = Math.round((h.correctas / h.total) * 100);
+      const cls = pct >= 70 ? 'alto' : pct >= 50 ? 'medio' : 'bajo';
+      const fecha = new Date(h.created_at).toLocaleDateString('es-PE');
+      return `<tr>
+        <td>${h.tipo === 'nombramiento' ? '📋 Nombramiento' : '🏆 Ascenso'}</td>
+        <td>${fecha}</td>
+        <td><span class="puntaje-chip ${cls}">${pct}%</span></td>
+        <td>${h.correctas} / ${h.total}</td>
+        <td>${h.tiempo_usado}</td>
+      </tr>`;
+    }).join('');
+  } catch (e) {
+    console.error('Error cargando historial:', e);
+    document.getElementById('historial-tbody').innerHTML =
+      '<tr><td colspan="5" class="sin-historial">⚠️ No se pudo cargar el historial. Verifica tu conexión.</td></tr>';
   }
-
-  tbody.innerHTML = hist.map(h => {
-    const pct = Math.round((h.correctas / h.total) * 100);
-    const cls = pct >= 70 ? 'alto' : pct >= 50 ? 'medio' : 'bajo';
-    const fecha = new Date(h.created_at).toLocaleDateString('es-PE');
-    return `<tr>
-      <td>${h.tipo === 'nombramiento' ? '📋 Nombramiento' : '🏆 Ascenso'}</td>
-      <td>${fecha}</td>
-      <td><span class="puntaje-chip ${cls}">${pct}%</span></td>
-      <td>${h.correctas} / ${h.total}</td>
-      <td>${h.tiempo_usado}</td>
-    </tr>`;
-  }).join('');
 }
 
 // ══════════════════════════════════════════
@@ -1520,48 +1765,48 @@ async function iniciarSimulacro(tipo) {
   btn.disabled = true;
 
   try {
-    // 1. Intentar cargar desde Supabase
-    const { data: hgDB } = await sb.from('preguntas')
+    // 1. Cargar preguntas desde Supabase
+    const { data: hgDB, error: e1 } = await sb.from('preguntas')
       .select('*')
       .eq('subprueba', 'hg')
       .eq('activa', true);
+    if (e1) throw e1;
 
-    const { data: cpDB } = await sb.from('preguntas')
+    const especialidad = currentProfile?.especialidad || 'general';
+    const { data: cpDB, error: e2 } = await sb.from('preguntas')
       .select('*')
       .eq('tipo', tipo)
       .eq('subprueba', 'cp')
+      .eq('especialidad', especialidad)
       .eq('activa', true);
+    if (e2) throw e2;
 
-    // 2. Convertir formato Supabase al formato interno
+    // 2. Verificar que hay suficientes preguntas
+    if (!hgDB || hgDB.length < 25) {
+      showScreen('dashboard');
+      alert(`⚠️ No hay suficientes preguntas de Habilidades Generales.\nSe necesitan 25, hay ${hgDB?.length || 0}.\nEl administrador debe agregar más preguntas.`);
+      return;
+    }
+    if (!cpDB || cpDB.length < 50) {
+      showScreen('dashboard');
+      const espLabel = especialidad === 'inicial' ? 'Inicial' : especialidad === 'primaria' ? 'Primaria' : 'General';
+      alert(`⚠️ No hay suficientes preguntas de Conocimientos Pedagógicos (${espLabel}).\nSe necesitan 50, hay ${cpDB?.length || 0}.\nEl administrador debe agregar más preguntas.`);
+      return;
+    }
+
+    // 3. Convertir formato Supabase al formato interno
     const convertir = (p) => ({
-      p: p.pregunta,
+      id:  p.id,
+      p:   p.pregunta,
       ops: p.opciones,
-      r: p.respuesta_correcta,
+      r:   p.respuesta_correcta,
       exp: p.explicacion || ''
     });
 
-    // 3. Decidir fuente: Supabase si hay suficientes, sino código
-    let hgPool, cpPool;
-    const usandoDB_HG = hgDB && hgDB.length >= 25;
-    const usandoDB_CP = cpDB && cpDB.length >= 50;
-
-    hgPool = usandoDB_HG
-      ? hgDB.map(convertir)
-      : [...PREGUNTAS.habilidades_generales];
-
-    cpPool = usandoDB_CP
-      ? cpDB.map(convertir)
-      : [...PREGUNTAS[tipo]];
-
-    // 4. Mezclar y tomar 25 HG + 50 CP
-    const hg = hgPool.sort(() => Math.random() - 0.5).slice(0, 25);
-    const cp = cpPool.sort(() => Math.random() - 0.5).slice(0, 50);
+    // 4. Mezclar aleatoriamente y tomar 25 HG + 50 CP
+    const hg = hgDB.map(convertir).sort(() => Math.random() - 0.5).slice(0, 25);
+    const cp = cpDB.map(convertir).sort(() => Math.random() - 0.5).slice(0, 50);
     const preguntas = [...hg, ...cp];
-
-    // 5. Mostrar de dónde vienen las preguntas (solo para info del admin)
-    if (currentUser.email === ADMIN_EMAIL) {
-      console.log(`HG: ${usandoDB_HG ? 'Supabase ('+hgDB.length+')' : 'Código'} | CP: ${usandoDB_CP ? 'Supabase ('+cpDB.length+')' : 'Código'}`);
-    }
 
     currentSim = {
       tipo,
@@ -1581,8 +1826,9 @@ async function iniciarSimulacro(tipo) {
     iniciarCronometro();
 
   } catch(err) {
-    console.error(err);
-    alert('Error al cargar preguntas. Intenta de nuevo.');
+    console.error('Error al cargar simulacro:', err);
+    showScreen('dashboard');
+    alert('⚠️ No se pudieron cargar las preguntas. Verifica tu conexión e intenta de nuevo.');
   } finally {
     btn.innerHTML = textoOriginal;
     btn.disabled = false;
@@ -1723,19 +1969,42 @@ async function finalizarSimulacro() {
   const aprobado = aproboCP && aproboTotal;
 
   // Guardar en Supabase
-  await sb.from('historial_simulacros').insert({
-    user_id: currentUser.id,
-    tipo,
-    correctas: correctasHG + correctasCP,
-    total: 75,
-    puntaje: total,
-    puntaje_hg: ptsHG,
-    puntaje_cp: ptsCP,
-    correctas_hg: correctasHG,
-    correctas_cp: correctasCP,
-    aprobado,
-    tiempo_usado: tiempoStr
-  });
+  try {
+    const { data: histInsert, error: e1 } = await sb.from('historial_simulacros').insert({
+      user_id: currentUser.id,
+      tipo,
+      correctas: correctasHG + correctasCP,
+      total: 75,
+      puntaje: total,
+      puntaje_hg: ptsHG,
+      puntaje_cp: ptsCP,
+      correctas_hg: correctasHG,
+      correctas_cp: correctasCP,
+      aprobado,
+      tiempo_usado: tiempoStr
+    }).select('id').single();
+    if (e1) throw e1;
+
+    // Guardar detalle por pregunta
+    const detalles = preguntas.map((p, i) => ({
+      historial_id:      histInsert.id,
+      user_id:           currentUser.id,
+      pregunta_id:       p.id || null,
+      pregunta_texto:    p.p,
+      subprueba:         i < 25 ? 'hg' : 'cp',
+      especialidad:      currentProfile?.especialidad || 'general',
+      respuesta_usuario: respuestas[i],
+      respuesta_correcta: p.r,
+      es_correcta:       respuestas[i] === p.r
+    }));
+
+    // Insertar en lotes de 50
+    for (let i = 0; i < detalles.length; i += 50) {
+      await sb.from('respuestas_detalle').insert(detalles.slice(i, i + 50));
+    }
+  } catch (e) {
+    console.error('Error guardando historial:', e);
+  }
 
   // Mostrar resultado
   showScreen('resultado');
@@ -1788,10 +2057,136 @@ async function finalizarSimulacro() {
   document.getElementById('res-correctas').textContent = correctasHG + correctasCP;
   document.getElementById('res-incorrectas').textContent = 75 - (correctasHG + correctasCP);
   document.getElementById('res-tiempo').textContent = tiempoStr;
+
+  // Mostrar botón repaso solo si hubo errores
+  const errores = preguntas.filter((p, i) => respuestas[i] !== p.r).length;
+  const btnRepaso = document.getElementById('btn-repaso');
+  if (errores > 0) {
+    btnRepaso.style.display = 'inline-flex';
+    btnRepaso.textContent = `📖 Repasar mis ${errores} error${errores > 1 ? 'es' : ''}`;
+  } else {
+    btnRepaso.style.display = 'none';
+  }
 }
 
 function repetirSimulacro() { iniciarSimulacro(currentSim.tipo); }
 function irDashboard() { showScreen('dashboard'); cargarDashboard(); }
+
+// ══════════════════════════════════════════
+// MODO REPASO
+// ══════════════════════════════════════════
+let repasoErrores = [];
+let repasoIdx     = 0;
+
+function iniciarRepaso() {
+  const { preguntas, respuestas } = currentSim;
+
+  // Filtrar solo las incorrectas o sin responder
+  repasoErrores = preguntas
+    .map((p, i) => ({ ...p, idxOriginal: i, respuestaUsuario: respuestas[i] }))
+    .filter(p => p.respuestaUsuario !== p.r);
+
+  if (!repasoErrores.length) {
+    alert('🎉 ¡No fallaste ninguna pregunta! No hay nada que repasar.');
+    return;
+  }
+
+  repasoIdx = 0;
+  document.getElementById('repaso-fin').style.display = 'none';
+  document.getElementById('repaso-card').style.display = 'block';
+  document.getElementById('repaso-contador').textContent =
+    `${repasoErrores.length} pregunta${repasoErrores.length > 1 ? 's' : ''} fallada${repasoErrores.length > 1 ? 's' : ''} para repasar`;
+
+  // Dots de navegación rápida
+  const dotsEl = document.getElementById('repaso-nav-dots');
+  dotsEl.innerHTML = repasoErrores.map((_, i) =>
+    `<button onclick="irRepaso(${i})" id="repaso-dot-${i}" style="width:30px;height:30px;border-radius:50%;border:2px solid rgba(239,68,68,0.4);background:rgba(239,68,68,0.08);color:var(--error);font-size:0.75rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif">${i+1}</button>`
+  ).join('');
+
+  showScreen('repaso');
+  renderRepaso();
+}
+
+function renderRepaso() {
+  if (repasoIdx >= repasoErrores.length) {
+    document.getElementById('repaso-card').style.display = 'none';
+    document.getElementById('repaso-fin').style.display = 'block';
+    return;
+  }
+
+  const p = repasoErrores[repasoIdx];
+  const letras = ['A', 'B', 'C', 'D'];
+  const esHG = p.idxOriginal < 25;
+
+  // Header
+  document.getElementById('repaso-num').textContent = `❌ Pregunta ${p.idxOriginal + 1}`;
+  document.getElementById('repaso-tipo-badge').textContent = esHG ? '📖 Habilidades Generales · 2 pts' : '🧠 Conocimientos Pedagógicos · 3 pts';
+  document.getElementById('repaso-pos').textContent = `${repasoIdx + 1} de ${repasoErrores.length}`;
+  document.getElementById('repaso-pregunta-texto').textContent = p.p;
+  document.getElementById('repaso-explicacion-texto').textContent = p.exp || 'Sin explicación disponible.';
+
+  // Opciones — mostrando correcta vs lo que respondió el docente
+  const opcionesEl = document.getElementById('repaso-opciones');
+  opcionesEl.innerHTML = p.ops.map((op, i) => {
+    let bg = 'rgba(15,45,138,0.04)';
+    let border = 'rgba(15,45,138,0.12)';
+    let color = 'var(--azul-oscuro)';
+    let icono = '';
+
+    if (i === p.r) {
+      bg = 'rgba(34,197,94,0.08)';
+      border = 'rgba(34,197,94,0.4)';
+      color = '#15803d';
+      icono = '✅ ';
+    } else if (i === p.respuestaUsuario) {
+      bg = 'rgba(239,68,68,0.06)';
+      border = 'rgba(239,68,68,0.35)';
+      color = '#dc2626';
+      icono = '❌ ';
+    }
+
+    return `<div style="padding:14px 18px;border-radius:10px;background:${bg};border:1.5px solid ${border};color:${color};font-size:0.9rem;line-height:1.4;font-weight:${i===p.r?'700':'400'}">
+      <span style="font-weight:700;margin-right:8px">${letras[i]}.</span>${icono}${op}
+    </div>`;
+  }).join('');
+
+  // Progreso
+  const pct = Math.round(((repasoIdx + 1) / repasoErrores.length) * 100);
+  document.getElementById('repaso-barra').style.width = pct + '%';
+
+  // Botones nav
+  document.getElementById('btn-repaso-ant').style.visibility = repasoIdx === 0 ? 'hidden' : 'visible';
+  document.getElementById('btn-repaso-sig').textContent =
+    repasoIdx === repasoErrores.length - 1 ? 'Finalizar repaso ✓' : 'Siguiente →';
+
+  // Actualizar dot activo
+  document.querySelectorAll('[id^="repaso-dot-"]').forEach((d, i) => {
+    d.style.background = i === repasoIdx ? 'var(--error)' : 'rgba(239,68,68,0.08)';
+    d.style.color = i === repasoIdx ? 'white' : 'var(--error)';
+  });
+}
+
+function repasoSiguiente() {
+  if (repasoIdx < repasoErrores.length - 1) {
+    repasoIdx++;
+    renderRepaso();
+  } else {
+    document.getElementById('repaso-card').style.display = 'none';
+    document.getElementById('repaso-fin').style.display = 'block';
+  }
+}
+
+function repasoAnterior() {
+  if (repasoIdx > 0) {
+    repasoIdx--;
+    renderRepaso();
+  }
+}
+
+function irRepaso(idx) {
+  repasoIdx = idx;
+  renderRepaso();
+}
 
 // ══════════════════════════════════════════
 // ADMIN COMPLETO
@@ -1808,25 +2203,41 @@ function adminTab(tab) {
   el.classList.add('active');
   if (tab === 'historial') cargarHistorialAdmin();
   if (tab === 'stats') cargarStats();
+  if (tab === 'dificiles') cargarPreguntasDificiles();
+}
+
+// ── Guardia de seguridad: verifica rol admin antes de cualquier acción admin ──
+function esAdmin() {
+  if (currentProfile?.rol !== 'admin') {
+    console.warn('Acceso denegado: se requiere rol admin.');
+    showScreen('login');
+    return false;
+  }
+  return true;
 }
 
 async function cargarAdmin() {
-  const { data: usuarios } = await sb.from('perfiles').select('*').order('created_at', { ascending: false });
-  const { data: historial } = await sb.from('historial_simulacros').select('id');
-  if (!usuarios) return;
-
-  todosUsuarios = usuarios;
-  document.getElementById('stat-total').textContent = usuarios.length;
-  document.getElementById('stat-activos').textContent = usuarios.filter(u => u.membresia_activa).length;
-  document.getElementById('stat-inactivos').textContent = usuarios.filter(u => !u.membresia_activa).length;
-  document.getElementById('stat-simulacros').textContent = historial?.length || 0;
-  renderTablaUsuarios(usuarios);
+  if (!esAdmin()) return;
+  try {
+    const { data: usuarios, error } = await sb.from('perfiles').select('*').order('created_at', { ascending: false });
+    if (error) throw error;
+    const { data: historial } = await sb.from('historial_simulacros').select('id');
+    todosUsuarios = usuarios || [];
+    document.getElementById('stat-total').textContent = todosUsuarios.length;
+    document.getElementById('stat-activos').textContent = todosUsuarios.filter(u => u.membresia_activa).length;
+    document.getElementById('stat-inactivos').textContent = todosUsuarios.filter(u => !u.membresia_activa).length;
+    document.getElementById('stat-simulacros').textContent = historial?.length || 0;
+    renderTablaUsuarios(todosUsuarios);
+  } catch (e) {
+    console.error('Error cargando panel admin:', e);
+    showAlertaAdmin('❌ Error de conexión al cargar usuarios. Recarga la página.', 'error');
+  }
 }
 
 function renderTablaUsuarios(usuarios) {
   const tbody = document.getElementById('admin-tbody');
   if (!usuarios.length) {
-    tbody.innerHTML = '<tr><td colspan="7" class="sin-historial">No hay usuarios registrados</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="8" class="sin-historial">No hay usuarios registrados</td></tr>';
     return;
   }
   tbody.innerHTML = usuarios.map(u => {
@@ -1834,15 +2245,18 @@ function renderTablaUsuarios(usuarios) {
     const activa = u.membresia_activa;
     const plan = u.plan || 'ninguno';
     const planLabel = plan === '1mes' ? '1 mes' : plan === '6meses' ? '6 meses' : plan === '12meses' ? '12 meses' : '—';
+    const tipoLabel = u.tipo_examen === 'ascenso' ? '🏆 Ascenso' : '📋 Nombramiento';
+    const espLabel  = u.especialidad === 'primaria' ? '📚 Primaria' : u.especialidad === 'inicial' ? '🧒 Inicial' : '—';
     return `<tr>
       <td><strong>${u.nombre || '—'}</strong></td>
       <td style="font-size:0.8rem">${u.email}</td>
+      <td style="font-size:0.78rem">${tipoLabel}</td>
+      <td style="font-size:0.78rem">${espLabel}</td>
       <td><span style="background:rgba(15,45,138,0.07);padding:3px 8px;border-radius:6px;font-size:0.78rem">${planLabel}</span></td>
       <td style="font-size:0.8rem;color:var(--gris)">${u.vencimiento ? new Date(u.vencimiento).toLocaleDateString('es-PE') : '—'}</td>
-      <td style="font-size:0.8rem;color:var(--gris)">${fecha}</td>
       <td><span class="estado-chip ${activa ? 'activo' : 'inactivo'}">${activa ? '✅ Activa' : '❌ Inactiva'}</span></td>
       <td>
-        <button class="btn-editar" onclick="abrirEditar('${u.id}','${(u.nombre||'').replace(/'/g,"\\'")}','${u.plan||'ninguno'}',${activa})">✏️ Editar</button>
+        <button class="btn-editar" onclick="abrirEditar('${u.id}','${(u.nombre||'').replace(/'/g,"\\'")}','${u.plan||'ninguno'}',${activa},'${u.tipo_examen||'nombramiento'}','${u.especialidad||'inicial'}')">✏️ Editar</button>
         <button class="toggle-membresia ${activa ? 'desactivar' : 'activar'}" onclick="toggleMembresia('${u.id}', ${!activa})">${activa ? 'Desactivar' : 'Activar'}</button>
       </td>
     </tr>`;
@@ -1858,15 +2272,24 @@ function filtrarUsuarios() {
 }
 
 async function toggleMembresia(userId, estado) {
-  await sb.from('perfiles').update({ membresia_activa: estado }).eq('id', userId);
-  cargarAdmin();
+  if (!esAdmin()) return;
+  try {
+    const { error } = await sb.from('perfiles').update({ membresia_activa: estado }).eq('id', userId);
+    if (error) throw error;
+    cargarAdmin();
+  } catch (e) {
+    console.error('Error al cambiar membresía:', e);
+    showAlertaAdmin('❌ No se pudo actualizar la membresía. Intenta de nuevo.', 'error');
+  }
 }
 
-function abrirEditar(id, nombre, plan, membresia) {
+function abrirEditar(id, nombre, plan, membresia, tipo_examen, especialidad) {
   document.getElementById('edit-id').value = id;
   document.getElementById('edit-nombre').value = nombre;
-  document.getElementById('edit-plan').value = plan;
+  document.getElementById('edit-plan').value = plan || 'ninguno';
   document.getElementById('edit-membresia').value = membresia.toString();
+  document.getElementById('edit-tipo-examen').value = tipo_examen || 'nombramiento';
+  document.getElementById('edit-especialidad').value = especialidad || 'inicial';
   const modal = document.getElementById('modal-editar');
   modal.style.display = 'flex';
 }
@@ -1876,12 +2299,14 @@ function cerrarModal() {
 }
 
 async function guardarEdicion() {
-  const id = document.getElementById('edit-id').value;
-  const nombre = document.getElementById('edit-nombre').value.trim();
-  const plan = document.getElementById('edit-plan').value;
-  const membresia = document.getElementById('edit-membresia').value === 'true';
+  if (!esAdmin()) return;
+  const id           = document.getElementById('edit-id').value;
+  const nombre       = document.getElementById('edit-nombre').value.trim();
+  const plan         = document.getElementById('edit-plan').value;
+  const membresia    = document.getElementById('edit-membresia').value === 'true';
+  const tipo_examen  = document.getElementById('edit-tipo-examen').value;
+  const especialidad = document.getElementById('edit-especialidad').value;
 
-  // Calcular vencimiento según plan
   let vencimiento = null;
   if (membresia) {
     const hoy = new Date();
@@ -1891,16 +2316,25 @@ async function guardarEdicion() {
     vencimiento = hoy.toISOString();
   }
 
-  await sb.from('perfiles').update({ nombre, plan, membresia_activa: membresia, vencimiento }).eq('id', id);
-  cerrarModal();
-  cargarAdmin();
+  try {
+    const { error } = await sb.from('perfiles').update({ nombre, plan, membresia_activa: membresia, vencimiento, tipo_examen, especialidad }).eq('id', id);
+    if (error) throw error;
+    cerrarModal();
+    cargarAdmin();
+  } catch (e) {
+    console.error('Error guardando edición:', e);
+    showAlertaAdmin('❌ No se pudo guardar los cambios. Intenta de nuevo.', 'error');
+  }
 }
 
 async function crearUsuarioAdmin() {
-  const nombre = document.getElementById('new-nombre').value.trim();
-  const email  = document.getElementById('new-email').value.trim();
-  const pass   = document.getElementById('new-pass').value;
-  const plan   = document.getElementById('new-plan').value;
+  if (!esAdmin()) return;
+  const nombre       = document.getElementById('new-nombre').value.trim();
+  const email        = document.getElementById('new-email').value.trim();
+  const pass         = document.getElementById('new-pass').value;
+  const plan         = document.getElementById('new-plan').value;
+  const tipo_examen  = document.getElementById('new-tipo-examen').value;
+  const especialidad = document.getElementById('new-especialidad').value;
 
   if (!nombre || !email || !pass) return showAlertaAdmin('⚠️ Completa todos los campos.', 'error');
   if (pass.length < 8) return showAlertaAdmin('⚠️ La contraseña debe tener al menos 8 caracteres.', 'error');
@@ -1915,24 +2349,30 @@ async function crearUsuarioAdmin() {
   else if (plan === '6meses') hoy.setMonth(hoy.getMonth() + 6);
   else if (plan === '12meses') hoy.setFullYear(hoy.getFullYear() + 1);
 
-  const { data, error } = await sb.auth.signUp({ email, password: pass });
-  btn.innerHTML = 'Crear usuario y activar membresía';
-  btn.disabled = false;
+  try {
+    const { data, error } = await sb.auth.signUp({ email, password: pass });
+    if (error) return showAlertaAdmin('❌ ' + error.message, 'error');
 
-  if (error) return showAlertaAdmin('❌ ' + error.message, 'error');
+    const { error: e2 } = await sb.from('perfiles').upsert({
+      id: data.user.id,
+      nombre, email,
+      membresia_activa: true,
+      plan, tipo_examen, especialidad,
+      vencimiento: hoy.toISOString()
+    });
+    if (e2) throw e2;
 
-  await sb.from('perfiles').upsert({
-    id: data.user.id,
-    nombre, email,
-    membresia_activa: true,
-    plan,
-    vencimiento: hoy.toISOString()
-  });
-
-  showAlertaAdmin(`✅ Usuario creado exitosamente. Correo: ${email} | Contraseña: ${pass}`, 'success');
-  document.getElementById('new-nombre').value = '';
-  document.getElementById('new-email').value = '';
-  document.getElementById('new-pass').value = '';
+    showAlertaAdmin(`✅ Usuario creado: ${email} | Contraseña: ${pass}`, 'success');
+    document.getElementById('new-nombre').value = '';
+    document.getElementById('new-email').value = '';
+    document.getElementById('new-pass').value = '';
+  } catch (e) {
+    console.error('Error creando usuario:', e);
+    showAlertaAdmin('❌ Error de conexión. No se pudo crear el usuario.', 'error');
+  } finally {
+    btn.innerHTML = 'Crear usuario y activar membresía';
+    btn.disabled = false;
+  }
 }
 
 function showAlertaAdmin(msg, tipo) {
@@ -1943,13 +2383,104 @@ function showAlertaAdmin(msg, tipo) {
   if (tipo !== 'success') setTimeout(() => el.style.display = 'none', 4000);
 }
 
+// ── PREGUNTAS DIFÍCILES ──
+async function cargarPreguntasDificiles() {
+  if (!esAdmin()) return;
+  const sub = document.getElementById('filtro-dif-sub').value;
+  const esp = document.getElementById('filtro-dif-esp').value;
+
+  const tbody = document.getElementById('dificiles-tbody');
+  tbody.innerHTML = '<tr><td colspan="7" class="sin-historial">Cargando...</td></tr>';
+
+  try {
+    let query = sb.from('respuestas_detalle').select('pregunta_texto, subprueba, especialidad, es_correcta, pregunta_id');
+    if (sub) query = query.eq('subprueba', sub);
+    if (esp) query = query.eq('especialidad', esp);
+
+    const { data, error } = await query;
+    if (error) throw error;
+    if (!data || !data.length) {
+      tbody.innerHTML = '<tr><td colspan="7" class="sin-historial">Aún no hay respuestas registradas. Los datos aparecerán después del primer simulacro completado.</td></tr>';
+      document.getElementById('dif-total-resp').textContent = '0';
+      document.getElementById('dif-tasa-error').textContent = '—';
+      document.getElementById('dif-peor-pregunta').textContent = '—';
+      return;
+    }
+
+    // Agrupar por pregunta
+    const mapa = {};
+    data.forEach(r => {
+      const key = r.pregunta_id || r.pregunta_texto;
+      if (!mapa[key]) mapa[key] = {
+        texto: r.pregunta_texto,
+        subprueba: r.subprueba,
+        especialidad: r.especialidad,
+        total: 0, errores: 0
+      };
+      mapa[key].total++;
+      if (!r.es_correcta) mapa[key].errores++;
+    });
+
+    // Ordenar por tasa de error descendente
+    const ranking = Object.values(mapa)
+      .map(p => ({ ...p, tasa: Math.round((p.errores / p.total) * 100) }))
+      .filter(p => p.total >= 2) // mínimo 2 respuestas para ser relevante
+      .sort((a, b) => b.tasa - a.tasa)
+      .slice(0, 30);
+
+    // Stats resumen
+    const totalResp = data.length;
+    const totalErrores = data.filter(r => !r.es_correcta).length;
+    const tasaGlobal = Math.round((totalErrores / totalResp) * 100);
+    document.getElementById('dif-total-resp').textContent = totalResp.toLocaleString('es-PE');
+    document.getElementById('dif-tasa-error').textContent = tasaGlobal + '%';
+    document.getElementById('dif-peor-pregunta').textContent =
+      ranking.length ? ranking[0].texto.substring(0, 60) + '...' : '—';
+
+    if (!ranking.length) {
+      tbody.innerHTML = '<tr><td colspan="7" class="sin-historial">No hay suficientes datos todavía (se necesitan al menos 2 respuestas por pregunta).</td></tr>';
+      return;
+    }
+
+    const subLabel = s => s === 'hg' ? '📖 HG' : '🧠 CP';
+    const espLabel = e => e === 'inicial' ? '🧒 Inicial' : e === 'primaria' ? '📚 Primaria' : '🌐 General';
+    const colorTasa = t => t >= 70 ? '#dc2626' : t >= 50 ? '#d97706' : '#16a34a';
+
+    tbody.innerHTML = ranking.map((p, i) => `
+      <tr>
+        <td><strong style="color:${i < 3 ? '#dc2626' : 'var(--azul-oscuro)'}">${i + 1}</strong></td>
+        <td style="font-size:0.8rem;max-width:280px;line-height:1.4">${p.texto.substring(0, 90)}${p.texto.length > 90 ? '...' : ''}</td>
+        <td style="font-size:0.78rem">${subLabel(p.subprueba)}</td>
+        <td style="font-size:0.78rem">${espLabel(p.especialidad)}</td>
+        <td style="text-align:center">${p.total}</td>
+        <td style="text-align:center;font-weight:700;color:${colorTasa(p.tasa)}">${p.tasa}%</td>
+        <td style="min-width:100px">
+          <div style="background:rgba(220,38,38,0.1);border-radius:6px;height:8px;overflow:hidden">
+            <div style="background:${colorTasa(p.tasa)};height:100%;width:${p.tasa}%;border-radius:6px;transition:width 0.4s"></div>
+          </div>
+        </td>
+      </tr>`).join('');
+
+  } catch (e) {
+    console.error('Error cargando preguntas difíciles:', e);
+    tbody.innerHTML = '<tr><td colspan="7" class="sin-historial">⚠️ Error de conexión al cargar estadísticas.</td></tr>';
+  }
+}
+
 async function cargarHistorialAdmin() {
-  const { data } = await sb.from('historial_simulacros')
-    .select('*, perfiles(nombre, email)')
-    .order('created_at', { ascending: false })
-    .limit(100);
-  todoHistorial = data || [];
-  renderHistorialAdmin(todoHistorial);
+  try {
+    const { data, error } = await sb.from('historial_simulacros')
+      .select('*, perfiles(nombre, email)')
+      .order('created_at', { ascending: false })
+      .limit(100);
+    if (error) throw error;
+    todoHistorial = data || [];
+    renderHistorialAdmin(todoHistorial);
+  } catch (e) {
+    console.error('Error cargando historial admin:', e);
+    document.getElementById('historial-admin-tbody').innerHTML =
+      '<tr><td colspan="6" class="sin-historial">⚠️ Error de conexión. No se pudo cargar el historial.</td></tr>';
+  }
 }
 
 function renderHistorialAdmin(data) {
@@ -1985,9 +2516,11 @@ function filtrarHistorial() {
 }
 
 async function cargarStats() {
-  const { data: hist } = await sb.from('historial_simulacros').select('*');
-  const { data: usuarios } = await sb.from('perfiles').select('*');
-  if (!hist || !usuarios) return;
+  try {
+    const { data: hist, error: e1 } = await sb.from('historial_simulacros').select('*');
+    const { data: usuarios, error: e2 } = await sb.from('perfiles').select('*');
+    if (e1 || e2) throw e1 || e2;
+    if (!hist || !usuarios) return;
 
   // Promedio general
   const promedio = hist.length ? Math.round(hist.reduce((a,h) => a + h.puntaje, 0) / hist.length) : 0;
@@ -2039,10 +2572,10 @@ async function cargarStats() {
       <td>${r.max}%</td>
     </tr>`;
   }).join('');
+  } catch (e) {
+    console.error('Error cargando estadísticas:', e);
+  }
 }
-
-// ══════════════════════════════════════════
-// PERFIL DEL DOCENTE
 // ══════════════════════════════════════════
 function togglePerfil() {
   const modal = document.getElementById('modal-perfil');
@@ -2090,25 +2623,27 @@ async function guardarPerfil() {
   btn.innerHTML = '<span class="spinner"></span>';
   btn.disabled = true;
 
-  // Actualizar nombre en perfiles
-  await sb.from('perfiles').update({ nombre }).eq('id', currentUser.id);
-  currentProfile.nombre = nombre;
-  document.getElementById('topbar-nombre').textContent = nombre;
+  try {
+    const { error: e1 } = await sb.from('perfiles').update({ nombre }).eq('id', currentUser.id);
+    if (e1) throw e1;
+    currentProfile.nombre = nombre;
+    document.getElementById('topbar-nombre').textContent = nombre;
 
-  // Cambiar contraseña si se ingresó
-  if (pass) {
-    const { error } = await sb.auth.updateUser({ password: pass });
-    if (error) {
-      btn.innerHTML = 'Guardar cambios';
-      btn.disabled = false;
-      return showA('❌ Error al cambiar contraseña: ' + error.message, 'error');
+    if (pass) {
+      const { error: e2 } = await sb.auth.updateUser({ password: pass });
+      if (e2) return showA('❌ Error al cambiar contraseña: ' + e2.message, 'error');
     }
-  }
 
-  btn.innerHTML = 'Guardar cambios';
-  btn.disabled = false;
-  showA('✅ Perfil actualizado correctamente.', 'success');
-  setTimeout(() => cerrarPerfil(), 2000);
+    showA('✅ Cambios guardados correctamente.', 'success');
+    document.getElementById('perfil-pass').value = '';
+    document.getElementById('perfil-pass2').value = '';
+  } catch (e) {
+    console.error('Error guardando perfil:', e);
+    showA('❌ Error de conexión. No se pudieron guardar los cambios.', 'error');
+  } finally {
+    btn.innerHTML = 'Guardar cambios';
+    btn.disabled = false;
+  }
 }
 
 // ══════════════════════════════════════════
@@ -2126,14 +2661,16 @@ function preguntaTab(tab) {
 }
 
 async function guardarPregunta() {
-  const tipo = document.getElementById('np-tipo').value;
-  const subprueba = document.getElementById('np-subprueba').value;
-  const pregunta = document.getElementById('np-pregunta').value.trim();
+  if (!esAdmin()) return;
+  const tipo        = document.getElementById('np-tipo').value;
+  const subprueba   = document.getElementById('np-subprueba').value;
+  const especialidad = document.getElementById('np-especialidad').value;
+  const pregunta    = document.getElementById('np-pregunta').value.trim();
   const a = document.getElementById('np-a').value.trim();
   const b = document.getElementById('np-b').value.trim();
   const c = document.getElementById('np-c').value.trim();
   const d = document.getElementById('np-d').value.trim();
-  const respuesta = parseInt(document.getElementById('np-respuesta').value);
+  const respuesta   = parseInt(document.getElementById('np-respuesta').value);
   const explicacion = document.getElementById('np-explicacion').value.trim();
 
   if (!pregunta || !a || !b || !c || !d) {
@@ -2144,25 +2681,26 @@ async function guardarPregunta() {
   btn.innerHTML = '<span class="spinner"></span> Guardando...';
   btn.disabled = true;
 
-  const { error } = await sb.from('preguntas').insert({
-    tipo, subprueba, pregunta,
-    opciones: [a, b, c, d],
-    respuesta_correcta: respuesta,
-    explicacion, activa: true
-  });
-
-  btn.innerHTML = '💾 Guardar pregunta';
-  btn.disabled = false;
-
-  if (error) return showAlertaPregunta('❌ Error: ' + error.message, 'error');
-
-  showAlertaPregunta('✅ Pregunta guardada correctamente.', 'success');
-  document.getElementById('np-pregunta').value = '';
-  document.getElementById('np-a').value = '';
-  document.getElementById('np-b').value = '';
-  document.getElementById('np-c').value = '';
-  document.getElementById('np-d').value = '';
-  document.getElementById('np-explicacion').value = '';
+  try {
+    const { error } = await sb.from('preguntas').insert({
+      tipo, subprueba, especialidad, pregunta,
+      opciones: [a, b, c, d],
+      respuesta_correcta: respuesta,
+      explicacion, activa: true
+    });
+    if (error) throw error;
+    showAlertaPregunta('✅ Pregunta guardada exitosamente.', 'success');
+    document.getElementById('np-pregunta').value = '';
+    ['np-a','np-b','np-c','np-d','np-explicacion'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('np-respuesta').value = '0';
+    cargarPreguntas();
+  } catch (e) {
+    console.error('Error guardando pregunta:', e);
+    showAlertaPregunta('❌ Error de conexión. No se pudo guardar la pregunta.', 'error');
+  } finally {
+    btn.innerHTML = 'Guardar pregunta';
+    btn.disabled = false;
+  }
 }
 
 function showAlertaPregunta(msg, tipo) {
@@ -2175,11 +2713,13 @@ function showAlertaPregunta(msg, tipo) {
 
 async function cargarPreguntas() {
   const tipo = document.getElementById('filtro-tipo-p').value;
-  const sub = document.getElementById('filtro-sub-p').value;
+  const sub  = document.getElementById('filtro-sub-p').value;
+  const esp  = document.getElementById('filtro-esp-p').value;
 
   let query = sb.from('preguntas').select('*').order('created_at', { ascending: false });
   if (tipo) query = query.eq('tipo', tipo);
-  if (sub) query = query.eq('subprueba', sub);
+  if (sub)  query = query.eq('subprueba', sub);
+  if (esp)  query = query.eq('especialidad', esp);
 
   const { data } = await query;
   const tbody = document.getElementById('preguntas-tbody');
@@ -2189,27 +2729,32 @@ async function cargarPreguntas() {
     `Total: ${data?.length || 0} preguntas`;
 
   if (!data || !data.length) {
-    tbody.innerHTML = '<tr><td colspan="6" class="sin-historial">No hay preguntas. ¡Agrega la primera!</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="7" class="sin-historial">No hay preguntas. ¡Agrega la primera!</td></tr>';
     return;
   }
 
-  tbody.innerHTML = data.map((p, i) => `<tr>
+  tbody.innerHTML = data.map((p, i) => {
+    const espLabel = p.especialidad === 'inicial' ? '🧒 Inicial' : p.especialidad === 'primaria' ? '📚 Primaria' : '🌐 General';
+    return `<tr>
     <td style="color:var(--gris);font-size:0.78rem">${i+1}</td>
     <td>${p.tipo === 'nombramiento' ? '📋' : '🏆'} ${p.tipo}</td>
     <td>${p.subprueba === 'hg' ? '📖 HG' : '🧠 CP'}</td>
-    <td style="font-size:0.82rem;max-width:300px">${p.pregunta.substring(0,80)}${p.pregunta.length>80?'...':''}</td>
+    <td style="font-size:0.78rem">${espLabel}</td>
+    <td style="font-size:0.82rem;max-width:280px">${p.pregunta.substring(0,80)}${p.pregunta.length>80?'...':''}</td>
     <td><strong>${letras[p.respuesta_correcta]}</strong></td>
     <td>
       <button class="btn-editar" onclick="abrirEditarPregunta(${JSON.stringify(p).replace(/"/g,'&quot;')})">✏️</button>
       <button onclick="eliminarPregunta('${p.id}')" style="padding:5px 10px;border-radius:7px;font-size:0.78rem;font-weight:600;cursor:pointer;border:1.5px solid rgba(239,68,68,0.3);background:rgba(239,68,68,0.08);color:var(--error);font-family:'DM Sans',sans-serif">🗑️</button>
     </td>
-  </tr>`).join('');
+  </tr>`;
+  }).join('');
 }
 
 function abrirEditarPregunta(p) {
   document.getElementById('ep-id').value = p.id;
   document.getElementById('ep-tipo').value = p.tipo;
   document.getElementById('ep-subprueba').value = p.subprueba;
+  document.getElementById('ep-especialidad').value = p.especialidad || 'general';
   document.getElementById('ep-pregunta').value = p.pregunta;
   document.getElementById('ep-a').value = p.opciones[0] || '';
   document.getElementById('ep-b').value = p.opciones[1] || '';
@@ -2227,34 +2772,46 @@ function cerrarModalPregunta() {
 
 async function actualizarPregunta() {
   const id = document.getElementById('ep-id').value;
-  const { error } = await sb.from('preguntas').update({
-    tipo: document.getElementById('ep-tipo').value,
-    subprueba: document.getElementById('ep-subprueba').value,
-    pregunta: document.getElementById('ep-pregunta').value.trim(),
-    opciones: [
-      document.getElementById('ep-a').value.trim(),
-      document.getElementById('ep-b').value.trim(),
-      document.getElementById('ep-c').value.trim(),
-      document.getElementById('ep-d').value.trim()
-    ],
-    respuesta_correcta: parseInt(document.getElementById('ep-respuesta').value),
-    explicacion: document.getElementById('ep-explicacion').value.trim()
-  }).eq('id', id);
-
-  if (error) return alert('Error: ' + error.message);
-  cerrarModalPregunta();
-  cargarPreguntas();
+  try {
+    const { error } = await sb.from('preguntas').update({
+      tipo:       document.getElementById('ep-tipo').value,
+      subprueba:  document.getElementById('ep-subprueba').value,
+      especialidad: document.getElementById('ep-especialidad').value,
+      pregunta:   document.getElementById('ep-pregunta').value.trim(),
+      opciones: [
+        document.getElementById('ep-a').value.trim(),
+        document.getElementById('ep-b').value.trim(),
+        document.getElementById('ep-c').value.trim(),
+        document.getElementById('ep-d').value.trim()
+      ],
+      respuesta_correcta: parseInt(document.getElementById('ep-respuesta').value),
+      explicacion: document.getElementById('ep-explicacion').value.trim()
+    }).eq('id', id);
+    if (error) throw error;
+    cerrarModalPregunta();
+    cargarPreguntas();
+  } catch (e) {
+    console.error('Error actualizando pregunta:', e);
+    alert('❌ Error de conexión. No se pudo actualizar la pregunta.');
+  }
 }
 
 async function eliminarPregunta(id) {
+  if (!esAdmin()) return;
   if (!confirm('¿Seguro que deseas eliminar esta pregunta?')) return;
-  await sb.from('preguntas').delete().eq('id', id);
-  cargarPreguntas();
+  try {
+    const { error } = await sb.from('preguntas').delete().eq('id', id);
+    if (error) throw error;
+    cargarPreguntas();
+  } catch (e) {
+    console.error('Error eliminando pregunta:', e);
+    alert('❌ Error de conexión. No se pudo eliminar la pregunta.');
+  }
 }
 
 // ── EXCEL ──
 function descargarPlantilla() {
-  const csv = 'tipo,subprueba,pregunta,opcion_a,opcion_b,opcion_c,opcion_d,respuesta,explicacion\nnombramiento,cp,¿Qué es el Currículo Nacional?,Un documento administrativo,El marco curricular oficial del Perú,Una lista de contenidos,Un reglamento interno,B,El CN es el marco curricular oficial que orienta la educación básica en el Perú.\nnombramiento,hg,Si todos los A son B y algunos B son C entonces,Todos los A son C,Algunos A pueden ser C,Ningún A es C,Todos los C son A,B,Por lógica deductiva algunos A podrían ser C pero no es obligatorio.';
+  const csv = 'tipo,subprueba,especialidad,pregunta,opcion_a,opcion_b,opcion_c,opcion_d,respuesta,explicacion\nnombramiento,hg,general,Si todos los A son B y algunos B son C entonces,Todos los A son C,Algunos A pueden ser C,Ningún A es C,Todos los C son A,B,Por lógica deductiva algunos A podrían ser C pero no es obligatorio.\nnombramiento,cp,inicial,¿Qué es el juego simbólico en educación inicial?,Una actividad libre sin propósito,La representación de roles y situaciones que desarrolla el pensamiento,Solo una actividad recreativa,Un juego con reglas fijas,B,El juego simbólico permite al niño representar roles y situaciones favoreciendo el desarrollo cognitivo.\nascenso,cp,primaria,¿Qué evalúa principalmente el concurso de ascenso de escala?,Solo la antigüedad,Desempeño formación y conocimientos pedagógicos,Solo el título profesional,La puntualidad,B,El concurso de ascenso evalúa desempeño laboral formación continua y conocimientos pedagógicos.';
   const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
@@ -2286,6 +2843,7 @@ async function procesarExcel(file) {
     const idx = (k) => cols[headers.indexOf(k)] || '';
     const tipo = idx('tipo').toLowerCase();
     const sub = idx('subprueba').toLowerCase();
+    const esp = idx('especialidad').toLowerCase() || 'general';
     const preg = idx('pregunta');
     const a = idx('opcion_a');
     const b = idx('opcion_b');
@@ -2303,6 +2861,10 @@ async function procesarExcel(file) {
       errores.push(`Fila ${i+1}: subprueba inválida ("${sub}")`);
       continue;
     }
+    if (!['general','inicial','primaria'].includes(esp)) {
+      errores.push(`Fila ${i+1}: especialidad inválida ("${esp}") — usar: general | inicial | primaria`);
+      continue;
+    }
     if (!preg || !a || !b || !c || !d) {
       errores.push(`Fila ${i+1}: faltan campos`);
       continue;
@@ -2312,7 +2874,7 @@ async function procesarExcel(file) {
       continue;
     }
 
-    preguntasExcel.push({ tipo, subprueba: sub, pregunta: preg, opciones: [a,b,c,d], respuesta_correcta: respNum, explicacion: exp, activa: true });
+    preguntasExcel.push({ tipo, subprueba: sub, especialidad: esp, pregunta: preg, opciones: [a,b,c,d], respuesta_correcta: respNum, explicacion: exp, activa: true });
   }
 
   // Mostrar preview
@@ -2325,10 +2887,11 @@ async function procesarExcel(file) {
     <td>${i+1}</td>
     <td>${p.tipo}</td>
     <td>${p.subprueba === 'hg' ? '📖 HG' : '🧠 CP'}</td>
+    <td>${p.especialidad === 'inicial' ? '🧒 Inicial' : p.especialidad === 'primaria' ? '📚 Primaria' : '🌐 General'}</td>
     <td style="font-size:0.78rem">${p.pregunta.substring(0,60)}...</td>
     <td>${['A','B','C','D'][p.respuesta_correcta]}</td>
     <td><span style="color:#16a34a;font-weight:700">✅ OK</span></td>
-  </tr>`).join('') + (preguntasExcel.length > 10 ? `<tr><td colspan="6" style="text-align:center;color:var(--gris);font-size:0.78rem;padding:10px">... y ${preguntasExcel.length - 10} más</td></tr>` : '');
+  </tr>`).join('') + (preguntasExcel.length > 10 ? `<tr><td colspan="7" style="text-align:center;color:var(--gris);font-size:0.78rem;padding:10px">... y ${preguntasExcel.length - 10} más</td></tr>` : '');
 
   const alertaEl = document.getElementById('alerta-excel');
   if (errores.length) {
@@ -2341,25 +2904,39 @@ async function procesarExcel(file) {
 }
 
 async function importarExcel() {
+  if (!esAdmin()) return;
   if (!preguntasExcel.length) return;
   const btn = document.getElementById('btn-importar');
   btn.innerHTML = '<span class="spinner"></span> Importando...';
   btn.disabled = true;
 
-  const BATCH = 50;
-  for (let i = 0; i < preguntasExcel.length; i += BATCH) {
-    await sb.from('preguntas').insert(preguntasExcel.slice(i, i + BATCH));
-  }
-
-  btn.innerHTML = `✅ ¡${preguntasExcel.length} preguntas importadas!`;
-  btn.style.background = 'linear-gradient(135deg,#16a34a,#22c55e)';
-  setTimeout(() => {
+  try {
+    const BATCH = 50;
+    let importadas = 0;
+    for (let i = 0; i < preguntasExcel.length; i += BATCH) {
+      const { error } = await sb.from('preguntas').insert(preguntasExcel.slice(i, i + BATCH));
+      if (error) throw error;
+      importadas += Math.min(BATCH, preguntasExcel.length - i);
+    }
+    btn.innerHTML = `✅ ¡${importadas} preguntas importadas!`;
+    btn.style.background = 'linear-gradient(135deg,#16a34a,#22c55e)';
+    setTimeout(() => {
+      btn.innerHTML = '⬆️ Importar todas las preguntas a Supabase';
+      btn.style.background = '';
+      btn.disabled = false;
+      preguntasExcel = [];
+      document.getElementById('excel-preview').style.display = 'none';
+      cargarPreguntas();
+    }, 3000);
+  } catch (e) {
+    console.error('Error importando preguntas:', e);
     btn.innerHTML = '⬆️ Importar todas las preguntas a Supabase';
-    btn.style.background = '';
     btn.disabled = false;
-    preguntasExcel = [];
-    document.getElementById('excel-preview').style.display = 'none';
-  }, 3000);
+    const alertaEl = document.getElementById('alerta-excel');
+    alertaEl.textContent = '❌ Error de conexión. No se pudieron importar las preguntas. Intenta de nuevo.';
+    alertaEl.className = 'alerta error';
+    alertaEl.style.display = 'block';
+  }
 }
 
 // Iniciar
