@@ -1478,7 +1478,7 @@ body { font-family:'DM Sans',sans-serif; background:var(--gris-claro); min-heigh
       </div>
       <div class="form-group" style="margin-bottom:0">
         <label>Especialidad</label>
-        <select id="ep-especialidad" style="width:100%;padding:12px 14px;border:1.5px solid rgba(15,45,138,0.15);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.9rem;background:var(--gris-claro);outline:none">
+        <select id="pdf-especialidad" style="width:100%;padding:12px 14px;border:1.5px solid rgba(15,45,138,0.15);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.9rem;background:var(--gris-claro);outline:none">
           <option value="inicial">🧒 Educación Inicial</option>
           <option value="primaria">📚 Educación Primaria</option>
           <option value="general">🌐 General</option>
@@ -1486,7 +1486,7 @@ body { font-family:'DM Sans',sans-serif; background:var(--gris-claro); min-heigh
       </div>
       <div class="form-group" style="margin-bottom:0">
         <label>Tipo</label>
-        <select id="ep-tipo" style="width:100%;padding:12px 14px;border:1.5px solid rgba(15,45,138,0.15);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.9rem;background:var(--gris-claro);outline:none">
+        <select id="pdf-tipo" style="width:100%;padding:12px 14px;border:1.5px solid rgba(15,45,138,0.15);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.9rem;background:var(--gris-claro);outline:none">
           <option value="nombramiento">📋 Nombramiento</option>
           <option value="ascenso">🏆 Ascenso</option>
         </select>
@@ -3389,8 +3389,8 @@ async function subirExamenPDF() {
   if (!esAdmin()) return;
   const titulo = document.getElementById('ep-titulo').value.trim();
   const numPreguntas = parseInt(document.getElementById('ep-num-preguntas').value);
-  const especialidad = document.getElementById('ep-especialidad').value;
-  const tipo = document.getElementById('ep-tipo').value;
+  const especialidad = document.getElementById('pdf-especialidad').value;
+  const tipo = document.getElementById('pdf-tipo').value;
   const claveTexto = document.getElementById('ep-clave').value.trim();
 
   if (!titulo) return showAlertaAdminPdf('⚠️ Escribe el título del examen.', 'error');
@@ -3603,7 +3603,7 @@ function epdfRenderLista() {
         if (o === resp) cls += ' selected';
       }
       const dis = answered ? 'disabled' : '';
-      return `<button class="${cls}" ${dis} onclick="epdfSelectOpt(${i},'${o}')" style="flex:1;padding:5px 0;border:0.5px solid rgba(15,45,138,0.15);border-radius:8px;background:var(--blanco);font-size:12px;font-weight:600;cursor:pointer;color:var(--azul-oscuro);transition:all 0.15s">${o}</button>`;
+      return `<button class="${cls}" ${dis} onclick="event.stopPropagation();epdfSelectOpt(${i},'${o}')" style="flex:1;padding:5px 0;border:0.5px solid rgba(15,45,138,0.15);border-radius:8px;background:var(--blanco);font-size:12px;font-weight:600;cursor:pointer;color:var(--azul-oscuro);transition:all 0.15s">${o}</button>`;
     }).join('');
 
     html += `<div style="${itemStyle}" onclick="epdfSetActive(${i})">
