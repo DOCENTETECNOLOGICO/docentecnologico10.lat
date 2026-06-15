@@ -3603,7 +3603,7 @@ function epdfRenderLista() {
         if (o === resp) cls += ' selected';
       }
       const dis = answered ? 'disabled' : '';
-      return `<button class="${cls}" ${dis} onclick="event.stopPropagation();epdfSelectOpt(${i},'${o}')" style="flex:1;padding:5px 0;border:0.5px solid rgba(15,45,138,0.15);border-radius:8px;background:var(--blanco);font-size:12px;font-weight:600;cursor:pointer;color:var(--azul-oscuro);transition:all 0.15s">${o}</button>`;
+      return `<button class="${cls}" ${dis} onclick="event.stopPropagation();epdfSelectOpt(${i},'${o}')">${o}</button>`;
     }).join('');
 
     html += `<div style="${itemStyle}" onclick="epdfSetActive(${i})">
