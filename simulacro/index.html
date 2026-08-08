@@ -379,7 +379,18 @@ body { font-family:'DM Sans',sans-serif; background:var(--gris-claro); min-heigh
 .btn-editar:hover { background:var(--azul);color:white; }
 .admin-form-card { background:var(--blanco);border-radius:16px;padding:32px;border:1px solid rgba(15,45,138,0.08);max-width:700px; }
 
-/* Responsive */
+/* ── EXAMEN PDF ── */
+.epdf-opt { flex:1;padding:5px 0;border:0.5px solid rgba(15,45,138,0.15);border-radius:8px;background:var(--blanco);font-size:12px;font-weight:600;cursor:pointer;color:var(--azul-oscuro);transition:all 0.15s;font-family:'DM Sans',sans-serif; }
+.epdf-opt:hover { border-color:var(--azul);color:var(--azul);background:rgba(15,45,138,0.05); }
+.opt-btn { flex:1;padding:5px 0;border:0.5px solid rgba(15,45,138,0.15);border-radius:8px;background:var(--blanco);font-size:12px;font-weight:600;cursor:pointer;color:var(--azul-oscuro);transition:all 0.15s;font-family:'DM Sans',sans-serif; }
+.opt-btn:hover:not(:disabled) { border-color:var(--azul);color:var(--azul);background:rgba(15,45,138,0.05); }
+.opt-btn.selected { border-color:var(--azul);background:var(--azul);color:white; }
+.opt-btn.correct { border-color:#16a34a;background:#16a34a;color:white; }
+.opt-btn.wrong { border-color:#dc2626;background:#dc2626;color:white; }
+.opt-btn.show-correct { border-color:#16a34a;color:#16a34a;background:#e6f6ee; }
+.opt-btn:disabled { cursor:default; }
+
+
 /* ── Tablet: 601px – 900px ── */
 @media(min-width:601px) and (max-width:900px){
   .dashboard-grid { grid-template-columns: 1fr 1fr; gap:16px; }
@@ -431,6 +442,7 @@ body { font-family:'DM Sans',sans-serif; background:var(--gris-claro); min-heigh
   </a>
   <div class="topbar-user">
     <span id="topbar-nombre">Usuario</span>
+    <button onclick="abrirAulaVirtual()" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.8);padding:7px 14px;border-radius:7px;font-size:0.8rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;margin-right:4px">🎥 Aula Virtual</button>
     <button onclick="togglePerfil()" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.8);padding:7px 14px;border-radius:7px;font-size:0.8rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;margin-right:4px">👤 Mi perfil</button>
     <button class="btn-logout" onclick="logout()">Cerrar sesión</button>
   </div>
@@ -707,6 +719,14 @@ body { font-family:'DM Sans',sans-serif; background:var(--gris-claro); min-heigh
     </div>
   </div>
 
+  <!-- Exámenes PDF -->
+  <div style="margin-bottom:28px">
+    <h2 style="font-family:'Playfair Display',serif;font-size:1.3rem;color:var(--azul-oscuro);margin-bottom:16px">📄 Exámenes PDF Oficiales</h2>
+    <div id="dash-examenes-pdf-lista" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px">
+      <div style="text-align:center;padding:28px;color:var(--gris);font-size:0.85rem;background:var(--blanco);border-radius:12px;border:1.5px dashed rgba(15,45,138,0.12)" id="dash-pdf-loading">Cargando exámenes...</div>
+    </div>
+  </div>
+
   <!-- Historial -->
   <div class="historial-section">
     <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:16px">
@@ -723,6 +743,77 @@ body { font-family:'DM Sans',sans-serif; background:var(--gris-claro); min-heigh
         <tr><td colspan="7" class="sin-historial">Aún no has realizado ningún simulacro</td></tr>
       </tbody>
     </table>
+  </div>
+</div>
+
+<!-- ════════ SCREEN: AULA VIRTUAL ════════ -->
+<div id="screen-aula" class="screen">
+  <div style="padding:36px 5%">
+    <div class="dash-header">
+      <h1>🎥 Aula Virtual</h1>
+      <p>Cursos en video con cuestionario y certificado</p>
+    </div>
+
+    <div id="aula-nivel-section" style="margin-bottom:32px;display:none">
+      <h2 style="font-family:'Playfair Display',serif;font-size:1.2rem;color:var(--azul-oscuro);margin-bottom:14px">📚 Cursos de tu nivel</h2>
+      <div id="aula-nivel-grid" class="dash-grid"></div>
+    </div>
+
+    <div>
+      <h2 style="font-family:'Playfair Display',serif;font-size:1.2rem;color:var(--azul-oscuro);margin-bottom:14px">🤖 Cursos de Inteligencia Artificial</h2>
+      <div id="aula-ia-grid" class="dash-grid">
+        <div style="padding:20px;color:var(--gris);font-size:0.85rem">Cargando...</div>
+      </div>
+    </div>
+
+    <button onclick="irDashboard()" style="margin-top:32px;padding:12px 24px;background:var(--gris-claro);color:var(--azul-oscuro);border:none;border-radius:9px;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer">← Volver al panel</button>
+  </div>
+</div>
+
+<!-- ════════ SCREEN: CURSO DETALLE ════════ -->
+<div id="screen-curso" class="screen">
+  <div style="padding:36px 5%;max-width:760px;margin:0 auto">
+    <button onclick="showScreen('aula')" style="margin-bottom:20px;padding:9px 18px;background:var(--gris-claro);color:var(--azul-oscuro);border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer;font-size:0.85rem">← Volver a cursos</button>
+    <div class="dash-header" style="margin-bottom:20px">
+      <h1 id="curso-titulo" style="font-size:1.4rem">Curso</h1>
+      <p id="curso-descripcion"></p>
+    </div>
+    <div style="background:var(--gris-claro);border-radius:100px;height:10px;margin-bottom:24px;overflow:hidden">
+      <div id="curso-progreso-bar" style="background:linear-gradient(90deg,var(--azul),var(--dorado));height:100%;width:0%;transition:width 0.4s"></div>
+    </div>
+    <div id="curso-videos-lista" style="display:flex;flex-direction:column;gap:12px"></div>
+
+    <div id="curso-certificado-box" style="display:none;margin-top:28px;background:linear-gradient(135deg,var(--azul-oscuro),var(--azul));border-radius:16px;padding:28px;text-align:center;color:white">
+      <div style="font-size:2.2rem;margin-bottom:8px">🏆</div>
+      <h3 style="font-family:'Playfair Display',serif;color:var(--dorado);margin-bottom:6px">¡Curso completado!</h3>
+      <p style="font-size:0.85rem;opacity:0.85;margin-bottom:18px">Ya puedes adquirir tu certificado de finalización.</p>
+      <button onclick="solicitarCertificado()" class="btn-iniciar" style="background:var(--dorado);color:var(--azul-oscuro)">🎓 Adquirir certificado</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ SCREEN: VIDEO PLAYER ════════ -->
+<div id="screen-video" class="screen">
+  <div style="padding:36px 5%;max-width:760px;margin:0 auto">
+    <button onclick="cerrarVideo()" style="margin-bottom:20px;padding:9px 18px;background:var(--gris-claro);color:var(--azul-oscuro);border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer;font-size:0.85rem">← Volver al curso</button>
+    <h2 id="video-titulo" style="font-family:'Playfair Display',serif;color:var(--azul-oscuro);margin-bottom:16px;font-size:1.2rem"></h2>
+
+    <div id="video-player-wrap" style="position:relative;padding-bottom:56.25%;height:0;border-radius:14px;overflow:hidden;box-shadow:0 12px 32px rgba(15,45,138,0.15)">
+      <div id="yt-player" style="position:absolute;top:0;left:0;width:100%;height:100%"></div>
+    </div>
+
+    <div id="video-aviso" style="margin-top:16px;padding:12px 16px;background:rgba(15,45,138,0.06);border-radius:10px;font-size:0.83rem;color:var(--azul-oscuro)">
+      📌 Mira el video completo para desbloquear el cuestionario.
+    </div>
+
+    <!-- CUESTIONARIO -->
+    <div id="cuestionario-box" style="display:none;margin-top:24px;background:var(--blanco);border-radius:16px;padding:28px;border:1.5px solid rgba(15,45,138,0.09)">
+      <h3 style="font-family:'Playfair Display',serif;color:var(--azul-oscuro);margin-bottom:4px">📝 Cuestionario</h3>
+      <p style="font-size:0.82rem;color:var(--gris);margin-bottom:18px">Necesitas un mínimo de 70% para aprobar. Puedes reintentar si no alcanzas el puntaje.</p>
+      <div id="cuestionario-preguntas"></div>
+      <button id="btn-enviar-cuestionario" class="btn-iniciar" style="margin-top:12px" onclick="enviarCuestionario()">Enviar respuestas</button>
+      <div id="cuestionario-resultado" style="margin-top:14px;font-weight:700;font-size:0.9rem"></div>
+    </div>
   </div>
 </div>
 
@@ -903,6 +994,9 @@ body { font-family:'DM Sans',sans-serif; background:var(--gris-claro); min-heigh
     <button class="admin-tab" onclick="adminTab('stats')">📈 Estadísticas</button>
     <button class="admin-tab" onclick="adminTab('dificiles')">🎯 Preguntas difíciles</button>
     <button class="admin-tab" onclick="adminTab('preguntas')">❓ Preguntas</button>
+    <button class="admin-tab" onclick="adminTab('examenes-pdf')">📄 Exámenes PDF</button>
+    <button class="admin-tab" onclick="adminTab('aula-virtual')">🎥 Aula Virtual</button>
+    <button class="admin-tab" onclick="adminTab('certificados')">🏆 Certificados</button>
   </div>
 
   <!-- ── TAB: USUARIOS ── -->
@@ -923,10 +1017,10 @@ body { font-family:'DM Sans',sans-serif; background:var(--gris-claro); min-heigh
 
     <table class="usuarios-table">
       <thead><tr>
-        <th>Nombre</th><th>Correo</th><th>Tipo Examen</th><th>Especialidad</th><th>Plan</th><th>Vencimiento</th><th>Membresía</th><th>Acciones</th>
+        <th>Nombre</th><th>Correo</th><th>Tipo Examen</th><th>Especialidad</th><th>Plan</th><th>Vencimiento</th><th>Membresía</th><th>IA</th><th>Acciones</th>
       </tr></thead>
       <tbody id="admin-tbody">
-        <tr><td colspan="8" class="sin-historial">Cargando usuarios...</td></tr>
+        <tr><td colspan="9" class="sin-historial">Cargando usuarios...</td></tr>
       </tbody>
     </table>
   </div>
@@ -1438,6 +1532,233 @@ body { font-family:'DM Sans',sans-serif; background:var(--gris-claro); min-heigh
       <button onclick="guardarEdicion()" style="flex:1;padding:12px;background:linear-gradient(135deg,var(--azul),var(--azul-medio));color:white;border:none;border-radius:9px;font-family:'DM Sans',sans-serif;font-weight:700;cursor:pointer">Guardar cambios</button>
       <button onclick="cerrarModal()" style="padding:12px 20px;background:var(--gris-claro);color:var(--gris);border:none;border-radius:9px;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer">Cancelar</button>
     </div>
+  </div>
+</div>
+
+<!-- ── TAB ADMIN: EXÁMENES PDF ── -->
+<div id="admin-tab-examenes-pdf" class="admin-tab-content" style="display:none;padding:0 5% 36px;">
+  <div class="admin-form-card" style="max-width:780px;margin-bottom:28px">
+    <h3 style="font-family:'Playfair Display',serif;color:var(--azul-oscuro);margin-bottom:6px;font-size:1.2rem">📄 Subir nuevo examen PDF</h3>
+    <p style="color:var(--gris);font-size:0.83rem;margin-bottom:20px">El PDF se sube a Supabase Storage. Los docentes lo verán al costado de su hoja de respuestas.</p>
+    <div id="alerta-pdf-admin" class="alerta"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+      <div class="form-group" style="margin-bottom:0">
+        <label>Título del examen</label>
+        <input type="text" id="ep-titulo" placeholder="Ej: Examen Nombramiento 2023 — Primaria">
+      </div>
+      <div class="form-group" style="margin-bottom:0">
+        <label>Número de preguntas</label>
+        <input type="number" id="ep-num-preguntas" value="75" min="1" max="200" style="padding:12px 14px;border:1.5px solid rgba(15,45,138,0.15);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.9rem;background:var(--gris-claro);outline:none;width:100%">
+      </div>
+      <div class="form-group" style="margin-bottom:0">
+        <label>Especialidad</label>
+        <select id="pdf-especialidad" style="width:100%;padding:12px 14px;border:1.5px solid rgba(15,45,138,0.15);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.9rem;background:var(--gris-claro);outline:none">
+          <option value="inicial">🧒 Educación Inicial</option>
+          <option value="primaria">📚 Educación Primaria</option>
+          <option value="general">🌐 General</option>
+        </select>
+      </div>
+      <div class="form-group" style="margin-bottom:0">
+        <label>Tipo</label>
+        <select id="pdf-tipo" style="width:100%;padding:12px 14px;border:1.5px solid rgba(15,45,138,0.15);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.9rem;background:var(--gris-claro);outline:none">
+          <option value="nombramiento">📋 Nombramiento</option>
+          <option value="ascenso">🏆 Ascenso</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Clave de respuestas (una por línea: número:letra)</label>
+      <textarea id="ep-clave" rows="4" placeholder="1:B&#10;2:C&#10;3:C&#10;4:B&#10;5:A&#10;..." style="width:100%;padding:12px 14px;border:1.5px solid rgba(15,45,138,0.15);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.88rem;background:var(--gris-claro);outline:none;resize:vertical"></textarea>
+      <div style="font-size:0.75rem;color:var(--gris);margin-top:4px">💡 Si el examen solo tiene 3 opciones (A, B, C), el visor lo detecta automáticamente.</div>
+    </div>
+    <div class="form-group">
+      <label>Archivo PDF</label>
+      <div id="pdf-drop-zone" style="border:2px dashed rgba(15,45,138,0.25);border-radius:12px;padding:32px;text-align:center;cursor:pointer;transition:all 0.2s;background:var(--blanco)"
+        onclick="document.getElementById('pdf-file-input').click()"
+        ondragover="event.preventDefault();this.style.borderColor='var(--azul)'"
+        ondragleave="this.style.borderColor='rgba(15,45,138,0.25)'"
+        ondrop="handlePdfDrop(event)">
+        <div style="font-size:2rem;margin-bottom:8px">📄</div>
+        <div id="pdf-drop-label" style="font-size:0.9rem;font-weight:600;color:var(--azul-oscuro)">Arrastra el PDF aquí o haz clic para seleccionar</div>
+        <div style="font-size:0.78rem;color:var(--gris);margin-top:4px">Solo archivos .pdf</div>
+        <input type="file" id="pdf-file-input" accept=".pdf" style="display:none" onchange="onPdfFileSelected(this.files[0])">
+      </div>
+    </div>
+    <button onclick="subirExamenPDF()" id="btn-subir-pdf" style="padding:12px 28px;background:linear-gradient(135deg,var(--azul),var(--azul-medio));color:white;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.92rem;font-weight:700;cursor:pointer">
+      ⬆️ Subir examen PDF
+    </button>
+  </div>
+
+  <h3 style="font-family:'Playfair Display',serif;color:var(--azul-oscuro);margin-bottom:16px;font-size:1.2rem">📋 Exámenes subidos</h3>
+  <table class="usuarios-table">
+    <thead><tr><th>Título</th><th>Tipo</th><th>Especialidad</th><th>Preguntas</th><th>Subido</th><th>Activo</th><th>Acciones</th></tr></thead>
+    <tbody id="admin-pdf-tbody"><tr><td colspan="7" class="sin-historial">Cargando...</td></tr></tbody>
+  </table>
+</div>
+
+<!-- ── TAB: AULA VIRTUAL ── -->
+<div id="admin-tab-aula-virtual" class="admin-tab-content" style="display:none;padding:0 5% 36px;">
+
+  <!-- FORM: Crear/Editar curso -->
+  <div class="admin-form-card" style="max-width:780px;margin-bottom:28px">
+    <h3 style="font-family:'Playfair Display',serif;color:var(--azul-oscuro);margin-bottom:6px;font-size:1.2rem">🎓 <span id="curso-form-titulo-label">Nuevo curso</span></h3>
+    <p style="color:var(--gris);font-size:0.83rem;margin-bottom:20px">Un curso agrupa uno o más videos con cuestionario. Los cursos de categoría "Nivel" se incluyen con la membresía; los de "IA" requieren acceso separado.</p>
+    <div id="alerta-curso-admin" class="alerta"></div>
+    <input type="hidden" id="curso-edit-id">
+    <div style="display:grid;grid-template-columns:2fr 1fr;gap:14px;margin-bottom:14px">
+      <div class="form-group" style="margin-bottom:0">
+        <label>Título del curso</label>
+        <input type="text" id="curso-titulo-input" placeholder="Ej: Introducción a la IA en el aula">
+      </div>
+      <div class="form-group" style="margin-bottom:0">
+        <label>Ícono (emoji)</label>
+        <input type="text" id="curso-icono-input" placeholder="🎓" value="🎓">
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:14px">
+      <div class="form-group" style="margin-bottom:0">
+        <label>Categoría</label>
+        <select id="curso-categoria-input" onchange="toggleNivelRequerido()" style="width:100%;padding:12px 14px;border:1.5px solid rgba(15,45,138,0.15);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.9rem;background:var(--gris-claro);outline:none">
+          <option value="ia">🤖 Inteligencia Artificial</option>
+          <option value="nivel">📚 Nivel (Inicial/Primaria)</option>
+        </select>
+      </div>
+      <div class="form-group" style="margin-bottom:0" id="curso-nivel-wrap">
+        <label>Nivel requerido</label>
+        <select id="curso-nivel-input" style="width:100%;padding:12px 14px;border:1.5px solid rgba(15,45,138,0.15);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.9rem;background:var(--gris-claro);outline:none">
+          <option value="inicial">🧒 Inicial</option>
+          <option value="primaria">📚 Primaria</option>
+        </select>
+      </div>
+      <div class="form-group" style="margin-bottom:0">
+        <label>Orden</label>
+        <input type="number" id="curso-orden-input" value="0">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Descripción</label>
+      <textarea id="curso-descripcion-input" rows="2" placeholder="Breve descripción del curso" style="width:100%;padding:12px 14px;border:1.5px solid rgba(15,45,138,0.15);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.88rem;background:var(--gris-claro);outline:none;resize:vertical"></textarea>
+    </div>
+    <button onclick="guardarCurso()" id="btn-guardar-curso" style="padding:12px 28px;background:linear-gradient(135deg,var(--azul),var(--azul-medio));color:white;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.92rem;font-weight:700;cursor:pointer">💾 Guardar curso</button>
+    <button onclick="cancelarEdicionCurso()" id="btn-cancelar-curso" style="display:none;padding:12px 20px;background:var(--gris-claro);color:var(--azul-oscuro);border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer;margin-left:8px">Cancelar</button>
+  </div>
+
+  <h3 style="font-family:'Playfair Display',serif;color:var(--azul-oscuro);margin-bottom:16px;font-size:1.2rem">📋 Cursos</h3>
+  <table class="usuarios-table">
+    <thead><tr><th>Curso</th><th>Categoría</th><th>Videos</th><th>Activo</th><th>Acciones</th></tr></thead>
+    <tbody id="admin-cursos-tbody"><tr><td colspan="5" class="sin-historial">Cargando...</td></tr></tbody>
+  </table>
+
+  <!-- PANEL: Videos del curso seleccionado -->
+  <div id="admin-videos-panel" style="display:none;margin-top:32px;padding-top:24px;border-top:2px dashed rgba(15,45,138,0.15)">
+    <h3 style="font-family:'Playfair Display',serif;color:var(--azul-oscuro);margin-bottom:16px;font-size:1.15rem">
+      🎬 Videos de: <span id="videos-curso-nombre" style="color:var(--azul)"></span>
+      <button onclick="cerrarPanelVideos()" style="float:right;padding:6px 14px;background:var(--gris-claro);border:none;border-radius:8px;font-size:0.8rem;font-weight:600;cursor:pointer;color:var(--azul-oscuro)">✕ Cerrar</button>
+    </h3>
+    <div class="admin-form-card" style="max-width:780px;margin-bottom:20px">
+      <input type="hidden" id="video-edit-id">
+      <div style="display:grid;grid-template-columns:2fr 1.3fr 90px;gap:14px;margin-bottom:14px">
+        <div class="form-group" style="margin-bottom:0"><label>Título del video</label><input type="text" id="video-titulo-input" placeholder="Ej: Clase 1 — Introducción"></div>
+        <div class="form-group" style="margin-bottom:0"><label>ID de YouTube</label><input type="text" id="video-youtube-input" placeholder="dQw4w9WgXcQ"></div>
+        <div class="form-group" style="margin-bottom:0"><label>Orden</label><input type="number" id="video-orden-input" value="0"></div>
+      </div>
+      <div style="font-size:0.75rem;color:var(--gris);margin-bottom:12px">💡 El ID es lo que va después de <code>watch?v=</code> en la URL de YouTube. Sube el video como "No listado".</div>
+      <button onclick="guardarVideo()" style="padding:11px 24px;background:linear-gradient(135deg,var(--azul),var(--azul-medio));color:white;border:none;border-radius:9px;font-family:'DM Sans',sans-serif;font-weight:700;cursor:pointer;font-size:0.88rem">💾 Guardar video</button>
+      <button onclick="cancelarEdicionVideo()" id="btn-cancelar-video" style="display:none;padding:11px 18px;background:var(--gris-claro);color:var(--azul-oscuro);border:none;border-radius:9px;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer;margin-left:8px">Cancelar</button>
+    </div>
+    <table class="usuarios-table">
+      <thead><tr><th>Video</th><th>YouTube ID</th><th>Preguntas</th><th>Acciones</th></tr></thead>
+      <tbody id="admin-videos-tbody"></tbody>
+    </table>
+  </div>
+
+  <!-- PANEL: Preguntas del video seleccionado -->
+  <div id="admin-preguntas-panel" style="display:none;margin-top:32px;padding-top:24px;border-top:2px dashed rgba(15,45,138,0.15)">
+    <h3 style="font-family:'Playfair Display',serif;color:var(--azul-oscuro);margin-bottom:16px;font-size:1.15rem">
+      📝 Cuestionario de: <span id="preguntas-video-nombre" style="color:var(--azul)"></span>
+      <button onclick="cerrarPanelPreguntas()" style="float:right;padding:6px 14px;background:var(--gris-claro);border:none;border-radius:8px;font-size:0.8rem;font-weight:600;cursor:pointer;color:var(--azul-oscuro)">✕ Cerrar</button>
+    </h3>
+    <div class="admin-form-card" style="max-width:780px;margin-bottom:20px">
+      <input type="hidden" id="pregunta-edit-id">
+      <div class="form-group">
+        <label>Pregunta</label>
+        <input type="text" id="pregunta-texto-input" placeholder="Ej: ¿Qué significa IA?">
+      </div>
+      <div class="form-group">
+        <label>Opciones (una por línea, mínimo 2)</label>
+        <textarea id="pregunta-opciones-input" rows="4" placeholder="Inteligencia Artificial&#10;Internet Avanzado&#10;Informática Aplicada" style="width:100%;padding:12px 14px;border:1.5px solid rgba(15,45,138,0.15);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.88rem;background:var(--gris-claro);outline:none;resize:vertical"></textarea>
+      </div>
+      <div class="form-group">
+        <label>Número de la opción correcta (1 = primera línea, 2 = segunda, etc.)</label>
+        <input type="number" id="pregunta-correcta-input" value="1" min="1" style="width:120px;padding:12px 14px;border:1.5px solid rgba(15,45,138,0.15);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.9rem;background:var(--gris-claro);outline:none">
+      </div>
+      <button onclick="guardarPregunta()" style="padding:11px 24px;background:linear-gradient(135deg,var(--azul),var(--azul-medio));color:white;border:none;border-radius:9px;font-family:'DM Sans',sans-serif;font-weight:700;cursor:pointer;font-size:0.88rem">💾 Guardar pregunta</button>
+      <button onclick="cancelarEdicionPregunta()" id="btn-cancelar-pregunta" style="display:none;padding:11px 18px;background:var(--gris-claro);color:var(--azul-oscuro);border:none;border-radius:9px;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer;margin-left:8px">Cancelar</button>
+    </div>
+    <table class="usuarios-table">
+      <thead><tr><th>Pregunta</th><th>Opciones</th><th>Correcta</th><th>Acciones</th></tr></thead>
+      <tbody id="admin-preguntas-tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ── TAB: CERTIFICADOS ── -->
+<div id="admin-tab-certificados" class="admin-tab-content" style="display:none;padding:0 5% 36px;">
+  <div style="margin-bottom:20px">
+    <h3 style="font-family:'Playfair Display',serif;color:var(--azul-oscuro);font-size:1.2rem;margin-bottom:4px">🏆 Certificados solicitados</h3>
+    <p style="color:var(--gris);font-size:0.83rem">Docentes que completaron un curso y pidieron su certificado. Márcalo como entregado cuando ya coordinaste el pago y se lo enviaste.</p>
+  </div>
+  <div style="margin-bottom:16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+    <button class="admin-tab active" id="cert-filtro-pendientes" onclick="filtrarCertificados('pendientes')" style="font-size:0.82rem;padding:8px 16px">⏳ Pendientes</button>
+    <button class="admin-tab" id="cert-filtro-todos" onclick="filtrarCertificados('todos')" style="font-size:0.82rem;padding:8px 16px">📋 Todos</button>
+    <button onclick="cargarCertificadosAdmin()" style="padding:8px 16px;background:var(--azul);color:white;border:none;border-radius:9px;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer;font-size:0.82rem">🔄 Actualizar</button>
+  </div>
+  <table class="usuarios-table">
+    <thead><tr><th>Docente</th><th>Curso</th><th>Fecha solicitud</th><th>Estado</th><th>Acciones</th></tr></thead>
+    <tbody id="admin-certificados-tbody"><tr><td colspan="5" class="sin-historial">Cargando...</td></tr></tbody>
+  </table>
+</div>
+
+<!-- ════════ SCREEN: EXAMEN PDF ════════ -->
+<div id="screen-examen-pdf" class="screen">
+  <div style="display:flex;align-items:center;justify-content:space-between;background:var(--blanco);border-radius:14px;padding:14px 20px;margin:20px 5% 16px;border:1px solid rgba(15,45,138,0.09);box-shadow:0 4px 16px rgba(15,45,138,0.06)">
+    <div>
+      <div id="epdf-titulo" style="font-family:'Playfair Display',serif;font-size:1rem;color:var(--azul-oscuro);font-weight:700"></div>
+      <div id="epdf-subtitulo" style="font-size:0.8rem;color:var(--gris);margin-top:2px"></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div style="font-size:0.82rem;color:var(--gris)">Progreso: <span id="epdf-progreso" style="font-weight:700;color:var(--azul)">0 / 0</span></div>
+      <button onclick="cerrarExamenPDF()" style="padding:8px 16px;background:var(--gris-claro);color:var(--azul-oscuro);border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer;font-size:0.85rem">✕ Salir</button>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 340px;gap:0;margin:0 5%;border:1px solid rgba(15,45,138,0.1);border-radius:14px;overflow:hidden;background:var(--blanco);height:calc(100vh - 160px);min-height:500px">
+
+    <!-- PDF viewer -->
+    <div style="display:flex;flex-direction:column;border-right:1px solid rgba(15,45,138,0.08);overflow:hidden">
+      <div style="padding:10px 16px;background:var(--gris-claro);border-bottom:1px solid rgba(15,45,138,0.08);display:flex;align-items:center;gap:8px;flex-shrink:0">
+        <span style="font-size:0.78rem;color:var(--gris);font-weight:600">📄 EXAMEN OFICIAL</span>
+      </div>
+      <iframe id="epdf-iframe" src="" style="flex:1;border:none;width:100%;min-height:0"></iframe>
+    </div>
+
+    <!-- Hoja de respuestas -->
+    <div style="display:flex;flex-direction:column;overflow:hidden">
+      <div style="padding:10px 14px;background:var(--gris-claro);border-bottom:1px solid rgba(15,45,138,0.08);flex-shrink:0">
+        <div style="font-size:0.78rem;color:var(--gris);font-weight:600;margin-bottom:6px">📝 HOJA DE RESPUESTAS</div>
+        <div style="height:4px;background:rgba(15,45,138,0.08);border-radius:2px;overflow:hidden">
+          <div id="epdf-barra" style="height:100%;background:var(--azul);border-radius:2px;transition:width 0.4s;width:0%"></div>
+        </div>
+      </div>
+
+      <div id="epdf-lista" style="flex:1;overflow-y:auto;padding:6px 0"></div>
+
+      <div style="padding:10px 14px;border-top:1px solid rgba(15,45,138,0.08);flex-shrink:0">
+        <button id="epdf-btn-enviar" onclick="epdfEnviarRespuesta()" disabled style="width:100%;padding:9px;background:var(--azul);color:white;border:none;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:0.88rem;font-weight:700;cursor:pointer;transition:background 0.15s">Enviar respuesta</button>
+        <div id="epdf-feedback" style="margin-top:6px;font-size:0.82rem;font-weight:600;text-align:center;min-height:18px"></div>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -1975,6 +2296,9 @@ async function cargarDashboard() {
     }
   } catch (e) { console.error('Error cargando uso diario:', e); }
 
+  // Cargar exámenes PDF
+  cargarExamenesPdfDashboard();
+
   // Cargar historial
   try {
     const { data: hist, error } = await sb.from('historial_simulacros')
@@ -2475,6 +2799,9 @@ function adminTab(tab) {
   if (tab === 'historial') cargarHistorialAdmin();
   if (tab === 'stats') cargarStats();
   if (tab === 'dificiles') cargarPreguntasDificiles();
+  if (tab === 'examenes-pdf') cargarExamenesPdfAdmin();
+  if (tab === 'aula-virtual') cargarCursosAdmin();
+  if (tab === 'certificados') cargarCertificadosAdmin();
 }
 
 // ── Guardia de seguridad: verifica rol admin antes de cualquier acción admin ──
@@ -2508,12 +2835,13 @@ async function cargarAdmin() {
 function renderTablaUsuarios(usuarios) {
   const tbody = document.getElementById('admin-tbody');
   if (!usuarios.length) {
-    tbody.innerHTML = '<tr><td colspan="8" class="sin-historial">No hay usuarios registrados</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="9" class="sin-historial">No hay usuarios registrados</td></tr>';
     return;
   }
   tbody.innerHTML = usuarios.map(u => {
     const fecha = new Date(u.created_at).toLocaleDateString('es-PE');
     const activa = u.membresia_activa;
+    const accesoIA = !!u.acceso_ia;
     const plan = u.plan || 'ninguno';
     const planLabel = plan === '1mes' ? '1 mes' : plan === '6meses' ? '6 meses' : plan === '12meses' ? '12 meses' : '—';
     const tipoLabel = u.tipo_examen === 'ascenso' ? '🏆 Ascenso' : '📋 Nombramiento';
@@ -2526,9 +2854,11 @@ function renderTablaUsuarios(usuarios) {
       <td><span style="background:rgba(15,45,138,0.07);padding:3px 8px;border-radius:6px;font-size:0.78rem">${planLabel}</span></td>
       <td style="font-size:0.8rem;color:var(--gris)">${u.vencimiento ? new Date(u.vencimiento).toLocaleDateString('es-PE') : '—'}</td>
       <td><span class="estado-chip ${activa ? 'activo' : 'inactivo'}">${activa ? '✅ Activa' : '❌ Inactiva'}</span></td>
+      <td><span class="estado-chip ${accesoIA ? 'activo' : 'inactivo'}">${accesoIA ? '✅' : '❌'}</span></td>
       <td>
         <button class="btn-editar" onclick="abrirEditar('${u.id}','${(u.nombre||'').replace(/'/g,"\\'")}','${u.plan||'ninguno'}',${activa},'${u.tipo_examen||'nombramiento'}','${u.especialidad||'inicial'}',${u.limite_diario||3})">✏️ Editar</button>
         <button class="toggle-membresia ${activa ? 'desactivar' : 'activar'}" onclick="toggleMembresia('${u.id}', ${!activa})">${activa ? 'Desactivar' : 'Activar'}</button>
+        <button class="toggle-membresia ${accesoIA ? 'desactivar' : 'activar'}" onclick="toggleAccesoIA('${u.id}', ${!accesoIA})">${accesoIA ? 'Quitar IA' : 'Activar IA'}</button>
       </td>
     </tr>`;
   }).join('');
@@ -2551,6 +2881,18 @@ async function toggleMembresia(userId, estado) {
   } catch (e) {
     console.error('Error al cambiar membresía:', e);
     showAlertaAdmin('❌ No se pudo actualizar la membresía. Intenta de nuevo.', 'error');
+  }
+}
+
+async function toggleAccesoIA(userId, estado) {
+  if (!esAdmin()) return;
+  try {
+    const { error } = await sb.from('perfiles').update({ acceso_ia: estado }).eq('id', userId);
+    if (error) throw error;
+    cargarAdmin();
+  } catch (e) {
+    console.error('Error al cambiar acceso IA:', e);
+    showAlertaAdmin('❌ No se pudo actualizar el acceso a IA. Intenta de nuevo.', 'error');
   }
 }
 
@@ -3219,6 +3561,1100 @@ async function importarExcel() {
 
 // Iniciar
 init();
+
+// ══════════════════════════════════════════
+// EXÁMENES PDF — ADMIN
+// ══════════════════════════════════════════
+let pdfFileSeleccionado = null;
+
+function handlePdfDrop(e) {
+  e.preventDefault();
+  document.getElementById('pdf-drop-zone').style.borderColor = 'rgba(15,45,138,0.25)';
+  const file = e.dataTransfer.files[0];
+  if (file && file.type === 'application/pdf') onPdfFileSelected(file);
+}
+
+function onPdfFileSelected(file) {
+  if (!file || file.type !== 'application/pdf') {
+    showAlertaAdmin('❌ Solo se aceptan archivos PDF.', 'error');
+    return;
+  }
+  pdfFileSeleccionado = file;
+  document.getElementById('pdf-drop-label').textContent = '✅ ' + file.name + ' (' + (file.size / 1024).toFixed(0) + ' KB)';
+  document.getElementById('pdf-drop-zone').style.borderColor = 'var(--success)';
+}
+
+function parsearClave(texto) {
+  const clave = {};
+  texto.split('\n').forEach(linea => {
+    linea = linea.trim();
+    if (!linea) return;
+    const partes = linea.split(':');
+    if (partes.length >= 2) {
+      const num = parseInt(partes[0].trim());
+      const resp = partes[1].trim().toUpperCase();
+      if (!isNaN(num) && ['A','B','C','D'].includes(resp)) clave[num] = resp;
+    }
+  });
+  return clave;
+}
+
+async function subirExamenPDF() {
+  if (!esAdmin()) return;
+  const titulo = document.getElementById('ep-titulo').value.trim();
+  const numPreguntas = parseInt(document.getElementById('ep-num-preguntas').value);
+  const especialidad = document.getElementById('pdf-especialidad').value;
+  const tipo = document.getElementById('pdf-tipo').value;
+  const claveTexto = document.getElementById('ep-clave').value.trim();
+
+  if (!titulo) return showAlertaAdminPdf('⚠️ Escribe el título del examen.', 'error');
+  if (!pdfFileSeleccionado) return showAlertaAdminPdf('⚠️ Selecciona un archivo PDF.', 'error');
+  if (!claveTexto) return showAlertaAdminPdf('⚠️ Ingresa la clave de respuestas.', 'error');
+
+  const clave = parsearClave(claveTexto);
+  if (Object.keys(clave).length === 0) return showAlertaAdminPdf('⚠️ La clave no tiene el formato correcto (ej: 1:A).', 'error');
+
+  const btn = document.getElementById('btn-subir-pdf');
+  btn.innerHTML = '<span class="spinner" style="border-top-color:white"></span> Subiendo...';
+  btn.disabled = true;
+
+  try {
+    const fileName = Date.now() + '_' + pdfFileSeleccionado.name.replace(/\s+/g, '_');
+    const { data: uploadData, error: uploadError } = await sb.storage
+      .from('examenes-pdf')
+      .upload(fileName, pdfFileSeleccionado, { contentType: 'application/pdf' });
+    if (uploadError) throw uploadError;
+
+    const { data: urlData } = sb.storage.from('examenes-pdf').getPublicUrl(fileName);
+    const pdfUrl = urlData.publicUrl;
+
+    const { error: insertError } = await sb.from('examenes_pdf').insert({
+      titulo, tipo, especialidad,
+      num_preguntas: numPreguntas,
+      clave_respuestas: clave,
+      pdf_url: pdfUrl,
+      activo: true
+    });
+    if (insertError) throw insertError;
+
+    showAlertaAdminPdf('✅ Examen subido correctamente.', 'success');
+    document.getElementById('ep-titulo').value = '';
+    document.getElementById('ep-clave').value = '';
+    document.getElementById('pdf-drop-label').textContent = 'Arrastra el PDF aquí o haz clic para seleccionar';
+    document.getElementById('pdf-drop-zone').style.borderColor = 'rgba(15,45,138,0.25)';
+    pdfFileSeleccionado = null;
+    cargarExamenesPdfAdmin();
+  } catch (e) {
+    console.error('Error subiendo PDF:', e);
+    showAlertaAdminPdf('❌ Error al subir: ' + (e.message || 'Verifica tu conexión.'), 'error');
+  } finally {
+    btn.innerHTML = '⬆️ Subir examen PDF';
+    btn.disabled = false;
+  }
+}
+
+function showAlertaAdminPdf(msg, tipo) {
+  const el = document.getElementById('alerta-pdf-admin');
+  el.textContent = msg;
+  el.className = 'alerta ' + tipo;
+  el.style.display = 'block';
+  if (tipo !== 'warning') setTimeout(() => el.style.display = 'none', 4000);
+}
+
+async function cargarExamenesPdfAdmin() {
+  if (!esAdmin()) return;
+  try {
+    const { data, error } = await sb.from('examenes_pdf').select('*').order('created_at', { ascending: false });
+    if (error) throw error;
+    const tbody = document.getElementById('admin-pdf-tbody');
+    if (!data || data.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="7" class="sin-historial">No hay exámenes PDF subidos aún</td></tr>';
+      return;
+    }
+    tbody.innerHTML = data.map(e => {
+      const fecha = new Date(e.created_at).toLocaleDateString('es-PE');
+      const espLabel = e.especialidad === 'inicial' ? '🧒 Inicial' : e.especialidad === 'primaria' ? '📚 Primaria' : '🌐 General';
+      const tipoLabel = e.tipo === 'ascenso' ? '🏆 Ascenso' : '📋 Nombramiento';
+      return `<tr>
+        <td><strong>${e.titulo}</strong></td>
+        <td style="font-size:0.82rem">${tipoLabel}</td>
+        <td style="font-size:0.82rem">${espLabel}</td>
+        <td style="text-align:center">${e.num_preguntas}</td>
+        <td style="font-size:0.8rem;color:var(--gris)">${fecha}</td>
+        <td><span class="estado-chip ${e.activo ? 'activo' : 'inactivo'}">${e.activo ? '✅ Sí' : '❌ No'}</span></td>
+        <td>
+          <button onclick="toggleActivoPdf('${e.id}', ${!e.activo})" class="toggle-membresia ${e.activo ? 'desactivar' : 'activar'}" style="margin-right:6px">${e.activo ? 'Desactivar' : 'Activar'}</button>
+          <button onclick="eliminarExamenPdf('${e.id}')" style="padding:5px 10px;border-radius:7px;font-size:0.75rem;background:rgba(239,68,68,0.1);color:var(--error);border:1px solid rgba(239,68,68,0.25);cursor:pointer;font-family:'DM Sans',sans-serif">🗑</button>
+        </td>
+      </tr>`;
+    }).join('');
+  } catch(e) {
+    console.error('Error cargando exámenes PDF admin:', e);
+  }
+}
+
+async function toggleActivoPdf(id, estado) {
+  if (!esAdmin()) return;
+  await sb.from('examenes_pdf').update({ activo: estado }).eq('id', id);
+  cargarExamenesPdfAdmin();
+}
+
+async function eliminarExamenPdf(id) {
+  if (!esAdmin()) return;
+  if (!confirm('¿Eliminar este examen PDF?')) return;
+  await sb.from('examenes_pdf').delete().eq('id', id);
+  cargarExamenesPdfAdmin();
+}
+
+// ══════════════════════════════════════════
+// EXÁMENES PDF — DASHBOARD (DOCENTE)
+// ══════════════════════════════════════════
+async function cargarExamenesPdfDashboard() {
+  const contenedor = document.getElementById('dash-examenes-pdf-lista');
+  try {
+    const esp = currentProfile?.especialidad || 'general';
+    const tipo = currentProfile?.tipo_examen || 'nombramiento';
+    const { data, error } = await sb.from('examenes_pdf')
+      .select('*').eq('activo', true)
+      .or(`especialidad.eq.${esp},especialidad.eq.general`)
+      .order('created_at', { ascending: false });
+    if (error) throw error;
+
+    if (!data || data.length === 0) {
+      contenedor.innerHTML = '<div style="text-align:center;padding:28px;color:var(--gris);font-size:0.85rem;background:var(--blanco);border-radius:12px;border:1.5px dashed rgba(15,45,138,0.12)">📭 No hay exámenes PDF disponibles aún</div>';
+      return;
+    }
+
+    contenedor.innerHTML = data.map(e => {
+      const espLabel = e.especialidad === 'inicial' ? '🧒 Inicial' : e.especialidad === 'primaria' ? '📚 Primaria' : '🌐 General';
+      const tipoLabel = e.tipo === 'ascenso' ? '🏆 Ascenso' : '📋 Nombramiento';
+      return `<div class="sim-card" style="cursor:pointer" onclick="iniciarExamenPDF('${e.id}')">
+        <div class="sim-icon">📄</div>
+        <h3 style="font-size:1rem">${e.titulo}</h3>
+        <p style="font-size:0.82rem;margin-bottom:12px">${tipoLabel} · ${espLabel}</p>
+        <div class="sim-meta">
+          <span>📝 ${e.num_preguntas} preguntas</span>
+          <span>🎯 Feedback inmediato</span>
+        </div>
+        <button class="btn-iniciar" style="margin-top:14px">Ver examen →</button>
+      </div>`;
+    }).join('');
+  } catch(e) {
+    console.error('Error cargando exámenes PDF:', e);
+    contenedor.innerHTML = '<div style="padding:20px;color:var(--gris);font-size:0.85rem">⚠️ No se pudieron cargar los exámenes.</div>';
+  }
+}
+
+// ══════════════════════════════════════════
+// AULA VIRTUAL — ESTADO GLOBAL
+// ══════════════════════════════════════════
+let currentCurso = null;
+let cursoProgresoMap = {};
+let currentVideoData = null;
+let ytPlayer = null;
+let ytApiReady = false;
+let cuestionarioActual = null;
+
+function abrirAulaVirtual() {
+  showScreen('aula');
+  cargarAulaVirtual();
+}
+
+async function cargarAulaVirtual() {
+  const gridIA = document.getElementById('aula-ia-grid');
+  const gridNivel = document.getElementById('aula-nivel-grid');
+  const seccionNivel = document.getElementById('aula-nivel-section');
+  gridIA.innerHTML = '<div style="padding:20px;color:var(--gris);font-size:0.85rem">Cargando...</div>';
+
+  try {
+    const { data, error } = await sb.from('cursos').select('*').eq('activo', true).order('orden');
+    if (error) throw error;
+
+    const especialidad = currentProfile?.especialidad;
+    const tieneMembresiaNivel = !!(currentProfile?.membresia_activa && (especialidad === 'inicial' || especialidad === 'primaria'));
+    const tieneAccesoIA = !!currentProfile?.acceso_ia;
+
+    const cursosNivel = (data || []).filter(c => c.categoria === 'nivel' && c.nivel_requerido === especialidad);
+    const cursosIA = (data || []).filter(c => c.categoria === 'ia');
+
+    if (cursosNivel.length > 0) {
+      seccionNivel.style.display = 'block';
+      gridNivel.innerHTML = cursosNivel.map(c => renderCursoCard(c, tieneMembresiaNivel)).join('');
+    } else {
+      seccionNivel.style.display = 'none';
+    }
+
+    gridIA.innerHTML = cursosIA.length
+      ? cursosIA.map(c => renderCursoCard(c, tieneAccesoIA)).join('')
+      : '<div style="padding:20px;color:var(--gris);font-size:0.85rem;background:var(--blanco);border-radius:12px;border:1.5px dashed rgba(15,45,138,0.12)">📭 Aún no hay cursos de IA disponibles.</div>';
+  } catch(e) {
+    console.error('Error cargando aula virtual:', e);
+    gridIA.innerHTML = '<div style="padding:20px;color:var(--error);font-size:0.85rem">⚠️ No se pudieron cargar los cursos.</div>';
+  }
+}
+
+function renderCursoCard(curso, tieneAcceso) {
+  const waTexto = curso.categoria === 'ia' ? 'los cursos de Inteligencia Artificial' : 'los cursos de mi nivel';
+  return `<div class="sim-card">
+    <div class="sim-icon">${curso.icono || '🎓'}</div>
+    <h3 style="font-size:1.05rem">${curso.titulo}</h3>
+    <p style="font-size:0.85rem">${curso.descripcion || ''}</p>
+    ${tieneAcceso
+      ? `<button class="btn-iniciar" onclick="abrirCurso('${curso.id}')" style="margin-top:14px">Entrar al curso →</button>`
+      : `<button class="btn-iniciar locked" disabled style="margin-top:14px">🔒 Sin acceso</button>
+         <a href="https://wa.me/51922573625?text=${encodeURIComponent('Hola, quiero adquirir acceso a ' + waTexto)}" target="_blank" style="display:block;text-align:center;margin-top:8px;font-size:0.78rem;color:var(--azul);font-weight:600">Adquirir acceso →</a>`}
+  </div>`;
+}
+
+async function abrirCurso(id) {
+  try {
+    const { data: curso, error: e1 } = await sb.from('cursos').select('*').eq('id', id).single();
+    if (e1 || !curso) throw e1 || new Error('No encontrado');
+    const { data: videos, error: e2 } = await sb.from('videos').select('*').eq('curso_id', id).order('orden');
+    if (e2) throw e2;
+
+    cursoProgresoMap = {};
+    if (videos && videos.length) {
+      const { data: progreso } = await sb.from('progreso_alumno').select('*')
+        .eq('alumno_id', currentUser.id).in('video_id', videos.map(v => v.id));
+      (progreso || []).forEach(p => cursoProgresoMap[p.video_id] = p);
+    }
+
+    currentCurso = { ...curso, videos: videos || [] };
+    document.getElementById('curso-titulo').textContent = curso.titulo;
+    document.getElementById('curso-descripcion').textContent = curso.descripcion || '';
+    renderVideosLista();
+    showScreen('curso');
+  } catch(e) {
+    console.error('Error abriendo curso:', e);
+    alert('❌ No se pudo cargar el curso.');
+  }
+}
+
+function renderVideosLista() {
+  const cont = document.getElementById('curso-videos-lista');
+  const { videos } = currentCurso;
+  const aprobados = videos.filter(v => cursoProgresoMap[v.id]?.aprobado).length;
+  const pct = videos.length ? Math.round((aprobados / videos.length) * 100) : 0;
+  document.getElementById('curso-progreso-bar').style.width = pct + '%';
+
+  cont.innerHTML = videos.map((v, i) => {
+    const prog = cursoProgresoMap[v.id];
+    const aprobado = !!prog?.aprobado;
+    const bloqueado = i > 0 && !cursoProgresoMap[videos[i-1].id]?.aprobado;
+    const estadoIcon = aprobado ? '✅' : bloqueado ? '🔒' : '▶️';
+    const estadoTxt = aprobado ? `Aprobado (${prog.mejor_puntaje}%)` : bloqueado ? 'Completa el video anterior' : 'Ver video';
+    return `<div ${bloqueado ? '' : `onclick="abrirVideo('${v.id}')"`} style="display:flex;align-items:center;gap:14px;padding:16px 18px;background:var(--blanco);border-radius:12px;border:1.5px solid rgba(15,45,138,0.08);${bloqueado ? 'opacity:0.5' : 'cursor:pointer'}">
+      <span style="font-size:1.3rem">${estadoIcon}</span>
+      <div style="flex:1">
+        <div style="font-weight:600;color:var(--azul-oscuro);font-size:0.92rem">${v.titulo}</div>
+        <div style="font-size:0.78rem;color:var(--gris)">${estadoTxt}</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('curso-certificado-box').style.display =
+    (videos.length > 0 && aprobados === videos.length) ? 'block' : 'none';
+}
+
+async function abrirVideo(videoId) {
+  const video = currentCurso.videos.find(v => v.id === videoId);
+  if (!video) return;
+  currentVideoData = video;
+
+  document.getElementById('video-titulo').textContent = video.titulo;
+  document.getElementById('cuestionario-box').style.display = 'none';
+  document.getElementById('video-aviso').style.display = 'block';
+  document.getElementById('cuestionario-resultado').textContent = '';
+  showScreen('video');
+
+  await cargarYouTubeAPI();
+  crearReproductor(video.youtube_id);
+}
+
+function cerrarVideo() {
+  if (ytPlayer && ytPlayer.destroy) { try { ytPlayer.destroy(); } catch(e){} }
+  ytPlayer = null;
+  showScreen('curso');
+  renderVideosLista();
+}
+
+// ── YouTube IFrame API ──
+function cargarYouTubeAPI() {
+  return new Promise((resolve) => {
+    if (window.YT && window.YT.Player) { ytApiReady = true; return resolve(); }
+    const tag = document.createElement('script');
+    tag.src = 'https://www.youtube.com/iframe_api';
+    document.head.appendChild(tag);
+    window.onYouTubeIframeAPIReady = () => { ytApiReady = true; resolve(); };
+  });
+}
+
+function crearReproductor(youtubeId) {
+  const wrap = document.getElementById('video-player-wrap');
+  wrap.innerHTML = '<div id="yt-player" style="position:absolute;top:0;left:0;width:100%;height:100%"></div>';
+  ytPlayer = new YT.Player('yt-player', {
+    videoId: youtubeId,
+    playerVars: { rel: 0, modestbranding: 1 },
+    events: { onStateChange: onPlayerStateChange }
+  });
+}
+
+async function onPlayerStateChange(event) {
+  if (event.data === YT.PlayerState.ENDED) {
+    document.getElementById('video-aviso').style.display = 'none';
+    await marcarVideoVisto();
+    abrirCuestionario();
+  }
+}
+
+async function marcarVideoVisto() {
+  try {
+    const existing = cursoProgresoMap[currentVideoData.id];
+    if (existing) {
+      await sb.from('progreso_alumno').update({ video_visto: true }).eq('id', existing.id);
+    } else {
+      const { data } = await sb.from('progreso_alumno').insert({
+        alumno_id: currentUser.id, video_id: currentVideoData.id, video_visto: true
+      }).select().single();
+      cursoProgresoMap[currentVideoData.id] = data;
+    }
+  } catch(e) { console.error('Error marcando video visto:', e); }
+}
+
+// ── Cuestionario ──
+async function abrirCuestionario() {
+  try {
+    const { data, error } = await sb.from('preguntas_video').select('*').eq('video_id', currentVideoData.id).order('orden');
+    if (error) throw error;
+    if (!data || data.length === 0) { await aprobarVideoDirecto(); return; }
+    cuestionarioActual = { preguntas: data, respuestas: {} };
+    renderCuestionario();
+    document.getElementById('cuestionario-box').style.display = 'block';
+  } catch(e) {
+    console.error('Error cargando cuestionario:', e);
+  }
+}
+
+function renderCuestionario() {
+  const cont = document.getElementById('cuestionario-preguntas');
+  cont.innerHTML = cuestionarioActual.preguntas.map((p, pi) => {
+    const opts = (p.opciones || []).map((op, oi) => {
+      const selected = cuestionarioActual.respuestas[pi] === oi;
+      return `<button class="opt-btn ${selected ? 'selected' : ''}" onclick="seleccionarRespuesta(${pi}, ${oi})" style="display:block;width:100%;text-align:left;margin-bottom:6px;padding:10px 14px">${op}</button>`;
+    }).join('');
+    return `<div style="margin-bottom:20px">
+      <div style="font-weight:600;font-size:0.88rem;color:var(--azul-oscuro);margin-bottom:8px">${pi+1}. ${p.pregunta}</div>
+      ${opts}
+    </div>`;
+  }).join('');
+}
+
+function seleccionarRespuesta(pi, oi) {
+  cuestionarioActual.respuestas[pi] = oi;
+  renderCuestionario();
+}
+
+async function enviarCuestionario() {
+  const { preguntas, respuestas } = cuestionarioActual;
+  if (Object.keys(respuestas).length < preguntas.length) {
+    alert('⚠️ Responde todas las preguntas antes de enviar.');
+    return;
+  }
+  const correctas = preguntas.filter((p, i) => respuestas[i] === p.respuesta_correcta).length;
+  const pct = Math.round((correctas / preguntas.length) * 100);
+  const aprobadoAhora = pct >= 70;
+
+  try {
+    const existing = cursoProgresoMap[currentVideoData.id];
+    const intentos = (existing?.intentos || 0) + 1;
+    const mejorPuntaje = Math.max(existing?.mejor_puntaje || 0, pct);
+    const yaAprobado = !!existing?.aprobado || aprobadoAhora;
+
+    const payload = {
+      video_visto: true, intentos, mejor_puntaje: mejorPuntaje, aprobado: yaAprobado,
+      fecha_aprobado: yaAprobado ? new Date().toISOString() : (existing?.fecha_aprobado || null)
+    };
+
+    let updated;
+    if (existing) {
+      const { data } = await sb.from('progreso_alumno').update(payload).eq('id', existing.id).select().single();
+      updated = data;
+    } else {
+      const { data } = await sb.from('progreso_alumno').insert({ alumno_id: currentUser.id, video_id: currentVideoData.id, ...payload }).select().single();
+      updated = data;
+    }
+    cursoProgresoMap[currentVideoData.id] = updated;
+
+    const resDiv = document.getElementById('cuestionario-resultado');
+    if (aprobadoAhora || existing?.aprobado) {
+      resDiv.style.color = '#16a34a';
+      resDiv.textContent = `✅ ¡Aprobado! ${correctas}/${preguntas.length} correctas (${pct}%)`;
+      setTimeout(() => { cerrarVideo(); }, 1600);
+    } else {
+      resDiv.style.color = '#dc2626';
+      resDiv.textContent = `❌ No alcanzaste el mínimo de 70% (obtuviste ${pct}%). Puedes reintentar.`;
+      cuestionarioActual.respuestas = {};
+      setTimeout(() => renderCuestionario(), 1600);
+    }
+  } catch(e) {
+    console.error('Error guardando cuestionario:', e);
+    alert('❌ Ocurrió un error al guardar tus respuestas.');
+  }
+}
+
+async function aprobarVideoDirecto() {
+  const existing = cursoProgresoMap[currentVideoData.id];
+  const payload = { video_visto: true, aprobado: true, mejor_puntaje: 100, fecha_aprobado: new Date().toISOString() };
+  let updated;
+  if (existing) {
+    const { data } = await sb.from('progreso_alumno').update(payload).eq('id', existing.id).select().single();
+    updated = data;
+  } else {
+    const { data } = await sb.from('progreso_alumno').insert({ alumno_id: currentUser.id, video_id: currentVideoData.id, ...payload }).select().single();
+    updated = data;
+  }
+  cursoProgresoMap[currentVideoData.id] = updated;
+  setTimeout(() => cerrarVideo(), 800);
+}
+
+// ── Certificado ──
+async function solicitarCertificado() {
+  try {
+    const { data: existing } = await sb.from('certificados').select('*')
+      .eq('alumno_id', currentUser.id).eq('curso_id', currentCurso.id).maybeSingle();
+    if (!existing) {
+      await sb.from('certificados').insert({ alumno_id: currentUser.id, curso_id: currentCurso.id });
+    }
+    const nombre = currentProfile?.nombre || currentUser.email;
+    const msg = encodeURIComponent(`Hola, completé el curso "${currentCurso.titulo}" y quiero adquirir mi certificado. Mi nombre es ${nombre}.`);
+    window.open(`https://wa.me/51922573625?text=${msg}`, '_blank');
+  } catch(e) {
+    console.error('Error solicitando certificado:', e);
+    alert('❌ No se pudo procesar la solicitud. Intenta de nuevo.');
+  }
+}
+
+// ══════════════════════════════════════════
+// AULA VIRTUAL — ADMIN (CURSOS)
+// ══════════════════════════════════════════
+let todosCursosAdmin = [];
+let cursoVideosActivo = null; // { id, titulo }
+let videoPreguntasActivo = null; // { id, titulo }
+
+function toggleNivelRequerido() {
+  const cat = document.getElementById('curso-categoria-input').value;
+  document.getElementById('curso-nivel-wrap').style.display = cat === 'nivel' ? 'block' : 'none';
+}
+
+async function cargarCursosAdmin() {
+  if (!esAdmin()) return;
+  const tbody = document.getElementById('admin-cursos-tbody');
+  try {
+    const { data: cursos, error } = await sb.from('cursos').select('*').order('orden');
+    if (error) throw error;
+    const { data: videos } = await sb.from('videos').select('id, curso_id');
+    const { data: preguntas } = await sb.from('preguntas_video').select('id, video_id');
+    todosCursosAdmin = cursos || [];
+
+    if (!todosCursosAdmin.length) {
+      tbody.innerHTML = '<tr><td colspan="5" class="sin-historial">Aún no hay cursos creados</td></tr>';
+      return;
+    }
+    tbody.innerHTML = todosCursosAdmin.map(c => {
+      const videosDelCurso = (videos || []).filter(v => v.curso_id === c.id);
+      const numVideos = videosDelCurso.length;
+      const incompleto = numVideos === 0 || videosDelCurso.some(v => !(preguntas || []).some(p => p.video_id === v.id));
+      const catLabel = c.categoria === 'ia' ? '🤖 IA' : `📚 Nivel · ${c.nivel_requerido === 'inicial' ? 'Inicial' : 'Primaria'}`;
+      return `<tr>
+        <td><strong>${c.icono || '🎓'} ${c.titulo}</strong>${incompleto ? ' <span title="Falta agregar videos o preguntas" style="background:rgba(245,158,11,0.12);color:var(--warning);border:1px solid rgba(245,158,11,0.3);padding:2px 8px;border-radius:10px;font-size:0.72rem;font-weight:700;margin-left:6px">⚠️ Incompleto</span>' : ''}</td>
+        <td style="font-size:0.8rem">${catLabel}</td>
+        <td>
+          <button onclick="abrirPanelVideos('${c.id}','${(c.titulo||'').replace(/'/g,"\\'")}')" style="padding:5px 12px;background:rgba(15,45,138,0.08);border:none;border-radius:7px;font-size:0.78rem;font-weight:600;color:var(--azul);cursor:pointer">${numVideos} video${numVideos===1?'':'s'} →</button>
+        </td>
+        <td><span class="estado-chip ${c.activo ? 'activo' : 'inactivo'}">${c.activo ? '✅ Activo' : '❌ Inactivo'}</span></td>
+        <td>
+          <button class="btn-editar" onclick="editarCurso('${c.id}')">✏️ Editar</button>
+          <button class="toggle-membresia ${c.activo ? 'desactivar' : 'activar'}" onclick="toggleActivoCurso('${c.id}', ${!c.activo})">${c.activo ? 'Desactivar' : 'Activar'}</button>
+          <button onclick="eliminarCurso('${c.id}')" style="padding:5px 12px;background:rgba(239,68,68,0.1);color:var(--error);border:1px solid rgba(239,68,68,0.25);border-radius:7px;font-size:0.78rem;font-weight:700;cursor:pointer">🗑️</button>
+        </td>
+      </tr>`;
+    }).join('');
+  } catch(e) {
+    console.error('Error cargando cursos:', e);
+    tbody.innerHTML = '<tr><td colspan="5" class="sin-historial">⚠️ Error al cargar cursos</td></tr>';
+  }
+}
+
+async function guardarCurso() {
+  if (!esAdmin()) return;
+  const id = document.getElementById('curso-edit-id').value;
+  const titulo = document.getElementById('curso-titulo-input').value.trim();
+  const icono = document.getElementById('curso-icono-input').value.trim() || '🎓';
+  const categoria = document.getElementById('curso-categoria-input').value;
+  const nivel_requerido = categoria === 'nivel' ? document.getElementById('curso-nivel-input').value : null;
+  const orden = parseInt(document.getElementById('curso-orden-input').value) || 0;
+  const descripcion = document.getElementById('curso-descripcion-input').value.trim();
+
+  if (!titulo) return showAlertaCursoAdmin('⚠️ El título es obligatorio.', 'error');
+
+  const payload = { titulo, icono, categoria, nivel_requerido, orden, descripcion };
+  try {
+    if (id) {
+      const { error } = await sb.from('cursos').update(payload).eq('id', id);
+      if (error) throw error;
+      showAlertaCursoAdmin('✅ Curso actualizado.', 'success');
+    } else {
+      const { error } = await sb.from('cursos').insert({ ...payload, activo: true });
+      if (error) throw error;
+      showAlertaCursoAdmin('✅ Curso creado.', 'success');
+    }
+    cancelarEdicionCurso();
+    cargarCursosAdmin();
+  } catch(e) {
+    console.error('Error guardando curso:', e);
+    showAlertaCursoAdmin('❌ No se pudo guardar el curso.', 'error');
+  }
+}
+
+function editarCurso(id) {
+  const c = todosCursosAdmin.find(x => x.id === id);
+  if (!c) return;
+  document.getElementById('curso-edit-id').value = c.id;
+  document.getElementById('curso-titulo-input').value = c.titulo || '';
+  document.getElementById('curso-icono-input').value = c.icono || '🎓';
+  document.getElementById('curso-categoria-input').value = c.categoria;
+  document.getElementById('curso-nivel-input').value = c.nivel_requerido || 'inicial';
+  document.getElementById('curso-orden-input').value = c.orden || 0;
+  document.getElementById('curso-descripcion-input').value = c.descripcion || '';
+  toggleNivelRequerido();
+  document.getElementById('curso-form-titulo-label').textContent = 'Editar curso';
+  document.getElementById('btn-cancelar-curso').style.display = 'inline-block';
+  document.getElementById('curso-titulo-input').scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function cancelarEdicionCurso() {
+  document.getElementById('curso-edit-id').value = '';
+  document.getElementById('curso-titulo-input').value = '';
+  document.getElementById('curso-icono-input').value = '🎓';
+  document.getElementById('curso-categoria-input').value = 'ia';
+  document.getElementById('curso-orden-input').value = 0;
+  document.getElementById('curso-descripcion-input').value = '';
+  toggleNivelRequerido();
+  document.getElementById('curso-form-titulo-label').textContent = 'Nuevo curso';
+  document.getElementById('btn-cancelar-curso').style.display = 'none';
+}
+
+async function toggleActivoCurso(id, estado) {
+  if (!esAdmin()) return;
+  try {
+    await sb.from('cursos').update({ activo: estado }).eq('id', id);
+    cargarCursosAdmin();
+  } catch(e) { console.error('Error activando/desactivando curso:', e); }
+}
+
+async function eliminarCurso(id) {
+  if (!esAdmin()) return;
+  if (!confirm('¿Eliminar este curso? Se borrarán también sus videos, preguntas y progreso de alumnos.')) return;
+  try {
+    await sb.from('cursos').delete().eq('id', id);
+    cargarCursosAdmin();
+  } catch(e) {
+    console.error('Error eliminando curso:', e);
+    alert('❌ No se pudo eliminar el curso.');
+  }
+}
+
+function showAlertaCursoAdmin(msg, tipo) {
+  const el = document.getElementById('alerta-curso-admin');
+  el.textContent = msg;
+  el.className = 'alerta ' + tipo;
+  el.style.display = 'block';
+  setTimeout(() => el.style.display = 'none', 3500);
+}
+
+// ── VIDEOS ──
+let todosVideosAdmin = [];
+
+function abrirPanelVideos(cursoId, cursoTitulo) {
+  cursoVideosActivo = { id: cursoId, titulo: cursoTitulo };
+  document.getElementById('videos-curso-nombre').textContent = cursoTitulo;
+  document.getElementById('admin-videos-panel').style.display = 'block';
+  document.getElementById('admin-preguntas-panel').style.display = 'none';
+  cancelarEdicionVideo();
+  cargarVideosAdmin();
+  document.getElementById('admin-videos-panel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function cerrarPanelVideos() {
+  cursoVideosActivo = null;
+  document.getElementById('admin-videos-panel').style.display = 'none';
+  document.getElementById('admin-preguntas-panel').style.display = 'none';
+}
+
+async function cargarVideosAdmin() {
+  if (!cursoVideosActivo) return;
+  const tbody = document.getElementById('admin-videos-tbody');
+  tbody.innerHTML = '<tr><td colspan="4" class="sin-historial">Cargando...</td></tr>';
+  try {
+    const { data: videos, error } = await sb.from('videos').select('*').eq('curso_id', cursoVideosActivo.id).order('orden');
+    if (error) throw error;
+    const { data: preguntas } = await sb.from('preguntas_video').select('id, video_id');
+    todosVideosAdmin = videos || [];
+
+    if (!todosVideosAdmin.length) {
+      tbody.innerHTML = '<tr><td colspan="4" class="sin-historial">Aún no hay videos en este curso</td></tr>';
+      return;
+    }
+    tbody.innerHTML = todosVideosAdmin.map(v => {
+      const numPreguntas = (preguntas || []).filter(p => p.video_id === v.id).length;
+      const sinPreguntas = numPreguntas === 0;
+      const btnStyle = sinPreguntas
+        ? 'padding:5px 12px;background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.3);border-radius:7px;font-size:0.78rem;font-weight:700;color:var(--warning);cursor:pointer'
+        : 'padding:5px 12px;background:rgba(15,45,138,0.08);border:none;border-radius:7px;font-size:0.78rem;font-weight:600;color:var(--azul);cursor:pointer';
+      const btnLabel = sinPreguntas ? '⚠️ Sin preguntas →' : `${numPreguntas} pregunta${numPreguntas===1?'':'s'} →`;
+      return `<tr>
+        <td><strong>${v.titulo}</strong></td>
+        <td style="font-size:0.78rem;color:var(--gris)">${v.youtube_id}</td>
+        <td>
+          <button onclick="abrirPanelPreguntas('${v.id}','${(v.titulo||'').replace(/'/g,"\\'")}')" style="${btnStyle}">${btnLabel}</button>
+        </td>
+        <td>
+          <button class="btn-editar" onclick="editarVideo('${v.id}')">✏️ Editar</button>
+          <button onclick="eliminarVideo('${v.id}')" style="padding:5px 12px;background:rgba(239,68,68,0.1);color:var(--error);border:1px solid rgba(239,68,68,0.25);border-radius:7px;font-size:0.78rem;font-weight:700;cursor:pointer">🗑️</button>
+        </td>
+      </tr>`;
+    }).join('');
+  } catch(e) {
+    console.error('Error cargando videos:', e);
+    tbody.innerHTML = '<tr><td colspan="4" class="sin-historial">⚠️ Error al cargar videos</td></tr>';
+  }
+}
+
+async function guardarVideo() {
+  if (!esAdmin() || !cursoVideosActivo) return;
+  const id = document.getElementById('video-edit-id').value;
+  const titulo = document.getElementById('video-titulo-input').value.trim();
+  const youtube_id = document.getElementById('video-youtube-input').value.trim();
+  const orden = parseInt(document.getElementById('video-orden-input').value) || 0;
+
+  if (!titulo || !youtube_id) return alert('⚠️ Completa el título y el ID de YouTube.');
+
+  const payload = { titulo, youtube_id, orden, curso_id: cursoVideosActivo.id };
+  try {
+    if (id) {
+      const { error } = await sb.from('videos').update(payload).eq('id', id);
+      if (error) throw error;
+    } else {
+      const { error } = await sb.from('videos').insert(payload);
+      if (error) throw error;
+    }
+    cancelarEdicionVideo();
+    cargarVideosAdmin();
+    cargarCursosAdmin();
+  } catch(e) {
+    console.error('Error guardando video:', e);
+    alert('❌ No se pudo guardar el video.');
+  }
+}
+
+function editarVideo(id) {
+  const v = todosVideosAdmin.find(x => x.id === id);
+  if (!v) return;
+  document.getElementById('video-edit-id').value = v.id;
+  document.getElementById('video-titulo-input').value = v.titulo || '';
+  document.getElementById('video-youtube-input').value = v.youtube_id || '';
+  document.getElementById('video-orden-input').value = v.orden || 0;
+  document.getElementById('btn-cancelar-video').style.display = 'inline-block';
+}
+
+function cancelarEdicionVideo() {
+  document.getElementById('video-edit-id').value = '';
+  document.getElementById('video-titulo-input').value = '';
+  document.getElementById('video-youtube-input').value = '';
+  document.getElementById('video-orden-input').value = 0;
+  document.getElementById('btn-cancelar-video').style.display = 'none';
+}
+
+async function eliminarVideo(id) {
+  if (!esAdmin()) return;
+  if (!confirm('¿Eliminar este video? Se borrarán también sus preguntas y el progreso de alumnos.')) return;
+  try {
+    await sb.from('videos').delete().eq('id', id);
+    cargarVideosAdmin();
+    cargarCursosAdmin();
+  } catch(e) {
+    console.error('Error eliminando video:', e);
+    alert('❌ No se pudo eliminar el video.');
+  }
+}
+
+// ── PREGUNTAS ──
+let todasPreguntasAdmin = [];
+
+function abrirPanelPreguntas(videoId, videoTitulo) {
+  videoPreguntasActivo = { id: videoId, titulo: videoTitulo };
+  document.getElementById('preguntas-video-nombre').textContent = videoTitulo;
+  document.getElementById('admin-preguntas-panel').style.display = 'block';
+  cancelarEdicionPregunta();
+  cargarPreguntasAdmin();
+  document.getElementById('admin-preguntas-panel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function cerrarPanelPreguntas() {
+  videoPreguntasActivo = null;
+  document.getElementById('admin-preguntas-panel').style.display = 'none';
+}
+
+async function cargarPreguntasAdmin() {
+  if (!videoPreguntasActivo) return;
+  const tbody = document.getElementById('admin-preguntas-tbody');
+  tbody.innerHTML = '<tr><td colspan="4" class="sin-historial">Cargando...</td></tr>';
+  try {
+    const { data, error } = await sb.from('preguntas_video').select('*').eq('video_id', videoPreguntasActivo.id).order('orden');
+    if (error) throw error;
+    todasPreguntasAdmin = data || [];
+
+    if (!todasPreguntasAdmin.length) {
+      tbody.innerHTML = '<tr><td colspan="4" class="sin-historial">Aún no hay preguntas para este video</td></tr>';
+      return;
+    }
+    tbody.innerHTML = todasPreguntasAdmin.map(p => {
+      const opciones = p.opciones || [];
+      return `<tr>
+        <td><strong style="font-size:0.85rem">${p.pregunta}</strong></td>
+        <td style="font-size:0.78rem;color:var(--gris)">${opciones.join(' · ')}</td>
+        <td style="font-size:0.8rem;color:var(--success);font-weight:700">${opciones[p.respuesta_correcta] || '—'}</td>
+        <td>
+          <button class="btn-editar" onclick="editarPregunta('${p.id}')">✏️ Editar</button>
+          <button onclick="eliminarPregunta('${p.id}')" style="padding:5px 12px;background:rgba(239,68,68,0.1);color:var(--error);border:1px solid rgba(239,68,68,0.25);border-radius:7px;font-size:0.78rem;font-weight:700;cursor:pointer">🗑️</button>
+        </td>
+      </tr>`;
+    }).join('');
+  } catch(e) {
+    console.error('Error cargando preguntas:', e);
+    tbody.innerHTML = '<tr><td colspan="4" class="sin-historial">⚠️ Error al cargar preguntas</td></tr>';
+  }
+}
+
+async function guardarPregunta() {
+  if (!esAdmin() || !videoPreguntasActivo) return;
+  const id = document.getElementById('pregunta-edit-id').value;
+  const pregunta = document.getElementById('pregunta-texto-input').value.trim();
+  const opciones = document.getElementById('pregunta-opciones-input').value.split('\n').map(o => o.trim()).filter(Boolean);
+  const correctaNum = parseInt(document.getElementById('pregunta-correcta-input').value);
+
+  if (!pregunta) return alert('⚠️ Escribe la pregunta.');
+  if (opciones.length < 2) return alert('⚠️ Agrega al menos 2 opciones (una por línea).');
+  if (!correctaNum || correctaNum < 1 || correctaNum > opciones.length) return alert(`⚠️ El número de la opción correcta debe estar entre 1 y ${opciones.length}.`);
+
+  const respuesta_correcta = correctaNum - 1; // a índice 0-based
+  const payload = { pregunta, opciones, respuesta_correcta, video_id: videoPreguntasActivo.id };
+  try {
+    if (id) {
+      const { error } = await sb.from('preguntas_video').update(payload).eq('id', id);
+      if (error) throw error;
+    } else {
+      const { error } = await sb.from('preguntas_video').insert(payload);
+      if (error) throw error;
+    }
+    cancelarEdicionPregunta();
+    cargarPreguntasAdmin();
+    cargarVideosAdmin();
+  } catch(e) {
+    console.error('Error guardando pregunta:', e);
+    alert('❌ No se pudo guardar la pregunta.');
+  }
+}
+
+function editarPregunta(id) {
+  const p = todasPreguntasAdmin.find(x => x.id === id);
+  if (!p) return;
+  document.getElementById('pregunta-edit-id').value = p.id;
+  document.getElementById('pregunta-texto-input').value = p.pregunta || '';
+  document.getElementById('pregunta-opciones-input').value = (p.opciones || []).join('\n');
+  document.getElementById('pregunta-correcta-input').value = (p.respuesta_correcta ?? 0) + 1;
+  document.getElementById('btn-cancelar-pregunta').style.display = 'inline-block';
+}
+
+function cancelarEdicionPregunta() {
+  document.getElementById('pregunta-edit-id').value = '';
+  document.getElementById('pregunta-texto-input').value = '';
+  document.getElementById('pregunta-opciones-input').value = '';
+  document.getElementById('pregunta-correcta-input').value = 1;
+  document.getElementById('btn-cancelar-pregunta').style.display = 'none';
+}
+
+async function eliminarPregunta(id) {
+  if (!esAdmin()) return;
+  if (!confirm('¿Eliminar esta pregunta?')) return;
+  try {
+    await sb.from('preguntas_video').delete().eq('id', id);
+    cargarPreguntasAdmin();
+    cargarVideosAdmin();
+  } catch(e) {
+    console.error('Error eliminando pregunta:', e);
+    alert('❌ No se pudo eliminar la pregunta.');
+  }
+}
+
+// ══════════════════════════════════════════
+// AULA VIRTUAL — CERTIFICADOS (ADMIN)
+// ══════════════════════════════════════════
+let todosCertificadosAdmin = [];
+let filtroCertificadosActual = 'pendientes';
+
+async function cargarCertificadosAdmin() {
+  if (!esAdmin()) return;
+  const tbody = document.getElementById('admin-certificados-tbody');
+  tbody.innerHTML = '<tr><td colspan="5" class="sin-historial">Cargando...</td></tr>';
+  try {
+    const { data: certs, error } = await sb.from('certificados').select('*').order('fecha_emision', { ascending: false });
+    if (error) throw error;
+    const { data: perfiles } = await sb.from('perfiles').select('id, nombre, email');
+    const { data: cursos } = await sb.from('cursos').select('id, titulo, icono');
+
+    todosCertificadosAdmin = (certs || []).map(c => ({
+      ...c,
+      alumno: (perfiles || []).find(p => p.id === c.alumno_id),
+      curso: (cursos || []).find(x => x.id === c.curso_id)
+    }));
+    renderCertificadosTabla();
+  } catch(e) {
+    console.error('Error cargando certificados:', e);
+    tbody.innerHTML = '<tr><td colspan="5" class="sin-historial">⚠️ Error al cargar certificados</td></tr>';
+  }
+}
+
+function filtrarCertificados(filtro) {
+  filtroCertificadosActual = filtro;
+  document.getElementById('cert-filtro-pendientes').classList.toggle('active', filtro === 'pendientes');
+  document.getElementById('cert-filtro-todos').classList.toggle('active', filtro === 'todos');
+  renderCertificadosTabla();
+}
+
+function renderCertificadosTabla() {
+  const tbody = document.getElementById('admin-certificados-tbody');
+  const lista = filtroCertificadosActual === 'pendientes'
+    ? todosCertificadosAdmin.filter(c => !c.entregado)
+    : todosCertificadosAdmin;
+
+  if (!lista.length) {
+    tbody.innerHTML = `<tr><td colspan="5" class="sin-historial">${filtroCertificadosActual === 'pendientes' ? '✅ No hay certificados pendientes' : 'Aún no hay certificados solicitados'}</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = lista.map(c => {
+    const fecha = new Date(c.fecha_emision).toLocaleDateString('es-PE');
+    const nombre = c.alumno?.nombre || '—';
+    const email = c.alumno?.email || '';
+    const cursoTitulo = c.curso ? `${c.curso.icono || '🎓'} ${c.curso.titulo}` : '—';
+    const waMsg = encodeURIComponent(`Hola ${nombre}, aquí tienes tu certificado del curso "${c.curso?.titulo || ''}" 🎓`);
+    return `<tr>
+      <td><strong>${nombre}</strong><div style="font-size:0.75rem;color:var(--gris)">${email}</div></td>
+      <td style="font-size:0.85rem">${cursoTitulo}</td>
+      <td style="font-size:0.8rem;color:var(--gris)">${fecha}</td>
+      <td><span class="estado-chip ${c.entregado ? 'activo' : 'inactivo'}">${c.entregado ? '✅ Entregado' : '⏳ Pendiente'}</span></td>
+      <td>
+        <a href="https://wa.me/51922573625?text=${waMsg}" target="_blank" style="padding:5px 12px;background:rgba(34,197,94,0.12);color:#16a34a;border:1px solid rgba(34,197,94,0.3);border-radius:7px;font-size:0.78rem;font-weight:700;cursor:pointer;text-decoration:none;display:inline-block;margin-right:4px">💬 Contactar</a>
+        <button class="toggle-membresia ${c.entregado ? 'desactivar' : 'activar'}" onclick="toggleEntregadoCertificado('${c.id}', ${!c.entregado})">${c.entregado ? 'Marcar pendiente' : 'Marcar entregado'}</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+async function toggleEntregadoCertificado(id, estado) {
+  if (!esAdmin()) return;
+  try {
+    await sb.from('certificados').update({ entregado: estado }).eq('id', id);
+    cargarCertificadosAdmin();
+  } catch(e) {
+    console.error('Error actualizando certificado:', e);
+    alert('❌ No se pudo actualizar el estado del certificado.');
+  }
+}
+
+// ══════════════════════════════════════════
+// EXÁMENES PDF — VISOR (DOCENTE)
+// ══════════════════════════════════════════
+let currentExamenPdf = null; // { examen, respuestas:{}, activeIdx }
+
+async function iniciarExamenPDF(id) {
+  if (!currentProfile?.membresia_activa) return;
+  try {
+    const { data, error } = await sb.from('examenes_pdf').select('*').eq('id', id).single();
+    if (error || !data) throw error || new Error('No encontrado');
+
+    currentExamenPdf = {
+      examen: data,
+      respuestas: {},   // { numPregunta: 'A'|'B'|'C'|'D' }
+      estados: {},      // { numPregunta: 'ok'|'wrong' }
+      activeIdx: 1
+    };
+
+    document.getElementById('epdf-titulo').textContent = data.titulo;
+    const espLabel = data.especialidad === 'inicial' ? 'Inicial' : data.especialidad === 'primaria' ? 'Primaria' : 'General';
+    document.getElementById('epdf-subtitulo').textContent = data.tipo === 'ascenso' ? '🏆 Ascenso · ' + espLabel : '📋 Nombramiento · ' + espLabel;
+    document.getElementById('epdf-iframe').src = data.pdf_url;
+    document.getElementById('epdf-progreso').textContent = '0 / ' + data.num_preguntas;
+    document.getElementById('epdf-barra').style.width = '0%';
+    document.getElementById('epdf-feedback').textContent = '';
+
+    epdfRenderLista();
+    showScreen('examen-pdf');
+  } catch(e) {
+    console.error('Error abriendo examen PDF:', e);
+    alert('❌ No se pudo cargar el examen. Intenta de nuevo.');
+  }
+}
+
+function epdfRenderLista() {
+  const { examen, respuestas, estados, activeIdx } = currentExamenPdf;
+  const n = examen.num_preguntas;
+  const lista = document.getElementById('epdf-lista');
+  let html = '';
+
+  for (let i = 1; i <= n; i++) {
+    const resp = respuestas[i] || null;
+    const estado = estados[i] || null;
+    const esActiva = i === activeIdx;
+    let itemStyle = 'padding:8px 14px;border-bottom:0.5px solid rgba(15,45,138,0.06);cursor:pointer;transition:background 0.15s;';
+    if (esActiva) itemStyle += 'background:rgba(15,45,138,0.05);border-left:3px solid var(--azul);';
+    if (estado === 'ok') itemStyle += 'background:#f0faf4;';
+    if (estado === 'wrong') itemStyle += 'background:#fff5f5;';
+
+    const badgeStyle = estado === 'ok'
+      ? 'background:#e6f6ee;color:#1a6b3c;padding:2px 7px;border-radius:10px;font-size:10px;font-weight:700'
+      : estado === 'wrong'
+      ? 'background:#fde8e8;color:#9b1c1c;padding:2px 7px;border-radius:10px;font-size:10px;font-weight:700'
+      : 'background:var(--gris-claro);color:var(--gris);padding:2px 7px;border-radius:10px;font-size:10px;font-weight:600';
+    const badgeText = estado === 'ok' ? '✓ Correcto' : estado === 'wrong' ? '✗ Incorrecto' : 'Sin responder';
+
+    // Detectar número de opciones según la clave del examen
+    const claveVals = Object.values(examen.clave_respuestas);
+    const tieneD = claveVals.some(v => v === 'D');
+    const opts = tieneD ? ['A','B','C','D'] : ['A','B','C'];
+    const optsHtml = opts.map(o => {
+      let cls = 'opt-btn';
+      const answered = !!estado;
+      const clave = examen.clave_respuestas[i];
+      if (answered) {
+        if (o === clave) cls += ' show-correct';
+        if (o === resp && estado === 'wrong') cls += ' wrong';
+        if (o === resp && estado === 'ok') cls += ' correct';
+      } else {
+        if (o === resp) cls += ' selected';
+      }
+      const dis = answered ? 'disabled' : '';
+      return `<button class="${cls}" ${dis} onclick="event.stopPropagation();epdfSelectOpt(${i},'${o}')">${o}</button>`;
+    }).join('');
+
+    html += `<div style="${itemStyle}" onclick="epdfSetActive(${i})">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px">
+        <span style="font-size:12px;font-weight:600;color:var(--azul-oscuro)">Pregunta ${i}</span>
+        <span style="${badgeStyle}">${badgeText}</span>
+      </div>
+      <div style="display:flex;gap:5px">${optsHtml}</div>
+    </div>`;
+  }
+  lista.innerHTML = html;
+
+  // Scroll a pregunta activa
+  const items = lista.children;
+  if (items[activeIdx - 1]) items[activeIdx - 1].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+  // Botón enviar
+  const btn = document.getElementById('epdf-btn-enviar');
+  const curResp = respuestas[activeIdx];
+  const curEstado = estados[activeIdx];
+  btn.disabled = !curResp || !!curEstado;
+  btn.textContent = curEstado ? 'Ya respondida' : 'Enviar respuesta';
+
+  // Progreso
+  const respondidas = Object.keys(estados).length;
+  document.getElementById('epdf-progreso').textContent = respondidas + ' / ' + n;
+  document.getElementById('epdf-barra').style.width = (respondidas / n * 100) + '%';
+}
+
+function epdfSetActive(i) {
+  currentExamenPdf.activeIdx = i;
+  document.getElementById('epdf-feedback').textContent = '';
+  epdfRenderLista();
+}
+
+function epdfSelectOpt(i, opt) {
+  if (currentExamenPdf.estados[i]) return;
+  currentExamenPdf.respuestas[i] = opt;
+  currentExamenPdf.activeIdx = i;
+  epdfRenderLista();
+}
+
+function epdfEnviarRespuesta() {
+  const { examen, respuestas, estados, activeIdx } = currentExamenPdf;
+  const resp = respuestas[activeIdx];
+  if (!resp || estados[activeIdx]) return;
+
+  const clave = examen.clave_respuestas[activeIdx];
+  const esCorrecta = resp === clave;
+  currentExamenPdf.estados[activeIdx] = esCorrecta ? 'ok' : 'wrong';
+
+  const fb = document.getElementById('epdf-feedback');
+  fb.textContent = esCorrecta ? '¡Correcto!' : 'Incorrecto — la respuesta era ' + clave;
+  fb.style.color = esCorrecta ? '#16a34a' : '#9b1c1c';
+
+  epdfRenderLista();
+
+  // Avanzar a siguiente sin responder
+  const n = examen.num_preguntas;
+  let sig = null;
+  for (let i = activeIdx + 1; i <= n; i++) {
+    if (!currentExamenPdf.estados[i]) { sig = i; break; }
+  }
+  if (sig) {
+    setTimeout(() => {
+      currentExamenPdf.activeIdx = sig;
+      document.getElementById('epdf-feedback').textContent = '';
+      epdfRenderLista();
+    }, 900);
+  }
+
+  // Si terminó todo, guardar resultado
+  if (Object.keys(currentExamenPdf.estados).length === n) {
+    setTimeout(() => guardarResultadoExamenPDF(), 1000);
+  }
+}
+
+async function guardarResultadoExamenPDF() {
+  const { examen, respuestas, estados } = currentExamenPdf;
+  const correctas = Object.values(estados).filter(e => e === 'ok').length;
+  const total = examen.num_preguntas;
+  const pct = Math.round((correctas / total) * 100);
+
+  try {
+    await sb.from('historial_examenes_pdf').insert({
+      user_id: currentUser.id,
+      examen_id: examen.id,
+      titulo: examen.titulo,
+      correctas,
+      total,
+      porcentaje: pct,
+      respuestas_usuario: respuestas,
+      estados_respuestas: estados
+    });
+  } catch(e) {
+    console.error('Error guardando resultado PDF:', e);
+  }
+
+  const fb = document.getElementById('epdf-feedback');
+  fb.textContent = `✅ Examen completado: ${correctas}/${total} correctas (${pct}%)`;
+  fb.style.color = pct >= 70 ? '#16a34a' : '#dc2626';
+}
+
+function cerrarExamenPDF() {
+  currentExamenPdf = null;
+  document.getElementById('epdf-iframe').src = '';
+  showScreen('dashboard');
+  cargarDashboard();
+}
 </script>
 </body>
 </html>
