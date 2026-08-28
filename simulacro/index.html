@@ -1623,7 +1623,7 @@ body { font-family:'DM Sans',sans-serif; background:var(--gris-claro); min-heigh
           <option value="nivel">📚 Nivel (Inicial/Primaria)</option>
         </select>
       </div>
-      <div class="form-group" style="margin-bottom:0" id="curso-nivel-wrap">
+      <div class="form-group" style="margin-bottom:0;display:none" id="curso-nivel-wrap">
         <label>Nivel requerido</label>
         <select id="curso-nivel-input" style="width:100%;padding:12px 14px;border:1.5px solid rgba(15,45,138,0.15);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.9rem;background:var(--gris-claro);outline:none">
           <option value="inicial">🧒 Inicial</option>
@@ -2264,13 +2264,23 @@ async function cargarDashboard() {
     banner.style.display = 'none';
   }
 
-  // Bloquear botones si no tiene membresía
+  // Bloquear botones: por membresía y por tipo de examen no contratado
+  const tipoContratado = currentProfile?.tipo_examen || 'nombramiento';
   ['btn-sim-nombramiento','btn-sim-ascenso'].forEach(id => {
     const btn = document.getElementById(id);
+    const tipoBtn = id.replace('btn-sim-', '');
     if (!activa) {
       btn.classList.add('locked');
       btn.textContent = '🔒 Requiere membresía';
       btn.onclick = () => window.open('https://wa.me/51922573625?text=Hola%2C%20quiero%20adquirir%20una%20membresia','_blank');
+    } else if (tipoBtn !== tipoContratado) {
+      btn.classList.add('locked');
+      btn.textContent = `🔒 Tu plan es de ${tipoContratado === 'ascenso' ? 'Ascenso' : 'Nombramiento'}`;
+      btn.onclick = () => window.open(`https://wa.me/51922573625?text=${encodeURIComponent('Hola, tengo el plan de ' + (tipoContratado === 'ascenso' ? 'Ascenso' : 'Nombramiento') + ' y quiero consultar sobre el examen de ' + (tipoBtn === 'ascenso' ? 'Ascenso' : 'Nombramiento') + '.')}`, '_blank');
+    } else {
+      btn.classList.remove('locked');
+      btn.textContent = 'Iniciar simulacro →';
+      btn.onclick = () => iniciarSimulacro(tipoBtn);
     }
   });
 
@@ -2338,6 +2348,12 @@ async function cargarDashboard() {
 // ══════════════════════════════════════════
 async function iniciarSimulacro(tipo) {
   if (!currentProfile?.membresia_activa) return;
+
+  const tipoPermitido = currentProfile?.tipo_examen || 'nombramiento';
+  if (tipo !== tipoPermitido) {
+    alert(`⚠️ Tu plan actual es de ${tipoPermitido === 'ascenso' ? 'Ascenso' : 'Nombramiento'}. Si necesitas el otro tipo de examen, contáctanos por WhatsApp para actualizarlo.`);
+    return;
+  }
 
   // Verificar límite diario
   const limite = currentProfile?.limite_diario ?? 3;
@@ -3715,7 +3731,7 @@ async function cargarExamenesPdfDashboard() {
     const esp = currentProfile?.especialidad || 'general';
     const tipo = currentProfile?.tipo_examen || 'nombramiento';
     const { data, error } = await sb.from('examenes_pdf')
-      .select('*').eq('activo', true)
+      .select('*').eq('activo', true).eq('tipo', tipo)
       .or(`especialidad.eq.${esp},especialidad.eq.general`)
       .order('created_at', { ascending: false });
     if (error) throw error;
