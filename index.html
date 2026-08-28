@@ -1535,6 +1535,40 @@ body { font-family:'DM Sans',sans-serif; background:var(--gris-claro); min-heigh
   </div>
 </div>
 
+<div id="modal-editar-pdf" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;align-items:center;justify-content:center;padding:20px">
+  <div style="background:var(--blanco);border-radius:16px;padding:32px;max-width:440px;width:100%;box-shadow:0 24px 60px rgba(0,0,0,0.2)">
+    <h3 style="font-family:'Playfair Display',serif;color:var(--azul-oscuro);margin-bottom:20px">✏️ Editar examen PDF</h3>
+    <input type="hidden" id="edit-pdf-id">
+    <div class="form-group">
+      <label>Título del examen</label>
+      <input type="text" id="edit-pdf-titulo" style="width:100%;padding:12px 14px;border:1.5px solid rgba(15,45,138,0.15);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.9rem;background:var(--gris-claro);outline:none">
+    </div>
+    <div class="form-group">
+      <label>Tipo</label>
+      <select id="edit-pdf-tipo" style="width:100%;padding:12px 14px;border:1.5px solid rgba(15,45,138,0.15);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.9rem;background:var(--gris-claro);outline:none">
+        <option value="nombramiento">📋 Nombramiento</option>
+        <option value="ascenso">🏆 Ascenso</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Especialidad</label>
+      <select id="edit-pdf-especialidad" style="width:100%;padding:12px 14px;border:1.5px solid rgba(15,45,138,0.15);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.9rem;background:var(--gris-claro);outline:none">
+        <option value="inicial">🧒 Educación Inicial</option>
+        <option value="primaria">📚 Educación Primaria</option>
+        <option value="general">🌐 General (visible para ambas)</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Número de preguntas</label>
+      <input type="number" id="edit-pdf-num-preguntas" min="1" max="200" style="width:100%;padding:12px 14px;border:1.5px solid rgba(15,45,138,0.15);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.9rem;background:var(--gris-claro);outline:none">
+    </div>
+    <div style="display:flex;gap:12px;margin-top:20px">
+      <button onclick="guardarEdicionPdf()" style="flex:1;padding:12px;background:linear-gradient(135deg,var(--azul),var(--azul-medio));color:white;border:none;border-radius:9px;font-family:'DM Sans',sans-serif;font-weight:700;cursor:pointer">Guardar cambios</button>
+      <button onclick="cerrarModalPdf()" style="padding:12px 20px;background:var(--gris-claro);color:var(--gris);border:none;border-radius:9px;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer">Cancelar</button>
+    </div>
+  </div>
+</div>
+
 <!-- ── TAB ADMIN: EXÁMENES PDF ── -->
 <div id="admin-tab-examenes-pdf" class="admin-tab-content" style="display:none;padding:0 5% 36px;">
   <div class="admin-form-card" style="max-width:780px;margin-bottom:28px">
@@ -1553,14 +1587,16 @@ body { font-family:'DM Sans',sans-serif; background:var(--gris-claro); min-heigh
       <div class="form-group" style="margin-bottom:0">
         <label>Especialidad</label>
         <select id="pdf-especialidad" style="width:100%;padding:12px 14px;border:1.5px solid rgba(15,45,138,0.15);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.9rem;background:var(--gris-claro);outline:none">
+          <option value="" selected disabled>⚠️ Selecciona una especialidad...</option>
           <option value="inicial">🧒 Educación Inicial</option>
           <option value="primaria">📚 Educación Primaria</option>
-          <option value="general">🌐 General</option>
+          <option value="general">🌐 General (visible para ambas)</option>
         </select>
       </div>
       <div class="form-group" style="margin-bottom:0">
         <label>Tipo</label>
         <select id="pdf-tipo" style="width:100%;padding:12px 14px;border:1.5px solid rgba(15,45,138,0.15);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.9rem;background:var(--gris-claro);outline:none">
+          <option value="" selected disabled>⚠️ Selecciona un tipo...</option>
           <option value="nombramiento">📋 Nombramiento</option>
           <option value="ascenso">🏆 Ascenso</option>
         </select>
@@ -3636,6 +3672,8 @@ async function subirExamenPDF() {
   const claveTexto = document.getElementById('ep-clave').value.trim();
 
   if (!titulo) return showAlertaAdminPdf('⚠️ Escribe el título del examen.', 'error');
+  if (!especialidad) return showAlertaAdminPdf('⚠️ Selecciona la especialidad (Inicial / Primaria / General).', 'error');
+  if (!tipo) return showAlertaAdminPdf('⚠️ Selecciona el tipo (Nombramiento / Ascenso).', 'error');
   if (!pdfFileSeleccionado) return showAlertaAdminPdf('⚠️ Selecciona un archivo PDF.', 'error');
   if (!claveTexto) return showAlertaAdminPdf('⚠️ Ingresa la clave de respuestas.', 'error');
 
@@ -3711,6 +3749,7 @@ async function cargarExamenesPdfAdmin() {
         <td style="font-size:0.8rem;color:var(--gris)">${fecha}</td>
         <td><span class="estado-chip ${e.activo ? 'activo' : 'inactivo'}">${e.activo ? '✅ Sí' : '❌ No'}</span></td>
         <td>
+          <button onclick="abrirEditarPdf('${e.id}','${(e.titulo||'').replace(/'/g,"\\'")}','${e.tipo}','${e.especialidad}',${e.num_preguntas})" class="btn-editar" style="margin-right:6px">✏️ Editar</button>
           <button onclick="toggleActivoPdf('${e.id}', ${!e.activo})" class="toggle-membresia ${e.activo ? 'desactivar' : 'activar'}" style="margin-right:6px">${e.activo ? 'Desactivar' : 'Activar'}</button>
           <button onclick="eliminarExamenPdf('${e.id}')" style="padding:5px 10px;border-radius:7px;font-size:0.75rem;background:rgba(239,68,68,0.1);color:var(--error);border:1px solid rgba(239,68,68,0.25);cursor:pointer;font-family:'DM Sans',sans-serif">🗑</button>
         </td>
@@ -3732,6 +3771,39 @@ async function eliminarExamenPdf(id) {
   if (!confirm('¿Eliminar este examen PDF?')) return;
   await sb.from('examenes_pdf').delete().eq('id', id);
   cargarExamenesPdfAdmin();
+}
+
+function abrirEditarPdf(id, titulo, tipo, especialidad, numPreguntas) {
+  document.getElementById('edit-pdf-id').value = id;
+  document.getElementById('edit-pdf-titulo').value = titulo;
+  document.getElementById('edit-pdf-tipo').value = tipo;
+  document.getElementById('edit-pdf-especialidad').value = especialidad;
+  document.getElementById('edit-pdf-num-preguntas').value = numPreguntas;
+  document.getElementById('modal-editar-pdf').style.display = 'flex';
+}
+
+function cerrarModalPdf() {
+  document.getElementById('modal-editar-pdf').style.display = 'none';
+}
+
+async function guardarEdicionPdf() {
+  const id = document.getElementById('edit-pdf-id').value;
+  const titulo = document.getElementById('edit-pdf-titulo').value.trim();
+  const tipo = document.getElementById('edit-pdf-tipo').value;
+  const especialidad = document.getElementById('edit-pdf-especialidad').value;
+  const numPreguntas = parseInt(document.getElementById('edit-pdf-num-preguntas').value);
+  if (!titulo) return alert('⚠️ El título no puede estar vacío.');
+  try {
+    const { error } = await sb.from('examenes_pdf').update({
+      titulo, tipo, especialidad, num_preguntas: numPreguntas
+    }).eq('id', id);
+    if (error) throw error;
+    cerrarModalPdf();
+    cargarExamenesPdfAdmin();
+  } catch (e) {
+    console.error('Error editando examen PDF:', e);
+    alert('❌ Error al guardar: ' + (e.message || 'Verifica tu conexión.'));
+  }
 }
 
 // ══════════════════════════════════════════
