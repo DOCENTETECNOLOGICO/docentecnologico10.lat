@@ -663,9 +663,9 @@ body { font-family:'DM Sans',sans-serif; background:var(--gris-claro); min-heigh
 
   <div class="dash-grid">
     <!-- Simulacro Nombramiento completo -->
-    <div class="sim-card">
+    <div class="sim-card" id="card-sim-nombramiento">
       <div class="sim-icon">📋</div>
-      <h3>Nombramiento Docente</h3>
+      <h3 id="titulo-sim-nombramiento">Nombramiento Docente</h3>
       <p>Simulacro completo con la estructura oficial del MINEDU: 2 subpruebas, 75 preguntas y sistema de puntaje real.</p>
       <div style="background:var(--gris-claro);border-radius:10px;padding:14px;margin-bottom:16px">
         <div style="font-size:0.78rem;color:var(--gris);margin-bottom:8px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px">Subpruebas</div>
@@ -691,9 +691,9 @@ body { font-family:'DM Sans',sans-serif; background:var(--gris-claro); min-heigh
     </div>
 
     <!-- Simulacro Ascenso -->
-    <div class="sim-card">
+    <div class="sim-card" id="card-sim-ascenso">
       <div class="sim-icon">🏆</div>
-      <h3>Ascenso de Escala Magisterial</h3>
+      <h3 id="titulo-sim-ascenso">Ascenso de Escala Magisterial</h3>
       <p>Prepárate para subir de escala con simulacros especializados alineados a los temarios oficiales del MINEDU.</p>
       <div style="background:var(--gris-claro);border-radius:10px;padding:14px;margin-bottom:16px">
         <div style="font-size:0.78rem;color:var(--gris);margin-bottom:8px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px">Subpruebas</div>
@@ -2264,19 +2264,31 @@ async function cargarDashboard() {
     banner.style.display = 'none';
   }
 
-  // Bloquear botones: por membresía y por tipo de examen no contratado
+  // Mostrar SOLO la tarjeta del tipo de examen contratado; bloquear por membresía
   const tipoContratado = currentProfile?.tipo_examen || 'nombramiento';
+  const espLabelCard = esp === 'inicial' ? 'Educación Inicial' : esp === 'primaria' ? 'Educación Primaria' : '';
   ['btn-sim-nombramiento','btn-sim-ascenso'].forEach(id => {
     const btn = document.getElementById(id);
     const tipoBtn = id.replace('btn-sim-', '');
+    const card = document.getElementById('card-sim-' + tipoBtn);
+    const tituloEl = document.getElementById('titulo-sim-' + tipoBtn);
+
+    // Si ya tiene membresía activa y el tipo no coincide con lo contratado, ocultar la tarjeta por completo
+    if (activa && tipoBtn !== tipoContratado) {
+      if (card) card.style.display = 'none';
+      return;
+    }
+    if (card) card.style.display = '';
+
+    if (tituloEl) {
+      const base = tipoBtn === 'nombramiento' ? 'Nombramiento Docente' : 'Ascenso de Escala Magisterial';
+      tituloEl.textContent = espLabelCard ? `${base} — ${espLabelCard}` : base;
+    }
+
     if (!activa) {
       btn.classList.add('locked');
       btn.textContent = '🔒 Requiere membresía';
       btn.onclick = () => window.open('https://wa.me/51922573625?text=Hola%2C%20quiero%20adquirir%20una%20membresia','_blank');
-    } else if (tipoBtn !== tipoContratado) {
-      btn.classList.add('locked');
-      btn.textContent = `🔒 Tu plan es de ${tipoContratado === 'ascenso' ? 'Ascenso' : 'Nombramiento'}`;
-      btn.onclick = () => window.open(`https://wa.me/51922573625?text=${encodeURIComponent('Hola, tengo el plan de ' + (tipoContratado === 'ascenso' ? 'Ascenso' : 'Nombramiento') + ' y quiero consultar sobre el examen de ' + (tipoBtn === 'ascenso' ? 'Ascenso' : 'Nombramiento') + '.')}`, '_blank');
     } else {
       btn.classList.remove('locked');
       btn.textContent = 'Iniciar simulacro →';
