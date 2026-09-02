@@ -430,6 +430,104 @@ body { font-family:'DM Sans',sans-serif; background:var(--gris-claro); min-heigh
 /* Loading spinner */
 .spinner { display:inline-block;width:20px;height:20px;border:2px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:spin 0.7s linear infinite; }
 @keyframes spin { to { transform:rotate(360deg); } }
+
+/* ══════════════════════════════════════════════════════════════
+   TEMA "BITÁCORA DIGITAL" — solo activo en Dashboard y Admin
+   (body.tema-tech, activado por showScreen() en JS).
+   Login, Simulacro y Resultado NO se tocan.
+   ══════════════════════════════════════════════════════════════ */
+body.tema-tech {
+  --chrome-1: #0a1226;
+  --chrome-2: #101b3d;
+  --paper: #faf6ec;
+  --paper-line: rgba(15,45,138,0.055);
+  --ink: #131b33;
+  --ink-suave: #5b6584;
+  background:
+    radial-gradient(1100px 500px at 85% -10%, rgba(201,162,39,0.12), transparent 60%),
+    var(--chrome-1);
+  min-height:100vh;
+}
+
+/* Carcasa oscura del topbar, con una línea dorada al pie como el borde de un escáner */
+body.tema-tech .topbar {
+  background:linear-gradient(135deg,var(--chrome-1),var(--chrome-2));
+  border-bottom:1px solid rgba(201,162,39,0.28);
+  box-shadow:0 1px 0 rgba(201,162,39,0.1), 0 8px 24px rgba(0,0,0,0.35);
+}
+
+/* Encabezados de sección: número/título grande sobre la carcasa oscura */
+body.tema-tech .dash-header h1,
+body.tema-tech .admin-header h1 {
+  color:var(--dorado-claro);
+}
+body.tema-tech .dash-header p,
+body.tema-tech .admin-header p {
+  color:rgba(255,255,255,0.55);
+}
+
+/* Tarjetas de simulacro y estadísticas: "hoja de examen" — papel cálido con
+   retícula fina de hoja de respuestas y una sola línea dorada como remate */
+body.tema-tech .sim-card,
+body.tema-tech .admin-stat-card,
+body.tema-tech .admin-form-card {
+  background:
+    repeating-linear-gradient(0deg, var(--paper-line) 0 1px, transparent 1px 28px),
+    var(--paper);
+  border:1px solid rgba(15,45,138,0.1);
+  box-shadow:0 12px 32px rgba(0,0,0,0.35);
+}
+body.tema-tech .sim-card h3,
+body.tema-tech .sim-card p,
+body.tema-tech .admin-stat-card span {
+  color:var(--ink-suave);
+}
+body.tema-tech .sim-card h3 { color:var(--ink); }
+body.tema-tech .admin-stat-card strong { color:var(--azul); font-variant-numeric:tabular-nums; }
+
+/* Tablas: cabecera oscura (carcasa) + cuerpo papel */
+body.tema-tech .historial-table,
+body.tema-tech .usuarios-table {
+  background:var(--paper);
+  border:1px solid rgba(15,45,138,0.1);
+  box-shadow:0 12px 32px rgba(0,0,0,0.3);
+}
+body.tema-tech .historial-table th,
+body.tema-tech .usuarios-table th {
+  background:linear-gradient(135deg,var(--chrome-1),var(--chrome-2));
+  color:var(--dorado-claro);
+}
+body.tema-tech .historial-table td,
+body.tema-tech .usuarios-table td {
+  color:var(--ink);
+  border-bottom-color:rgba(15,45,138,0.08);
+}
+body.tema-tech .usuarios-table tr:hover td { background:rgba(201,162,39,0.06); }
+
+/* Pestañas de admin: indicador dorado en vez de fondo plano */
+body.tema-tech .admin-tab {
+  color:rgba(255,255,255,0.55);
+}
+body.tema-tech .admin-tab.active {
+  color:var(--dorado-claro);
+  border-bottom:2px solid var(--dorado);
+}
+
+/* Insignias: anillo dorado sutil en vez de solo relleno de color */
+body.tema-tech .membresia-badge.activa,
+body.tema-tech .estado-chip.activo {
+  box-shadow:0 0 0 1px rgba(34,197,94,0.35) inset;
+}
+body.tema-tech .membresia-badge.inactiva,
+body.tema-tech .estado-chip.inactivo {
+  box-shadow:0 0 0 1px rgba(239,68,68,0.3) inset;
+}
+
+/* Botón principal: mismo azul/dorado de marca, con más presencia sobre la carcasa oscura */
+body.tema-tech .btn-iniciar,
+body.tema-tech .btn-editar {
+  box-shadow:0 0 0 1px rgba(201,162,39,0.18);
+}
 </style>
 </head>
 <body>
@@ -636,7 +734,7 @@ body { font-family:'DM Sans',sans-serif; background:var(--gris-claro); min-heigh
       <strong id="banner-vencimiento-titulo" style="font-size:0.95rem">Tu membresía vence pronto</strong>
       <div id="banner-vencimiento-texto" style="font-size:0.82rem;opacity:0.9;margin-top:2px"></div>
     </div>
-    <a href="https://wa.me/51922573625?text=Hola%2C%20quiero%20renovar%20mi%20membresia" target="_blank" style="background:white;color:#92400e;font-weight:700;font-size:0.82rem;padding:8px 16px;border-radius:8px;text-decoration:none;white-space:nowrap;font-family:'DM Sans',sans-serif">Renovar ahora</a>
+    <a id="banner-vencimiento-wa" href="#" target="_blank" style="background:white;color:#92400e;font-weight:700;font-size:0.82rem;padding:8px 16px;border-radius:8px;text-decoration:none;white-space:nowrap;font-family:'DM Sans',sans-serif">Renovar ahora</a>
   </div>
 
   <div class="dash-header">
@@ -1809,6 +1907,23 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const { createClient } = supabase;
 const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+// ── Escapa HTML para evitar XSS al insertar datos de usuario (nombre, email, etc.) en innerHTML ──
+function escapeHtml(str) {
+  if (str === null || str === undefined) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+// ── Número de WhatsApp de contacto/ventas. Único lugar donde se define — cámbialo solo aquí. ──
+const WHATSAPP_NUMBER = '51922573625';
+function waLink(mensaje) {
+  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(mensaje)}`;
+}
+
 
 // ══════════════════════════════════════════
 // ESTADO DE LA APP
@@ -1821,6 +1936,9 @@ let currentSim = null; // { tipo, preguntas, idx, respuestas, tiempoInicio, time
 // INICIALIZACIÓN
 // ══════════════════════════════════════════
 async function init() {
+  const waRenovar = document.getElementById('banner-vencimiento-wa');
+  if (waRenovar) waRenovar.href = waLink('Hola, quiero renovar mi membresia');
+
   // Detectar si viene del enlace de recuperación de contraseña
   const hash = window.location.hash;
   if (hash.includes('type=recovery')) {
@@ -1890,6 +2008,8 @@ function showScreen(name) {
   }
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById('screen-' + name).classList.add('active');
+  // Tema "bitácora digital": solo se activa en dashboard y admin
+  document.body.classList.toggle('tema-tech', name === 'dashboard' || name === 'admin');
   if (name === 'login') document.getElementById('topbar').style.display = 'none';
 }
 
@@ -2269,7 +2389,7 @@ async function cargarDashboard() {
   const badge = document.getElementById('dash-membresia-badge');
   badge.innerHTML = activa
     ? '<span class="membresia-badge activa">✅ Membresía Activa</span>'
-    : '<span class="membresia-badge inactiva">🔒 Sin membresía — <a href="https://wa.me/51922573625?text=Hola%2C%20quiero%20adquirir%20una%20membresia" target="_blank" style="color:inherit;font-weight:700">Adquirir aquí</a></span>';
+    : `<span class="membresia-badge inactiva">🔒 Sin membresía — <a href="${waLink('Hola, quiero adquirir una membresia')}" target="_blank" style="color:inherit;font-weight:700">Adquirir aquí</a></span>`;
 
   // Badge especialidad
   const espBadge = document.getElementById('dash-especialidad-badge');
@@ -2324,7 +2444,7 @@ async function cargarDashboard() {
     if (!activa) {
       btn.classList.add('locked');
       btn.textContent = '🔒 Requiere membresía';
-      btn.onclick = () => window.open('https://wa.me/51922573625?text=Hola%2C%20quiero%20adquirir%20una%20membresia','_blank');
+      btn.onclick = () => window.open(waLink('Hola, quiero adquirir una membresia'),'_blank');
     } else {
       btn.classList.remove('locked');
       btn.textContent = 'Iniciar simulacro →';
@@ -2911,8 +3031,8 @@ function renderTablaUsuarios(usuarios) {
     const tipoLabel = u.tipo_examen === 'ascenso' ? '🏆 Ascenso' : '📋 Nombramiento';
     const espLabel  = u.especialidad === 'primaria' ? '📚 Primaria' : u.especialidad === 'inicial' ? '🧒 Inicial' : '—';
     return `<tr>
-      <td><strong>${u.nombre || '—'}</strong></td>
-      <td style="font-size:0.8rem">${u.email}</td>
+      <td><strong>${escapeHtml(u.nombre) || '—'}</strong></td>
+      <td style="font-size:0.8rem">${escapeHtml(u.email)}</td>
       <td style="font-size:0.78rem">${tipoLabel}</td>
       <td style="font-size:0.78rem">${espLabel}</td>
       <td><span style="background:rgba(15,45,138,0.07);padding:3px 8px;border-radius:6px;font-size:0.78rem">${planLabel}</span></td>
@@ -2920,7 +3040,7 @@ function renderTablaUsuarios(usuarios) {
       <td><span class="estado-chip ${activa ? 'activo' : 'inactivo'}">${activa ? '✅ Activa' : '❌ Inactiva'}</span></td>
       <td><span class="estado-chip ${accesoIA ? 'activo' : 'inactivo'}">${accesoIA ? '✅' : '❌'}</span></td>
       <td>
-        <button class="btn-editar" onclick="abrirEditar('${u.id}','${(u.nombre||'').replace(/'/g,"\\'")}','${u.plan||'ninguno'}',${activa},'${u.tipo_examen||'nombramiento'}','${u.especialidad||'inicial'}',${u.limite_diario||3})">✏️ Editar</button>
+        <button class="btn-editar" onclick="abrirEditar('${u.id}')">✏️ Editar</button>
         <button class="toggle-membresia ${activa ? 'desactivar' : 'activar'}" onclick="toggleMembresia('${u.id}', ${!activa})">${activa ? 'Desactivar' : 'Activar'}</button>
         <button class="toggle-membresia ${accesoIA ? 'desactivar' : 'activar'}" onclick="toggleAccesoIA('${u.id}', ${!accesoIA})">${accesoIA ? 'Quitar IA' : 'Activar IA'}</button>
       </td>
@@ -2960,14 +3080,17 @@ async function toggleAccesoIA(userId, estado) {
   }
 }
 
-function abrirEditar(id, nombre, plan, membresia, tipo_examen, especialidad, limite) {
+function abrirEditar(id) {
+  // Busca los datos del usuario en la caché ya cargada (evita pasar texto libre por el atributo onclick, que era vulnerable a XSS)
+  const u = (todosUsuarios || []).find(x => x.id === id);
+  if (!u) return;
   document.getElementById('edit-id').value = id;
-  document.getElementById('edit-nombre').value = nombre;
-  document.getElementById('edit-plan').value = plan || 'ninguno';
-  document.getElementById('edit-membresia').value = membresia.toString();
-  document.getElementById('edit-tipo-examen').value = tipo_examen || 'nombramiento';
-  document.getElementById('edit-especialidad').value = especialidad || 'inicial';
-  document.getElementById('edit-limite').value = String(limite || 3);
+  document.getElementById('edit-nombre').value = u.nombre || '';
+  document.getElementById('edit-plan').value = u.plan || 'ninguno';
+  document.getElementById('edit-membresia').value = (!!u.membresia_activa).toString();
+  document.getElementById('edit-tipo-examen').value = u.tipo_examen || 'nombramiento';
+  document.getElementById('edit-especialidad').value = u.especialidad || 'inicial';
+  document.getElementById('edit-limite').value = String(u.limite_diario || 3);
   const modal = document.getElementById('modal-editar');
   modal.style.display = 'flex';
 }
@@ -3178,7 +3301,7 @@ function renderHistorialAdmin(data) {
     const cls = pct >= 70 ? 'alto' : pct >= 50 ? 'medio' : 'bajo';
     const fecha = new Date(h.created_at).toLocaleDateString('es-PE');
     return `<tr>
-      <td><strong>${h.perfiles?.nombre || '—'}</strong><br><span style="font-size:0.75rem;color:var(--gris)">${h.perfiles?.email || ''}</span></td>
+      <td><strong>${escapeHtml(h.perfiles?.nombre) || '—'}</strong><br><span style="font-size:0.75rem;color:var(--gris)">${escapeHtml(h.perfiles?.email)}</span></td>
       <td>${h.tipo === 'nombramiento' ? '📋 Nombramiento' : '🏆 Ascenso'}</td>
       <td><span class="puntaje-chip ${cls}">${pct}%</span></td>
       <td>${h.correctas} / ${h.total}</td>
@@ -3250,7 +3373,7 @@ async function cargarStats() {
     const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i+1);
     return `<tr>
       <td><strong>${medal}</strong></td>
-      <td>${u?.nombre || '—'}</td>
+      <td>${escapeHtml(u?.nombre) || '—'}</td>
       <td>${r.count}</td>
       <td><span class="puntaje-chip ${r.promedio>=70?'alto':r.promedio>=50?'medio':'bajo'}">${r.promedio}%</span></td>
       <td>${r.max}%</td>
@@ -3280,7 +3403,7 @@ function togglePerfil() {
 
   memEl.innerHTML = activa
     ? `✅ <strong>Membresía activa</strong> · Plan: ${currentProfile?.plan || '—'} ${vence ? '· Vence: ' + vence : ''}`
-    : `❌ <strong>Sin membresía activa</strong> · <a href="https://wa.me/51922573625?text=Hola%2C%20quiero%20adquirir%20una%20membresia" target="_blank" style="color:var(--azul);font-weight:700">Adquirir aquí</a>`;
+    : `❌ <strong>Sin membresía activa</strong> · <a href="${waLink('Hola, quiero adquirir una membresia')}" target="_blank" style="color:var(--azul);font-weight:700">Adquirir aquí</a>`;
 }
 
 function cerrarPerfil() {
@@ -3902,7 +4025,7 @@ function renderCursoCard(curso, tieneAcceso) {
     ${tieneAcceso
       ? `<button class="btn-iniciar" onclick="abrirCurso('${curso.id}')" style="margin-top:14px">Entrar al curso →</button>`
       : `<button class="btn-iniciar locked" disabled style="margin-top:14px">🔒 Sin acceso</button>
-         <a href="https://wa.me/51922573625?text=${encodeURIComponent('Hola, quiero adquirir acceso a ' + waTexto)}" target="_blank" style="display:block;text-align:center;margin-top:8px;font-size:0.78rem;color:var(--azul);font-weight:600">Adquirir acceso →</a>`}
+         <a href="${waLink('Hola, quiero adquirir acceso a ' + waTexto)}" target="_blank" style="display:block;text-align:center;margin-top:8px;font-size:0.78rem;color:var(--azul);font-weight:600">Adquirir acceso →</a>`}
   </div>`;
 }
 
@@ -4127,8 +4250,7 @@ async function solicitarCertificado() {
       await sb.from('certificados').insert({ alumno_id: currentUser.id, curso_id: currentCurso.id });
     }
     const nombre = currentProfile?.nombre || currentUser.email;
-    const msg = encodeURIComponent(`Hola, completé el curso "${currentCurso.titulo}" y quiero adquirir mi certificado. Mi nombre es ${nombre}.`);
-    window.open(`https://wa.me/51922573625?text=${msg}`, '_blank');
+    window.open(waLink(`Hola, completé el curso "${currentCurso.titulo}" y quiero adquirir mi certificado. Mi nombre es ${nombre}.`), '_blank');
   } catch(e) {
     console.error('Error solicitando certificado:', e);
     alert('❌ No se pudo procesar la solicitud. Intenta de nuevo.');
@@ -4545,17 +4667,18 @@ function renderCertificadosTabla() {
   }
   tbody.innerHTML = lista.map(c => {
     const fecha = new Date(c.fecha_emision).toLocaleDateString('es-PE');
-    const nombre = c.alumno?.nombre || '—';
-    const email = c.alumno?.email || '';
-    const cursoTitulo = c.curso ? `${c.curso.icono || '🎓'} ${c.curso.titulo}` : '—';
-    const waMsg = encodeURIComponent(`Hola ${nombre}, aquí tienes tu certificado del curso "${c.curso?.titulo || ''}" 🎓`);
+    const nombreRaw = c.alumno?.nombre || '—';
+    const nombre = escapeHtml(nombreRaw);
+    const email = escapeHtml(c.alumno?.email || '');
+    const cursoTitulo = c.curso ? `${c.curso.icono || '🎓'} ${escapeHtml(c.curso.titulo)}` : '—';
+    const waHref = waLink(`Hola ${nombreRaw}, aquí tienes tu certificado del curso "${c.curso?.titulo || ''}" 🎓`);
     return `<tr>
       <td><strong>${nombre}</strong><div style="font-size:0.75rem;color:var(--gris)">${email}</div></td>
       <td style="font-size:0.85rem">${cursoTitulo}</td>
       <td style="font-size:0.8rem;color:var(--gris)">${fecha}</td>
       <td><span class="estado-chip ${c.entregado ? 'activo' : 'inactivo'}">${c.entregado ? '✅ Entregado' : '⏳ Pendiente'}</span></td>
       <td>
-        <a href="https://wa.me/51922573625?text=${waMsg}" target="_blank" style="padding:5px 12px;background:rgba(34,197,94,0.12);color:#16a34a;border:1px solid rgba(34,197,94,0.3);border-radius:7px;font-size:0.78rem;font-weight:700;cursor:pointer;text-decoration:none;display:inline-block;margin-right:4px">💬 Contactar</a>
+        <a href="${waHref}" target="_blank" style="padding:5px 12px;background:rgba(34,197,94,0.12);color:#16a34a;border:1px solid rgba(34,197,94,0.3);border-radius:7px;font-size:0.78rem;font-weight:700;cursor:pointer;text-decoration:none;display:inline-block;margin-right:4px">💬 Contactar</a>
         <button class="toggle-membresia ${c.entregado ? 'desactivar' : 'activar'}" onclick="toggleEntregadoCertificado('${c.id}', ${!c.entregado})">${c.entregado ? 'Marcar pendiente' : 'Marcar entregado'}</button>
       </td>
     </tr>`;
@@ -4581,13 +4704,18 @@ let currentExamenPdf = null; // { examen, respuestas:{}, activeIdx }
 async function iniciarExamenPDF(id) {
   if (!currentProfile?.membresia_activa) return;
   try {
-    const { data, error } = await sb.from('examenes_pdf').select('*').eq('id', id).single();
+    // No se selecciona clave_respuestas: la clave nunca debe llegar al navegador.
+    // La calificación se hace en el servidor vía RPC (ver verificar_respuesta_pdf / finalizar_examen_pdf).
+    const { data, error } = await sb.from('examenes_pdf')
+      .select('id, titulo, tipo, especialidad, num_preguntas, num_opciones, pdf_url')
+      .eq('id', id).single();
     if (error || !data) throw error || new Error('No encontrado');
 
     currentExamenPdf = {
       examen: data,
       respuestas: {},   // { numPregunta: 'A'|'B'|'C'|'D' }
       estados: {},      // { numPregunta: 'ok'|'wrong' }
+      claves: {},        // { numPregunta: letra correcta } — solo se llena DESPUÉS de responder, vía RPC
       activeIdx: 1
     };
 
@@ -4608,7 +4736,7 @@ async function iniciarExamenPDF(id) {
 }
 
 function epdfRenderLista() {
-  const { examen, respuestas, estados, activeIdx } = currentExamenPdf;
+  const { examen, respuestas, estados, claves, activeIdx } = currentExamenPdf;
   const n = examen.num_preguntas;
   const lista = document.getElementById('epdf-lista');
   let html = '';
@@ -4629,14 +4757,12 @@ function epdfRenderLista() {
       : 'background:var(--gris-claro);color:var(--gris);padding:2px 7px;border-radius:10px;font-size:10px;font-weight:600';
     const badgeText = estado === 'ok' ? '✓ Correcto' : estado === 'wrong' ? '✗ Incorrecto' : 'Sin responder';
 
-    // Detectar número de opciones según la clave del examen
-    const claveVals = Object.values(examen.clave_respuestas);
-    const tieneD = claveVals.some(v => v === 'D');
-    const opts = tieneD ? ['A','B','C','D'] : ['A','B','C'];
+    // Número de opciones: viene de la columna num_opciones (3 o 4). Por defecto 4 si no está definida aún.
+    const opts = examen.num_opciones === 3 ? ['A','B','C'] : ['A','B','C','D'];
     const optsHtml = opts.map(o => {
       let cls = 'opt-btn';
       const answered = !!estado;
-      const clave = examen.clave_respuestas[i];
+      const clave = claves[i]; // solo existe si ya se respondió esta pregunta (llega del servidor)
       if (answered) {
         if (o === clave) cls += ' show-correct';
         if (o === resp && estado === 'wrong') cls += ' wrong';
@@ -4688,17 +4814,36 @@ function epdfSelectOpt(i, opt) {
   epdfRenderLista();
 }
 
-function epdfEnviarRespuesta() {
+async function epdfEnviarRespuesta() {
   const { examen, respuestas, estados, activeIdx } = currentExamenPdf;
   const resp = respuestas[activeIdx];
   if (!resp || estados[activeIdx]) return;
 
-  const clave = examen.clave_respuestas[activeIdx];
-  const esCorrecta = resp === clave;
-  currentExamenPdf.estados[activeIdx] = esCorrecta ? 'ok' : 'wrong';
-
+  const btn = document.getElementById('epdf-btn-enviar');
+  btn.disabled = true;
   const fb = document.getElementById('epdf-feedback');
-  fb.textContent = esCorrecta ? '¡Correcto!' : 'Incorrecto — la respuesta era ' + clave;
+
+  let data, error;
+  try {
+    ({ data, error } = await sb.rpc('verificar_respuesta_pdf', {
+      p_examen_id: examen.id,
+      p_num_pregunta: activeIdx,
+      p_respuesta: resp
+    }));
+    if (error) throw error;
+  } catch (e) {
+    console.error('Error verificando respuesta:', e);
+    fb.textContent = '❌ No se pudo calificar. Revisa tu conexión e intenta de nuevo.';
+    fb.style.color = '#9b1c1c';
+    btn.disabled = false;
+    return;
+  }
+
+  const esCorrecta = !!data.correcta;
+  currentExamenPdf.estados[activeIdx] = esCorrecta ? 'ok' : 'wrong';
+  currentExamenPdf.claves[activeIdx] = data.clave; // la letra correcta llega recién ahora, del servidor
+
+  fb.textContent = esCorrecta ? '¡Correcto!' : 'Incorrecto — la respuesta era ' + data.clave;
   fb.style.color = esCorrecta ? '#16a34a' : '#9b1c1c';
 
   epdfRenderLista();
@@ -4724,29 +4869,26 @@ function epdfEnviarRespuesta() {
 }
 
 async function guardarResultadoExamenPDF() {
-  const { examen, respuestas, estados } = currentExamenPdf;
-  const correctas = Object.values(estados).filter(e => e === 'ok').length;
-  const total = examen.num_preguntas;
-  const pct = Math.round((correctas / total) * 100);
+  const { examen, respuestas } = currentExamenPdf;
+  const fb = document.getElementById('epdf-feedback');
 
   try {
-    await sb.from('historial_examenes_pdf').insert({
-      user_id: currentUser.id,
-      examen_id: examen.id,
-      titulo: examen.titulo,
-      correctas,
-      total,
-      porcentaje: pct,
-      respuestas_usuario: respuestas,
-      estados_respuestas: estados
-    });
+    // El servidor recalcula el puntaje desde cero comparando contra la clave real;
+    // el cliente ya no puede "inventar" un resultado insertando directo a historial_examenes_pdf.
+    const { data, error } = await sb.rpc('finalizar_examen_pdf', {
+      p_examen_id: examen.id,
+      p_respuestas: respuestas
+    }).single();
+    if (error) throw error;
+
+    const { correctas, total, porcentaje } = data;
+    fb.textContent = `✅ Examen completado: ${correctas}/${total} correctas (${porcentaje}%)`;
+    fb.style.color = porcentaje >= 70 ? '#16a34a' : '#dc2626';
   } catch(e) {
     console.error('Error guardando resultado PDF:', e);
+    fb.textContent = '⚠️ No se pudo guardar tu resultado. Contacta soporte si el problema persiste.';
+    fb.style.color = '#9b1c1c';
   }
-
-  const fb = document.getElementById('epdf-feedback');
-  fb.textContent = `✅ Examen completado: ${correctas}/${total} correctas (${pct}%)`;
-  fb.style.color = pct >= 70 ? '#16a34a' : '#dc2626';
 }
 
 function cerrarExamenPDF() {
