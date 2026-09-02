@@ -16,15 +16,26 @@
   --dorado: #c9a227;
   --dorado-claro: #f0c84a;
   --dorado-oscuro: #9e7d1a;
+  --cian: #17c3f2;
+  --cian-claro: #7fe3ff;
+  --cian-oscuro: #0a91b8;
   --blanco: #ffffff;
   --gris-claro: #f4f6fb;
   --gris: #6b7280;
+  --gris-oscuro: #374151;
   --error: #ef4444;
   --success: #22c55e;
   --warning: #f59e0b;
+  --glow-cian: 0 0 0 1px rgba(23,195,242,0.25), 0 8px 24px rgba(23,195,242,0.18);
+  /* Tokens que cambian según el fondo activo (claro vs. tema-tech oscuro),
+     para que un mismo elemento de texto siempre combine con su fondo. */
+  --admin-heading: var(--azul-oscuro);
+  --admin-accent: var(--azul);
+  --admin-subtext: var(--gris);
 }
 * { margin:0; padding:0; box-sizing:border-box; }
 body { font-family:'DM Sans',sans-serif; background:var(--gris-claro); min-height:100vh; }
+::selection { background:rgba(23,195,242,0.25); color:var(--azul-oscuro); }
 
 /* ── TOPBAR ── */
 .topbar {
@@ -37,7 +48,8 @@ body { font-family:'DM Sans',sans-serif; background:var(--gris-claro); min-heigh
   position:sticky;
   top:0;
   z-index:100;
-  box-shadow:0 2px 16px rgba(0,0,0,0.2);
+  box-shadow:0 2px 16px rgba(0,0,0,0.25), 0 1px 0 rgba(23,195,242,0.35);
+  border-bottom:1px solid rgba(23,195,242,0.25);
 }
 .topbar-brand {
   display:flex;
@@ -47,9 +59,14 @@ body { font-family:'DM Sans',sans-serif; background:var(--gris-claro); min-heigh
 }
 .topbar-brand span {
   font-family:'Playfair Display',serif;
-  color:var(--dorado);
+  background:linear-gradient(90deg,var(--dorado-claro),var(--cian-claro));
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:var(--dorado-claro);
+  -webkit-text-fill-color:transparent;
   font-size:1rem;
   font-weight:700;
+  letter-spacing:0.3px;
 }
 .topbar-user {
   display:flex;
@@ -57,22 +74,22 @@ body { font-family:'DM Sans',sans-serif; background:var(--gris-claro); min-heigh
   gap:16px;
 }
 .topbar-user span {
-  color:rgba(255,255,255,0.75);
+  color:rgba(255,255,255,0.8);
   font-size:0.83rem;
 }
 .btn-logout {
   background:rgba(255,255,255,0.1);
   border:1px solid rgba(255,255,255,0.2);
-  color:rgba(255,255,255,0.8);
+  color:rgba(255,255,255,0.85);
   padding:7px 16px;
   border-radius:7px;
   font-size:0.8rem;
   font-weight:600;
   cursor:pointer;
   font-family:'DM Sans',sans-serif;
-  transition:background 0.2s;
+  transition:background 0.2s,border-color 0.2s;
 }
-.btn-logout:hover { background:rgba(255,255,255,0.18); }
+.btn-logout:hover { background:rgba(255,255,255,0.18); border-color:rgba(23,195,242,0.5); }
 
 /* ── PANTALLAS ── */
 .screen { display:none; }
@@ -93,9 +110,18 @@ body { font-family:'DM Sans',sans-serif; background:var(--gris-claro); min-heigh
   content:'';
   position:fixed;
   inset:0;
-  background-image:linear-gradient(rgba(201,162,39,0.06) 1px,transparent 1px),linear-gradient(90deg,rgba(201,162,39,0.06) 1px,transparent 1px);
+  background-image:linear-gradient(rgba(23,195,242,0.08) 1px,transparent 1px),linear-gradient(90deg,rgba(23,195,242,0.08) 1px,transparent 1px);
   background-size:55px 55px;
   pointer-events:none;
+}
+#screen-login::after {
+  content:'';
+  position:fixed;
+  top:-10%;right:-8%;
+  width:480px;height:480px;
+  background:radial-gradient(circle,rgba(23,195,242,0.20),transparent 70%);
+  pointer-events:none;
+  filter:blur(10px);
 }
 .login-box {
   background:var(--blanco);
@@ -103,7 +129,8 @@ body { font-family:'DM Sans',sans-serif; background:var(--gris-claro); min-heigh
   padding:48px 40px;
   width:100%;
   max-width:420px;
-  box-shadow:0 24px 60px rgba(0,0,0,0.25);
+  box-shadow:0 24px 60px rgba(0,0,0,0.25), var(--glow-cian);
+  border:1px solid rgba(23,195,242,0.15);
   position:relative;
   z-index:2;
 }
@@ -118,6 +145,7 @@ body { font-family:'DM Sans',sans-serif; background:var(--gris-claro); min-heigh
   display:flex;align-items:center;justify-content:center;
   font-size:1.8rem;
   margin:0 auto 12px;
+  box-shadow:0 0 0 4px rgba(23,195,242,0.12), 0 0 24px rgba(23,195,242,0.35);
 }
 .login-logo h2 {
   font-family:'Playfair Display',serif;
@@ -139,7 +167,7 @@ body { font-family:'DM Sans',sans-serif; background:var(--gris-claro); min-heigh
   background:var(--gris-claro);
   outline:none;transition:border-color 0.2s,box-shadow 0.2s;
 }
-.form-group input:focus { border-color:var(--azul);background:var(--blanco);box-shadow:0 0 0 3px rgba(15,45,138,0.08); }
+.form-group input:focus { border-color:var(--cian-oscuro);background:var(--blanco);box-shadow:0 0 0 3px rgba(23,195,242,0.15); }
 .btn-primary {
   width:100%;padding:13px;
   background:linear-gradient(135deg,var(--azul),var(--azul-medio));
@@ -148,14 +176,14 @@ body { font-family:'DM Sans',sans-serif; background:var(--gris-claro); min-heigh
   cursor:pointer;transition:transform 0.2s,box-shadow 0.2s;
   margin-top:4px;
 }
-.btn-primary:hover { transform:translateY(-2px);box-shadow:0 8px 24px rgba(15,45,138,0.3); }
+.btn-primary:hover { transform:translateY(-2px);box-shadow:0 8px 24px rgba(15,45,138,0.3), 0 0 0 1px rgba(23,195,242,0.3); }
 .alerta { padding:10px 14px;border-radius:8px;font-size:0.82rem;font-weight:500;margin-bottom:14px;display:none; }
 .alerta.error { background:rgba(239,68,68,0.1);color:var(--error);border:1px solid rgba(239,68,68,0.25); }
 .alerta.success { background:rgba(34,197,94,0.1);color:var(--success);border:1px solid rgba(34,197,94,0.25); }
 .alerta.warning { background:rgba(245,158,11,0.1);color:var(--warning);border:1px solid rgba(245,158,11,0.25); }
 .login-tabs { display:flex;background:var(--gris-claro);border-radius:10px;padding:4px;margin-bottom:24px; }
 .ltab { flex:1;padding:9px;border:none;background:transparent;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:0.85rem;font-weight:600;color:var(--gris);cursor:pointer;transition:all 0.2s; }
-.ltab.active { background:var(--blanco);color:var(--azul);box-shadow:0 2px 8px rgba(15,45,138,0.12); }
+.ltab.active { background:var(--blanco);color:var(--azul);box-shadow:0 2px 8px rgba(15,45,138,0.12), 0 0 0 1px rgba(23,195,242,0.2); }
 
 /* ── DASHBOARD ── */
 #screen-dashboard { padding:36px 5%; }
@@ -179,9 +207,9 @@ body { font-family:'DM Sans',sans-serif; background:var(--gris-claro); min-heigh
 }
 .sim-card::before {
   content:'';position:absolute;top:0;left:0;right:0;height:4px;
-  background:linear-gradient(90deg,var(--azul),var(--dorado));
+  background:linear-gradient(90deg,var(--azul),var(--cian),var(--dorado));
 }
-.sim-card:hover { transform:translateY(-5px);box-shadow:0 16px 40px rgba(15,45,138,0.12); }
+.sim-card:hover { transform:translateY(-5px);box-shadow:0 16px 40px rgba(15,45,138,0.14), 0 0 0 1px rgba(23,195,242,0.15); border-color:rgba(23,195,242,0.25); }
 .sim-card .sim-icon { font-size:2.5rem;margin-bottom:14px; }
 .sim-card h3 { font-family:'Playfair Display',serif;font-size:1.2rem;color:var(--azul-oscuro);margin-bottom:8px; }
 .sim-card p { font-size:0.85rem;color:var(--gris);line-height:1.6;margin-bottom:20px; }
@@ -200,10 +228,10 @@ body { font-family:'DM Sans',sans-serif; background:var(--gris-claro); min-heigh
   background:#d1d5db;color:#9ca3af;cursor:not-allowed;
   transform:none;box-shadow:none;
 }
-.historial-section h2 { font-family:'Playfair Display',serif;font-size:1.3rem;color:var(--azul-oscuro);margin-bottom:16px; }
+.historial-section h2 { font-family:'Playfair Display',serif;font-size:1.3rem;color:var(--admin-heading);margin-bottom:16px; }
 .historial-table { width:100%;background:var(--blanco);border-radius:12px;overflow:hidden;border:1px solid rgba(15,45,138,0.08); }
 .historial-table th { background:var(--azul-oscuro);color:var(--blanco);padding:12px 16px;font-size:0.8rem;text-align:left;font-weight:600; }
-.historial-table td { padding:12px 16px;font-size:0.85rem;color:var(--texto);border-bottom:1px solid rgba(15,45,138,0.06); }
+.historial-table td { padding:12px 16px;font-size:0.85rem;color:var(--azul-oscuro);border-bottom:1px solid rgba(15,45,138,0.06); }
 .historial-table tr:last-child td { border-bottom:none; }
 .puntaje-chip { padding:3px 10px;border-radius:100px;font-size:0.75rem;font-weight:700; }
 .puntaje-chip.alto { background:rgba(34,197,94,0.12);color:#16a34a; }
@@ -230,7 +258,7 @@ body { font-family:'DM Sans',sans-serif; background:var(--gris-claro); min-heigh
 }
 .cronometro.warning { background:linear-gradient(135deg,#dc2626,#ef4444); }
 .progress-bar { background:rgba(15,45,138,0.08);border-radius:100px;height:6px;margin-bottom:28px;overflow:hidden; }
-.progress-fill { height:100%;background:linear-gradient(90deg,var(--azul),var(--dorado));border-radius:100px;transition:width 0.4s; }
+.progress-fill { height:100%;background:linear-gradient(90deg,var(--azul),var(--cian));border-radius:100px;transition:width 0.4s;box-shadow:0 0 8px rgba(23,195,242,0.5); }
 .pregunta-card {
   background:var(--blanco);border-radius:16px;padding:36px;
   border:1px solid rgba(15,45,138,0.09);
@@ -354,8 +382,8 @@ body { font-family:'DM Sans',sans-serif; background:var(--gris-claro); min-heigh
   cursor:pointer;background:var(--blanco);color:var(--gris);
   border:1.5px solid rgba(15,45,138,0.1);transition:all 0.2s;
 }
-.admin-tab.active { background:var(--azul);color:white;border-color:var(--azul); }
-.admin-tab:hover:not(.active) { border-color:var(--azul);color:var(--azul); }
+.admin-tab.active { background:linear-gradient(135deg,var(--azul),var(--azul-medio));color:white;border-color:var(--azul);box-shadow:0 0 0 1px rgba(23,195,242,0.3); }
+.admin-tab:hover:not(.active) { border-color:var(--cian-oscuro);color:var(--azul); }
 .admin-tab-content { display:none; }
 .admin-tab-content.active { display:block; }
 .admin-stats { display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;margin-bottom:20px; }
@@ -445,8 +473,12 @@ body.tema-tech {
   --ink-suave: #5b6584;
   background:
     radial-gradient(1100px 500px at 85% -10%, rgba(201,162,39,0.12), transparent 60%),
+    radial-gradient(900px 500px at -5% 105%, rgba(23,195,242,0.08), transparent 60%),
     var(--chrome-1);
   min-height:100vh;
+  --admin-heading: var(--dorado-claro);
+  --admin-accent: var(--cian-claro);
+  --admin-subtext: rgba(255,255,255,0.6);
 }
 
 /* Carcasa oscura del topbar, con una línea dorada al pie como el borde de un escáner */
@@ -819,7 +851,7 @@ body.tema-tech .btn-editar {
 
   <!-- Exámenes PDF -->
   <div style="margin-bottom:28px">
-    <h2 style="font-family:'Playfair Display',serif;font-size:1.3rem;color:var(--azul-oscuro);margin-bottom:16px">📄 Exámenes PDF Oficiales</h2>
+    <h2 style="font-family:'Playfair Display',serif;font-size:1.3rem;color:var(--admin-heading);margin-bottom:16px">📄 Exámenes PDF Oficiales</h2>
     <div id="dash-examenes-pdf-lista" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px">
       <div style="text-align:center;padding:28px;color:var(--gris);font-size:0.85rem;background:var(--blanco);border-radius:12px;border:1.5px dashed rgba(15,45,138,0.12)" id="dash-pdf-loading">Cargando exámenes...</div>
     </div>
@@ -1264,8 +1296,8 @@ body.tema-tech .btn-editar {
   <div id="admin-tab-dificiles" class="admin-tab-content" style="display:none">
     <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px">
       <div>
-        <h3 style="font-family:'Playfair Display',serif;color:var(--azul-oscuro);margin:0 0 4px">🎯 Preguntas más falladas</h3>
-        <p style="color:var(--gris);font-size:0.83rem;margin:0">Ranking de preguntas con mayor tasa de error entre todos los docentes</p>
+        <h3 style="font-family:'Playfair Display',serif;color:var(--admin-heading);margin:0 0 4px">🎯 Preguntas más falladas</h3>
+        <p style="color:var(--admin-subtext);font-size:0.83rem;margin:0">Ranking de preguntas con mayor tasa de error entre todos los docentes</p>
       </div>
       <div style="display:flex;gap:10px;flex-wrap:wrap">
         <select id="filtro-dif-sub" onchange="cargarPreguntasDificiles()" style="padding:9px 14px;border:1.5px solid rgba(15,45,138,0.15);border-radius:9px;font-family:'DM Sans',sans-serif;font-size:0.83rem;outline:none;background:var(--blanco)">
@@ -1634,34 +1666,62 @@ body.tema-tech .btn-editar {
 </div>
 
 <div id="modal-editar-pdf" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;align-items:center;justify-content:center;padding:20px">
-  <div style="background:var(--blanco);border-radius:16px;padding:32px;max-width:440px;width:100%;box-shadow:0 24px 60px rgba(0,0,0,0.2)">
+  <div style="background:var(--blanco);border-radius:16px;padding:32px;max-width:560px;width:100%;box-shadow:0 24px 60px rgba(0,0,0,0.2);max-height:90vh;overflow-y:auto">
     <h3 style="font-family:'Playfair Display',serif;color:var(--azul-oscuro);margin-bottom:20px">✏️ Editar examen PDF</h3>
     <input type="hidden" id="edit-pdf-id">
     <div class="form-group">
       <label>Título del examen</label>
       <input type="text" id="edit-pdf-titulo" style="width:100%;padding:12px 14px;border:1.5px solid rgba(15,45,138,0.15);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.9rem;background:var(--gris-claro);outline:none">
     </div>
-    <div class="form-group">
-      <label>Tipo</label>
-      <select id="edit-pdf-tipo" style="width:100%;padding:12px 14px;border:1.5px solid rgba(15,45,138,0.15);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.9rem;background:var(--gris-claro);outline:none">
-        <option value="nombramiento">📋 Nombramiento</option>
-        <option value="ascenso">🏆 Ascenso</option>
-      </select>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+      <div class="form-group">
+        <label>Tipo</label>
+        <select id="edit-pdf-tipo" style="width:100%;padding:12px 14px;border:1.5px solid rgba(15,45,138,0.15);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.9rem;background:var(--gris-claro);outline:none">
+          <option value="nombramiento">📋 Nombramiento</option>
+          <option value="ascenso">🏆 Ascenso</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Especialidad</label>
+        <select id="edit-pdf-especialidad" style="width:100%;padding:12px 14px;border:1.5px solid rgba(15,45,138,0.15);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.9rem;background:var(--gris-claro);outline:none">
+          <option value="inicial">🧒 Educación Inicial</option>
+          <option value="primaria">📚 Educación Primaria</option>
+          <option value="general">🌐 General (visible para ambas)</option>
+        </select>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+      <div class="form-group">
+        <label>Número de preguntas</label>
+        <input type="number" id="edit-pdf-num-preguntas" min="1" max="200" style="width:100%;padding:12px 14px;border:1.5px solid rgba(15,45,138,0.15);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.9rem;background:var(--gris-claro);outline:none">
+      </div>
+      <div class="form-group">
+        <label>N° de opciones</label>
+        <select id="edit-pdf-num-opciones" style="width:100%;padding:12px 14px;border:1.5px solid rgba(15,45,138,0.15);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.9rem;background:var(--gris-claro);outline:none">
+          <option value="4">4 (A, B, C, D)</option>
+          <option value="3">3 (A, B, C)</option>
+        </select>
+      </div>
     </div>
     <div class="form-group">
-      <label>Especialidad</label>
-      <select id="edit-pdf-especialidad" style="width:100%;padding:12px 14px;border:1.5px solid rgba(15,45,138,0.15);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.9rem;background:var(--gris-claro);outline:none">
-        <option value="inicial">🧒 Educación Inicial</option>
-        <option value="primaria">📚 Educación Primaria</option>
-        <option value="general">🌐 General (visible para ambas)</option>
-      </select>
+      <label>Clave de respuestas (una por línea: número:letra)</label>
+      <textarea id="edit-pdf-clave" rows="6" placeholder="1:B&#10;2:C&#10;3:C&#10;4:B&#10;5:A&#10;..." style="width:100%;padding:12px 14px;border:1.5px solid rgba(15,45,138,0.15);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.88rem;background:var(--gris-claro);outline:none;resize:vertical"></textarea>
+      <div style="font-size:0.75rem;color:var(--gris);margin-top:4px">💡 Se precarga con la clave actual. Edita las letras que necesites corregir y guarda.</div>
     </div>
     <div class="form-group">
-      <label>Número de preguntas</label>
-      <input type="number" id="edit-pdf-num-preguntas" min="1" max="200" style="width:100%;padding:12px 14px;border:1.5px solid rgba(15,45,138,0.15);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.9rem;background:var(--gris-claro);outline:none">
+      <label>Reemplazar archivo PDF (opcional)</label>
+      <div id="edit-pdf-drop-zone" style="border:2px dashed rgba(15,45,138,0.25);border-radius:12px;padding:18px;text-align:center;cursor:pointer;transition:all 0.2s;background:var(--gris-claro)"
+        onclick="document.getElementById('edit-pdf-file-input').click()"
+        ondragover="event.preventDefault();this.style.borderColor='var(--azul)'"
+        ondragleave="this.style.borderColor='rgba(15,45,138,0.25)'"
+        ondrop="handleEditPdfDrop(event)">
+        <div id="edit-pdf-drop-label" style="font-size:0.85rem;font-weight:600;color:var(--azul-oscuro)">📄 Deja el PDF actual, o arrastra uno nuevo aquí</div>
+        <input type="file" id="edit-pdf-file-input" accept=".pdf" style="display:none" onchange="onEditPdfFileSelected(this.files[0])">
+      </div>
     </div>
+    <div id="alerta-editar-pdf" class="alerta"></div>
     <div style="display:flex;gap:12px;margin-top:20px">
-      <button onclick="guardarEdicionPdf()" style="flex:1;padding:12px;background:linear-gradient(135deg,var(--azul),var(--azul-medio));color:white;border:none;border-radius:9px;font-family:'DM Sans',sans-serif;font-weight:700;cursor:pointer">Guardar cambios</button>
+      <button onclick="guardarEdicionPdf()" id="btn-guardar-edicion-pdf" style="flex:1;padding:12px;background:linear-gradient(135deg,var(--azul),var(--azul-medio));color:white;border:none;border-radius:9px;font-family:'DM Sans',sans-serif;font-weight:700;cursor:pointer">Guardar cambios</button>
       <button onclick="cerrarModalPdf()" style="padding:12px 20px;background:var(--gris-claro);color:var(--gris);border:none;border-radius:9px;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer">Cancelar</button>
     </div>
   </div>
@@ -1699,6 +1759,13 @@ body.tema-tech .btn-editar {
           <option value="ascenso">🏆 Ascenso</option>
         </select>
       </div>
+      <div class="form-group" style="margin-bottom:0">
+        <label>Número de opciones por pregunta</label>
+        <select id="ep-num-opciones" style="width:100%;padding:12px 14px;border:1.5px solid rgba(15,45,138,0.15);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.9rem;background:var(--gris-claro);outline:none">
+          <option value="4" selected>4 (A, B, C, D)</option>
+          <option value="3">3 (A, B, C)</option>
+        </select>
+      </div>
     </div>
     <div class="form-group">
       <label>Clave de respuestas (una por línea: número:letra)</label>
@@ -1723,7 +1790,7 @@ body.tema-tech .btn-editar {
     </button>
   </div>
 
-  <h3 style="font-family:'Playfair Display',serif;color:var(--azul-oscuro);margin-bottom:16px;font-size:1.2rem">📋 Exámenes subidos</h3>
+  <h3 style="font-family:'Playfair Display',serif;color:var(--admin-heading);margin-bottom:16px;font-size:1.2rem">📋 Exámenes subidos</h3>
   <table class="usuarios-table">
     <thead><tr><th>Título</th><th>Tipo</th><th>Especialidad</th><th>Preguntas</th><th>Subido</th><th>Activo</th><th>Acciones</th></tr></thead>
     <tbody id="admin-pdf-tbody"><tr><td colspan="7" class="sin-historial">Cargando...</td></tr></tbody>
@@ -1777,7 +1844,7 @@ body.tema-tech .btn-editar {
     <button onclick="cancelarEdicionCurso()" id="btn-cancelar-curso" style="display:none;padding:12px 20px;background:var(--gris-claro);color:var(--azul-oscuro);border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer;margin-left:8px">Cancelar</button>
   </div>
 
-  <h3 style="font-family:'Playfair Display',serif;color:var(--azul-oscuro);margin-bottom:16px;font-size:1.2rem">📋 Cursos</h3>
+  <h3 style="font-family:'Playfair Display',serif;color:var(--admin-heading);margin-bottom:16px;font-size:1.2rem">📋 Cursos</h3>
   <table class="usuarios-table">
     <thead><tr><th>Curso</th><th>Categoría</th><th>Videos</th><th>Activo</th><th>Acciones</th></tr></thead>
     <tbody id="admin-cursos-tbody"><tr><td colspan="5" class="sin-historial">Cargando...</td></tr></tbody>
@@ -1785,8 +1852,8 @@ body.tema-tech .btn-editar {
 
   <!-- PANEL: Videos del curso seleccionado -->
   <div id="admin-videos-panel" style="display:none;margin-top:32px;padding-top:24px;border-top:2px dashed rgba(15,45,138,0.15)">
-    <h3 style="font-family:'Playfair Display',serif;color:var(--azul-oscuro);margin-bottom:16px;font-size:1.15rem">
-      🎬 Videos de: <span id="videos-curso-nombre" style="color:var(--azul)"></span>
+    <h3 style="font-family:'Playfair Display',serif;color:var(--admin-heading);margin-bottom:16px;font-size:1.15rem">
+      🎬 Videos de: <span id="videos-curso-nombre" style="color:var(--admin-accent)"></span>
       <button onclick="cerrarPanelVideos()" style="float:right;padding:6px 14px;background:var(--gris-claro);border:none;border-radius:8px;font-size:0.8rem;font-weight:600;cursor:pointer;color:var(--azul-oscuro)">✕ Cerrar</button>
     </h3>
     <div class="admin-form-card" style="max-width:780px;margin-bottom:20px">
@@ -1808,8 +1875,8 @@ body.tema-tech .btn-editar {
 
   <!-- PANEL: Preguntas del video seleccionado -->
   <div id="admin-preguntas-panel" style="display:none;margin-top:32px;padding-top:24px;border-top:2px dashed rgba(15,45,138,0.15)">
-    <h3 style="font-family:'Playfair Display',serif;color:var(--azul-oscuro);margin-bottom:16px;font-size:1.15rem">
-      📝 Cuestionario de: <span id="preguntas-video-nombre" style="color:var(--azul)"></span>
+    <h3 style="font-family:'Playfair Display',serif;color:var(--admin-heading);margin-bottom:16px;font-size:1.15rem">
+      📝 Cuestionario de: <span id="preguntas-video-nombre" style="color:var(--admin-accent)"></span>
       <button onclick="cerrarPanelPreguntas()" style="float:right;padding:6px 14px;background:var(--gris-claro);border:none;border-radius:8px;font-size:0.8rem;font-weight:600;cursor:pointer;color:var(--azul-oscuro)">✕ Cerrar</button>
     </h3>
     <div class="admin-form-card" style="max-width:780px;margin-bottom:20px">
@@ -1839,8 +1906,8 @@ body.tema-tech .btn-editar {
 <!-- ── TAB: CERTIFICADOS ── -->
 <div id="admin-tab-certificados" class="admin-tab-content" style="display:none;padding:0 5% 36px;">
   <div style="margin-bottom:20px">
-    <h3 style="font-family:'Playfair Display',serif;color:var(--azul-oscuro);font-size:1.2rem;margin-bottom:4px">🏆 Certificados solicitados</h3>
-    <p style="color:var(--gris);font-size:0.83rem">Docentes que completaron un curso y pidieron su certificado. Márcalo como entregado cuando ya coordinaste el pago y se lo enviaste.</p>
+    <h3 style="font-family:'Playfair Display',serif;color:var(--admin-heading);font-size:1.2rem;margin-bottom:4px">🏆 Certificados solicitados</h3>
+    <p style="color:var(--admin-subtext);font-size:0.83rem">Docentes que completaron un curso y pidieron su certificado. Márcalo como entregado cuando ya coordinaste el pago y se lo enviaste.</p>
   </div>
   <div style="margin-bottom:16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
     <button class="admin-tab active" id="cert-filtro-pendientes" onclick="filtrarCertificados('pendientes')" style="font-size:0.82rem;padding:8px 16px">⏳ Pendientes</button>
@@ -2398,7 +2465,7 @@ async function cargarDashboard() {
   if (esp && esp !== 'general') {
     const espLabel = esp === 'inicial' ? '🧒 Educación Inicial' : '📚 Educación Primaria';
     const tipoLabel = tipoExamen === 'ascenso' ? '🏆 Ascenso' : '📋 Nombramiento';
-    espBadge.innerHTML = `<span style="background:rgba(15,45,138,0.08);border:1.5px solid rgba(15,45,138,0.15);padding:5px 12px;border-radius:8px;font-size:0.82rem;font-weight:600;color:var(--azul-oscuro)">${tipoLabel} · ${espLabel}</span>`;
+    espBadge.innerHTML = `<span style="background:rgba(15,45,138,0.08);border:1.5px solid rgba(15,45,138,0.15);padding:5px 12px;border-radius:8px;font-size:0.82rem;font-weight:600;color:var(--admin-heading)">${tipoLabel} · ${espLabel}</span>`;
   }
 
   // Banner de vencimiento próximo (menos de 7 días)
@@ -2469,7 +2536,7 @@ async function cargarDashboard() {
       usoDiarioEl.innerHTML = `
         <div style="display:flex;align-items:center;gap:8px;font-size:0.82rem">
           <span style="color:${color};font-weight:700">🎯 ${restantes} simulacro${restantes !== 1 ? 's' : ''} disponible${restantes !== 1 ? 's' : ''} hoy</span>
-          <span style="color:var(--gris)">(${count || 0}/${limite} usados)</span>
+          <span style="color:var(--admin-subtext)">(${count || 0}/${limite} usados)</span>
         </div>`;
     }
   } catch (e) { console.error('Error cargando uso diario:', e); }
@@ -3753,6 +3820,8 @@ init();
 // EXÁMENES PDF — ADMIN
 // ══════════════════════════════════════════
 let pdfFileSeleccionado = null;
+let editPdfFileSeleccionado = null;
+let examenesPdfAdminCache = {}; // { id: registro completo, incluida clave_respuestas }
 
 function handlePdfDrop(e) {
   e.preventDefault();
@@ -3771,7 +3840,25 @@ function onPdfFileSelected(file) {
   document.getElementById('pdf-drop-zone').style.borderColor = 'var(--success)';
 }
 
-function parsearClave(texto) {
+function handleEditPdfDrop(e) {
+  e.preventDefault();
+  document.getElementById('edit-pdf-drop-zone').style.borderColor = 'rgba(15,45,138,0.25)';
+  const file = e.dataTransfer.files[0];
+  if (file && file.type === 'application/pdf') onEditPdfFileSelected(file);
+}
+
+function onEditPdfFileSelected(file) {
+  if (!file || file.type !== 'application/pdf') {
+    showAlertaEditarPdf('❌ Solo se aceptan archivos PDF.', 'error');
+    return;
+  }
+  editPdfFileSeleccionado = file;
+  document.getElementById('edit-pdf-drop-label').textContent = '✅ ' + file.name + ' (' + (file.size / 1024).toFixed(0) + ' KB) — reemplazará al actual';
+  document.getElementById('edit-pdf-drop-zone').style.borderColor = 'var(--success)';
+}
+
+function parsearClave(texto, maxOpciones) {
+  const opcionesValidas = maxOpciones === 3 ? ['A','B','C'] : ['A','B','C','D'];
   const clave = {};
   texto.split('\n').forEach(linea => {
     linea = linea.trim();
@@ -3780,16 +3867,26 @@ function parsearClave(texto) {
     if (partes.length >= 2) {
       const num = parseInt(partes[0].trim());
       const resp = partes[1].trim().toUpperCase();
-      if (!isNaN(num) && ['A','B','C','D'].includes(resp)) clave[num] = resp;
+      if (!isNaN(num) && opcionesValidas.includes(resp)) clave[num] = resp;
     }
   });
   return clave;
+}
+
+// Convierte el objeto { "1":"A", "2":"C", ... } al formato de texto "1:A" para precargar el textarea
+function formatearClave(claveObj) {
+  if (!claveObj || typeof claveObj !== 'object') return '';
+  return Object.keys(claveObj)
+    .sort((a, b) => parseInt(a) - parseInt(b))
+    .map(num => `${num}:${claveObj[num]}`)
+    .join('\n');
 }
 
 async function subirExamenPDF() {
   if (!esAdmin()) return;
   const titulo = document.getElementById('ep-titulo').value.trim();
   const numPreguntas = parseInt(document.getElementById('ep-num-preguntas').value);
+  const numOpciones = parseInt(document.getElementById('ep-num-opciones').value);
   const especialidad = document.getElementById('pdf-especialidad').value;
   const tipo = document.getElementById('pdf-tipo').value;
   const claveTexto = document.getElementById('ep-clave').value.trim();
@@ -3800,7 +3897,7 @@ async function subirExamenPDF() {
   if (!pdfFileSeleccionado) return showAlertaAdminPdf('⚠️ Selecciona un archivo PDF.', 'error');
   if (!claveTexto) return showAlertaAdminPdf('⚠️ Ingresa la clave de respuestas.', 'error');
 
-  const clave = parsearClave(claveTexto);
+  const clave = parsearClave(claveTexto, numOpciones);
   if (Object.keys(clave).length === 0) return showAlertaAdminPdf('⚠️ La clave no tiene el formato correcto (ej: 1:A).', 'error');
 
   const btn = document.getElementById('btn-subir-pdf');
@@ -3820,6 +3917,7 @@ async function subirExamenPDF() {
     const { error: insertError } = await sb.from('examenes_pdf').insert({
       titulo, tipo, especialidad,
       num_preguntas: numPreguntas,
+      num_opciones: numOpciones,
       clave_respuestas: clave,
       pdf_url: pdfUrl,
       activo: true
@@ -3829,6 +3927,7 @@ async function subirExamenPDF() {
     showAlertaAdminPdf('✅ Examen subido correctamente.', 'success');
     document.getElementById('ep-titulo').value = '';
     document.getElementById('ep-clave').value = '';
+    document.getElementById('ep-num-opciones').value = '4';
     document.getElementById('pdf-drop-label').textContent = 'Arrastra el PDF aquí o haz clic para seleccionar';
     document.getElementById('pdf-drop-zone').style.borderColor = 'rgba(15,45,138,0.25)';
     pdfFileSeleccionado = null;
@@ -3850,17 +3949,27 @@ function showAlertaAdminPdf(msg, tipo) {
   if (tipo !== 'warning') setTimeout(() => el.style.display = 'none', 4000);
 }
 
+function showAlertaEditarPdf(msg, tipo) {
+  const el = document.getElementById('alerta-editar-pdf');
+  el.textContent = msg;
+  el.className = 'alerta ' + tipo;
+  el.style.display = 'block';
+  if (tipo !== 'warning') setTimeout(() => el.style.display = 'none', 4000);
+}
+
 async function cargarExamenesPdfAdmin() {
   if (!esAdmin()) return;
   try {
     const { data, error } = await sb.from('examenes_pdf').select('*').order('created_at', { ascending: false });
     if (error) throw error;
     const tbody = document.getElementById('admin-pdf-tbody');
+    examenesPdfAdminCache = {};
     if (!data || data.length === 0) {
       tbody.innerHTML = '<tr><td colspan="7" class="sin-historial">No hay exámenes PDF subidos aún</td></tr>';
       return;
     }
     tbody.innerHTML = data.map(e => {
+      examenesPdfAdminCache[e.id] = e; // guarda el registro completo, incluida clave_respuestas, para el modal de edición
       const fecha = new Date(e.created_at).toLocaleDateString('es-PE');
       const espLabel = e.especialidad === 'inicial' ? '🧒 Inicial' : e.especialidad === 'primaria' ? '📚 Primaria' : '🌐 General';
       const tipoLabel = e.tipo === 'ascenso' ? '🏆 Ascenso' : '📋 Nombramiento';
@@ -3872,7 +3981,7 @@ async function cargarExamenesPdfAdmin() {
         <td style="font-size:0.8rem;color:var(--gris)">${fecha}</td>
         <td><span class="estado-chip ${e.activo ? 'activo' : 'inactivo'}">${e.activo ? '✅ Sí' : '❌ No'}</span></td>
         <td>
-          <button onclick="abrirEditarPdf('${e.id}','${(e.titulo||'').replace(/'/g,"\\'")}','${e.tipo}','${e.especialidad}',${e.num_preguntas})" class="btn-editar" style="margin-right:6px">✏️ Editar</button>
+          <button onclick="abrirEditarPdf('${e.id}')" class="btn-editar" style="margin-right:6px">✏️ Editar</button>
           <button onclick="toggleActivoPdf('${e.id}', ${!e.activo})" class="toggle-membresia ${e.activo ? 'desactivar' : 'activar'}" style="margin-right:6px">${e.activo ? 'Desactivar' : 'Activar'}</button>
           <button onclick="eliminarExamenPdf('${e.id}')" style="padding:5px 10px;border-radius:7px;font-size:0.75rem;background:rgba(239,68,68,0.1);color:var(--error);border:1px solid rgba(239,68,68,0.25);cursor:pointer;font-family:'DM Sans',sans-serif">🗑</button>
         </td>
@@ -3896,12 +4005,20 @@ async function eliminarExamenPdf(id) {
   cargarExamenesPdfAdmin();
 }
 
-function abrirEditarPdf(id, titulo, tipo, especialidad, numPreguntas) {
-  document.getElementById('edit-pdf-id').value = id;
-  document.getElementById('edit-pdf-titulo').value = titulo;
-  document.getElementById('edit-pdf-tipo').value = tipo;
-  document.getElementById('edit-pdf-especialidad').value = especialidad;
-  document.getElementById('edit-pdf-num-preguntas').value = numPreguntas;
+function abrirEditarPdf(id) {
+  const e = examenesPdfAdminCache[id];
+  if (!e) return;
+  document.getElementById('edit-pdf-id').value = e.id;
+  document.getElementById('edit-pdf-titulo').value = e.titulo || '';
+  document.getElementById('edit-pdf-tipo').value = e.tipo;
+  document.getElementById('edit-pdf-especialidad').value = e.especialidad;
+  document.getElementById('edit-pdf-num-preguntas').value = e.num_preguntas;
+  document.getElementById('edit-pdf-num-opciones').value = e.num_opciones === 3 ? '3' : '4';
+  document.getElementById('edit-pdf-clave').value = formatearClave(e.clave_respuestas);
+  editPdfFileSeleccionado = null;
+  document.getElementById('edit-pdf-drop-label').textContent = '📄 Deja el PDF actual, o arrastra uno nuevo aquí';
+  document.getElementById('edit-pdf-drop-zone').style.borderColor = 'rgba(15,45,138,0.25)';
+  document.getElementById('alerta-editar-pdf').style.display = 'none';
   document.getElementById('modal-editar-pdf').style.display = 'flex';
 }
 
@@ -3915,17 +4032,50 @@ async function guardarEdicionPdf() {
   const tipo = document.getElementById('edit-pdf-tipo').value;
   const especialidad = document.getElementById('edit-pdf-especialidad').value;
   const numPreguntas = parseInt(document.getElementById('edit-pdf-num-preguntas').value);
-  if (!titulo) return alert('⚠️ El título no puede estar vacío.');
+  const numOpciones = parseInt(document.getElementById('edit-pdf-num-opciones').value);
+  const claveTexto = document.getElementById('edit-pdf-clave').value.trim();
+
+  if (!titulo) return showAlertaEditarPdf('⚠️ El título no puede estar vacío.', 'error');
+  if (!claveTexto) return showAlertaEditarPdf('⚠️ La clave de respuestas no puede estar vacía.', 'error');
+
+  const clave = parsearClave(claveTexto, numOpciones);
+  if (Object.keys(clave).length === 0) return showAlertaEditarPdf('⚠️ La clave no tiene el formato correcto (ej: 1:A).', 'error');
+
+  const btn = document.getElementById('btn-guardar-edicion-pdf');
+  const textoOriginalBtn = btn.textContent;
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner" style="border-top-color:white"></span> Guardando...';
+
   try {
-    const { error } = await sb.from('examenes_pdf').update({
-      titulo, tipo, especialidad, num_preguntas: numPreguntas
-    }).eq('id', id);
+    const payload = {
+      titulo, tipo, especialidad,
+      num_preguntas: numPreguntas,
+      num_opciones: numOpciones,
+      clave_respuestas: clave
+    };
+
+    // Si se seleccionó un nuevo PDF, se sube primero y se reemplaza la URL
+    if (editPdfFileSeleccionado) {
+      const fileName = Date.now() + '_' + editPdfFileSeleccionado.name.replace(/\s+/g, '_');
+      const { error: uploadError } = await sb.storage
+        .from('examenes-pdf')
+        .upload(fileName, editPdfFileSeleccionado, { contentType: 'application/pdf' });
+      if (uploadError) throw uploadError;
+      const { data: urlData } = sb.storage.from('examenes-pdf').getPublicUrl(fileName);
+      payload.pdf_url = urlData.publicUrl;
+    }
+
+    const { error } = await sb.from('examenes_pdf').update(payload).eq('id', id);
     if (error) throw error;
+    editPdfFileSeleccionado = null;
     cerrarModalPdf();
     cargarExamenesPdfAdmin();
   } catch (e) {
     console.error('Error editando examen PDF:', e);
-    alert('❌ Error al guardar: ' + (e.message || 'Verifica tu conexión.'));
+    showAlertaEditarPdf('❌ Error al guardar: ' + (e.message || 'Verifica tu conexión.'), 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = textoOriginalBtn;
   }
 }
 
@@ -4764,9 +4914,9 @@ function epdfRenderLista() {
       const answered = !!estado;
       const clave = claves[i]; // solo existe si ya se respondió esta pregunta (llega del servidor)
       if (answered) {
-        if (o === clave) cls += ' show-correct';
         if (o === resp && estado === 'wrong') cls += ' wrong';
         if (o === resp && estado === 'ok') cls += ' correct';
+        else if (o === clave) cls += ' show-correct';
       } else {
         if (o === resp) cls += ' selected';
       }
