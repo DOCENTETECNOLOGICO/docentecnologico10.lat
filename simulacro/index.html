@@ -410,6 +410,33 @@ body { font-family:'DM Sans',sans-serif; background:var(--gris-claro); min-heigh
 /* ── EXAMEN PDF ── */
 .epdf-opt { flex:1;padding:5px 0;border:0.5px solid rgba(15,45,138,0.15);border-radius:8px;background:var(--blanco);font-size:12px;font-weight:600;cursor:pointer;color:var(--azul-oscuro);transition:all 0.15s;font-family:'DM Sans',sans-serif; }
 .epdf-opt:hover { border-color:var(--azul);color:var(--azul);background:rgba(15,45,138,0.05); }
+.pdf-card { position:relative; }
+.pdf-card .pdf-card-icon {
+  width:44px;height:44px;border-radius:12px;
+  background:linear-gradient(135deg,var(--azul),var(--azul-medio));
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.25rem;margin-bottom:14px;
+  box-shadow:0 0 0 4px rgba(23,195,242,0.08);
+}
+.pdf-card-tags { display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px; }
+.pdf-card-tag {
+  font-size:0.72rem;font-weight:700;padding:3px 10px;border-radius:100px;
+  background:rgba(15,45,138,0.07);color:var(--azul);
+  border:1px solid rgba(15,45,138,0.12);
+}
+body.tema-tech .pdf-card-tag { background:rgba(15,45,138,0.08);color:var(--azul); }
+.pdf-hero-header { display:flex; align-items:flex-end; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-bottom:18px; }
+.pdf-hero-header h2 { font-family:'Playfair Display',serif;font-size:1.5rem;color:var(--admin-heading);margin:0; }
+.pdf-hero-header p { font-size:0.85rem;color:var(--admin-subtext);margin-top:4px; }
+.pdf-quickfacts { display:flex;gap:10px;flex-wrap:wrap; }
+.pdf-quickfact {
+  display:flex;align-items:center;gap:7px;
+  background:rgba(23,195,242,0.08);border:1px solid rgba(23,195,242,0.2);
+  padding:7px 13px;border-radius:100px;font-size:0.78rem;font-weight:600;
+  color:var(--admin-heading);
+}
+.pdf-quickfact strong { font-family:'Playfair Display',serif;color:var(--cian-claro);font-size:0.95rem; }
+body:not(.tema-tech) .pdf-quickfact strong { color:var(--cian-oscuro); }
 .opt-btn { flex:1;padding:5px 0;border:0.5px solid rgba(15,45,138,0.15);border-radius:8px;background:var(--blanco);font-size:12px;font-weight:600;cursor:pointer;color:var(--azul-oscuro);transition:all 0.15s;font-family:'DM Sans',sans-serif; }
 .opt-btn:hover:not(:disabled) { border-color:var(--azul);color:var(--azul);background:rgba(15,45,138,0.05); }
 .opt-btn.selected { border-color:var(--azul);background:var(--azul);color:white; }
@@ -536,13 +563,22 @@ body.tema-tech .usuarios-table td {
 }
 body.tema-tech .usuarios-table tr:hover td { background:rgba(201,162,39,0.06); }
 
-/* Pestañas de admin: indicador dorado en vez de fondo plano */
+/* Pestañas de admin: fondo oscuro a juego con la carcasa (antes se quedaba
+   blanco de base y el texto casi blanco encima quedaba ilegible) */
 body.tema-tech .admin-tab {
-  color:rgba(255,255,255,0.55);
+  background:rgba(255,255,255,0.05);
+  border-color:rgba(255,255,255,0.14);
+  color:rgba(255,255,255,0.62);
+}
+body.tema-tech .admin-tab:hover:not(.active) {
+  background:rgba(23,195,242,0.1);
+  border-color:var(--cian);
+  color:var(--cian-claro);
 }
 body.tema-tech .admin-tab.active {
   color:var(--dorado-claro);
-  border-bottom:2px solid var(--dorado);
+  border-color:var(--dorado);
+  box-shadow:0 0 0 1px rgba(201,162,39,0.25);
 }
 
 /* Insignias: anillo dorado sutil en vez de solo relleno de color */
@@ -779,79 +815,19 @@ body.tema-tech .btn-editar {
     <div id="dash-uso-diario" style="margin-top:8px"></div>
   </div>
 
-  <!-- Info oficial MINEDU -->
-  <div style="background:linear-gradient(135deg,var(--azul-oscuro),var(--azul));border-radius:16px;padding:24px 28px;margin-bottom:28px;color:white;position:relative;overflow:hidden">
-    <div style="position:absolute;top:-40px;right:-40px;width:180px;height:180px;background:rgba(201,162,39,0.1);border-radius:50%"></div>
-    <div style="font-size:0.75rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--dorado-claro);margin-bottom:8px;font-weight:700">📋 Estructura oficial MINEDU</div>
-    <div style="display:flex;gap:32px;flex-wrap:wrap">
-      <div><strong style="font-family:'Playfair Display',serif;font-size:1.5rem;color:var(--dorado)">75</strong><div style="font-size:0.78rem;color:rgba(255,255,255,0.65)">Preguntas totales</div></div>
-      <div><strong style="font-family:'Playfair Display',serif;font-size:1.5rem;color:var(--dorado)">200</strong><div style="font-size:0.78rem;color:rgba(255,255,255,0.65)">Puntaje máximo</div></div>
-      <div><strong style="font-family:'Playfair Display',serif;font-size:1.5rem;color:var(--dorado)">110</strong><div style="font-size:0.78rem;color:rgba(255,255,255,0.65)">Puntaje mínimo</div></div>
-      <div><strong style="font-family:'Playfair Display',serif;font-size:1.5rem;color:var(--dorado)">3h 45m</strong><div style="font-size:0.78rem;color:rgba(255,255,255,0.65)">Tiempo total</div></div>
-    </div>
-  </div>
-
-  <div class="dash-grid">
-    <!-- Simulacro Nombramiento completo -->
-    <div class="sim-card" id="card-sim-nombramiento">
-      <div class="sim-icon">📋</div>
-      <h3 id="titulo-sim-nombramiento">Nombramiento Docente</h3>
-      <p>Simulacro completo con la estructura oficial del MINEDU: 2 subpruebas, 75 preguntas y sistema de puntaje real.</p>
-      <div style="background:var(--gris-claro);border-radius:10px;padding:14px;margin-bottom:16px">
-        <div style="font-size:0.78rem;color:var(--gris);margin-bottom:8px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px">Subpruebas</div>
-        <div style="display:flex;flex-direction:column;gap:6px">
-          <div style="display:flex;justify-content:space-between;font-size:0.82rem">
-            <span>📖 Habilidades Generales</span>
-            <span style="color:var(--gris)">25 pregs · 2pts c/u · Máx 50</span>
-          </div>
-          <div style="display:flex;justify-content:space-between;font-size:0.82rem">
-            <span>🧠 Conocimientos Pedagógicos</span>
-            <span style="color:var(--gris)">50 pregs · 3pts c/u · Mín 84</span>
-          </div>
-        </div>
-      </div>
-      <div class="sim-meta">
-        <span>⏱ 3h 45min</span>
-        <span>📝 75 preguntas</span>
-        <span>🎯 Mín. 110 pts</span>
-      </div>
-      <button class="btn-iniciar" id="btn-sim-nombramiento" onclick="iniciarSimulacro('nombramiento')" style="margin-top:16px">
-        Iniciar simulacro →
-      </button>
-    </div>
-
-    <!-- Simulacro Ascenso -->
-    <div class="sim-card" id="card-sim-ascenso">
-      <div class="sim-icon">🏆</div>
-      <h3 id="titulo-sim-ascenso">Ascenso de Escala Magisterial</h3>
-      <p>Prepárate para subir de escala con simulacros especializados alineados a los temarios oficiales del MINEDU.</p>
-      <div style="background:var(--gris-claro);border-radius:10px;padding:14px;margin-bottom:16px">
-        <div style="font-size:0.78rem;color:var(--gris);margin-bottom:8px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px">Subpruebas</div>
-        <div style="display:flex;flex-direction:column;gap:6px">
-          <div style="display:flex;justify-content:space-between;font-size:0.82rem">
-            <span>📖 Habilidades Generales</span>
-            <span style="color:var(--gris)">25 pregs · 2pts c/u · Máx 50</span>
-          </div>
-          <div style="display:flex;justify-content:space-between;font-size:0.82rem">
-            <span>🧠 Conocimientos Pedagógicos</span>
-            <span style="color:var(--gris)">50 pregs · 3pts c/u · Mín 84</span>
-          </div>
-        </div>
-      </div>
-      <div class="sim-meta">
-        <span>⏱ 3h 45min</span>
-        <span>📝 75 preguntas</span>
-        <span>🎯 Mín. 110 pts</span>
-      </div>
-      <button class="btn-iniciar" id="btn-sim-ascenso" onclick="iniciarSimulacro('ascenso')" style="margin-top:16px">
-        Iniciar simulacro →
-      </button>
-    </div>
-  </div>
-
-  <!-- Exámenes PDF -->
+  <!-- Exámenes PDF Oficiales — ahora es la sección principal del Dashboard -->
   <div style="margin-bottom:28px">
-    <h2 style="font-family:'Playfair Display',serif;font-size:1.3rem;color:var(--admin-heading);margin-bottom:16px">📄 Exámenes PDF Oficiales</h2>
+    <div class="pdf-hero-header">
+      <div>
+        <h2>📄 Exámenes PDF Oficiales</h2>
+        <p>Descarga el examen, respóndelo a tu ritmo y obtén tu puntaje al instante — con la estructura oficial del MINEDU.</p>
+      </div>
+      <div class="pdf-quickfacts">
+        <div class="pdf-quickfact">🧩 <strong>2</strong>&nbsp;subpruebas</div>
+        <div class="pdf-quickfact">🎯 <strong>200</strong>&nbsp;pts máx.</div>
+        <div class="pdf-quickfact">✅ <strong>110</strong>&nbsp;pts mín.</div>
+      </div>
+    </div>
     <div id="dash-examenes-pdf-lista" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px">
       <div style="text-align:center;padding:28px;color:var(--gris);font-size:0.85rem;background:var(--blanco);border-radius:12px;border:1.5px dashed rgba(15,45,138,0.12)" id="dash-pdf-loading">Cargando exámenes...</div>
     </div>
@@ -1147,7 +1123,7 @@ body.tema-tech .btn-editar {
 
     <table class="usuarios-table">
       <thead><tr>
-        <th>Nombre</th><th>Correo</th><th>Tipo Examen</th><th>Especialidad</th><th>Plan</th><th>Vencimiento</th><th>Membresía</th><th>IA</th><th>Acciones</th>
+        <th>Nombre</th><th>Correo</th><th>Tipo Examen</th><th>Especialidad</th><th>Plan</th><th>Vencimiento</th><th>Membresía</th><th>Cursos</th><th>Acciones</th>
       </tr></thead>
       <tbody id="admin-tbody">
         <tr><td colspan="9" class="sin-historial">Cargando usuarios...</td></tr>
@@ -1221,6 +1197,14 @@ body.tema-tech .btn-editar {
             </select>
           </div>
         </div>
+      </div>
+
+      <div class="form-group" style="margin-top:8px">
+        <label>🎥 Acceso a cursos del Aula Virtual</label>
+        <div id="new-cursos-ia-list" style="display:flex;flex-direction:column;gap:8px;background:var(--gris-claro);border-radius:10px;padding:14px;border:1.5px solid rgba(15,45,138,0.1)">
+          <div style="font-size:0.8rem;color:var(--gris)">Cargando cursos...</div>
+        </div>
+        <div style="font-size:0.75rem;color:var(--gris);margin-top:4px">Marca los cursos a los que este docente tendrá acceso. Si no marcas ninguno, no tendrá acceso al Aula Virtual — puedes agregárselo después editándolo.</div>
       </div>
 
       <div style="margin-top:8px;padding:14px;background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.3);border-radius:10px;font-size:0.82rem;color:#92400e">
@@ -1604,7 +1588,7 @@ body.tema-tech .btn-editar {
 </div>
 
 <div id="modal-editar" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;display:none;align-items:center;justify-content:center;padding:20px">
-  <div style="background:var(--blanco);border-radius:16px;padding:32px;max-width:440px;width:100%;box-shadow:0 24px 60px rgba(0,0,0,0.2)">
+  <div style="background:var(--blanco);border-radius:16px;padding:32px;max-width:440px;width:100%;box-shadow:0 24px 60px rgba(0,0,0,0.2);max-height:90vh;overflow-y:auto">
     <h3 style="font-family:'Playfair Display',serif;color:var(--azul-oscuro);margin-bottom:20px">✏️ Editar usuario</h3>
     <input type="hidden" id="edit-id">
     <div class="form-group">
@@ -1657,6 +1641,13 @@ body.tema-tech .btn-editar {
         <option value="true">✅ Activa</option>
         <option value="false">❌ Inactiva</option>
       </select>
+    </div>
+    <div class="form-group">
+      <label>🎥 Acceso a cursos del Aula Virtual</label>
+      <div id="edit-cursos-ia-list" style="display:flex;flex-direction:column;gap:8px;background:var(--gris-claro);border-radius:10px;padding:14px;border:1.5px solid rgba(15,45,138,0.1)">
+        <div style="font-size:0.8rem;color:var(--gris)">Cargando cursos...</div>
+      </div>
+      <div style="font-size:0.75rem;color:var(--gris);margin-top:4px">Marca los cursos a los que este docente tendrá acceso.</div>
     </div>
     <div style="display:flex;gap:12px;margin-top:20px">
       <button onclick="guardarEdicion()" style="flex:1;padding:12px;background:linear-gradient(135deg,var(--azul),var(--azul-medio));color:white;border:none;border-radius:9px;font-family:'DM Sans',sans-serif;font-weight:700;cursor:pointer">Guardar cambios</button>
@@ -2487,38 +2478,7 @@ async function cargarDashboard() {
     banner.style.display = 'none';
   }
 
-  // Mostrar SOLO la tarjeta del tipo de examen contratado; bloquear por membresía
-  const tipoContratado = currentProfile?.tipo_examen || 'nombramiento';
-  const espLabelCard = esp === 'inicial' ? 'Educación Inicial' : esp === 'primaria' ? 'Educación Primaria' : '';
-  ['btn-sim-nombramiento','btn-sim-ascenso'].forEach(id => {
-    const btn = document.getElementById(id);
-    const tipoBtn = id.replace('btn-sim-', '');
-    const card = document.getElementById('card-sim-' + tipoBtn);
-    const tituloEl = document.getElementById('titulo-sim-' + tipoBtn);
-
-    // Si ya tiene membresía activa y el tipo no coincide con lo contratado, ocultar la tarjeta por completo
-    if (activa && tipoBtn !== tipoContratado) {
-      if (card) card.style.display = 'none';
-      return;
-    }
-    if (card) card.style.display = '';
-
-    if (tituloEl) {
-      const base = tipoBtn === 'nombramiento' ? 'Nombramiento Docente' : 'Ascenso de Escala Magisterial';
-      tituloEl.textContent = espLabelCard ? `${base} — ${espLabelCard}` : base;
-    }
-
-    if (!activa) {
-      btn.classList.add('locked');
-      btn.textContent = '🔒 Requiere membresía';
-      btn.onclick = () => window.open(waLink('Hola, quiero adquirir una membresia'),'_blank');
-    } else {
-      btn.classList.remove('locked');
-      btn.textContent = 'Iniciar simulacro →';
-      btn.onclick = () => iniciarSimulacro(tipoBtn);
-    }
-  });
-
+  
   // Mostrar uso diario
   try {
     const hoy = new Date().toISOString().split('T')[0];
@@ -3077,6 +3037,7 @@ async function cargarAdmin() {
     document.getElementById('stat-inactivos').textContent = todosUsuarios.filter(u => !u.membresia_activa).length;
     document.getElementById('stat-simulacros').textContent = historial?.length || 0;
     renderTablaUsuarios(todosUsuarios);
+    renderCursosChecklist('new-cursos-ia-list', []);
   } catch (e) {
     console.error('Error cargando panel admin:', e);
     showAlertaAdmin('❌ Error de conexión al cargar usuarios. Recarga la página.', 'error');
@@ -3092,7 +3053,12 @@ function renderTablaUsuarios(usuarios) {
   tbody.innerHTML = usuarios.map(u => {
     const fecha = new Date(u.created_at).toLocaleDateString('es-PE');
     const activa = u.membresia_activa;
-    const accesoIA = !!u.acceso_ia;
+    const tieneSeleccionCursos = Array.isArray(u.cursos_permitidos);
+    const numCursos = tieneSeleccionCursos ? u.cursos_permitidos.length : null;
+    const cursosLabel = tieneSeleccionCursos
+      ? `${numCursos} curso${numCursos === 1 ? '' : 's'}`
+      : (u.acceso_ia ? 'Automático (IA)' : 'Sin definir');
+    const cursosActivo = tieneSeleccionCursos ? numCursos > 0 : !!u.acceso_ia;
     const plan = u.plan || 'ninguno';
     const planLabel = plan === '1mes' ? '1 mes' : plan === '6meses' ? '6 meses' : plan === '12meses' ? '12 meses' : '—';
     const tipoLabel = u.tipo_examen === 'ascenso' ? '🏆 Ascenso' : '📋 Nombramiento';
@@ -3105,11 +3071,10 @@ function renderTablaUsuarios(usuarios) {
       <td><span style="background:rgba(15,45,138,0.07);padding:3px 8px;border-radius:6px;font-size:0.78rem">${planLabel}</span></td>
       <td style="font-size:0.8rem;color:var(--gris)">${u.vencimiento ? new Date(u.vencimiento).toLocaleDateString('es-PE') : '—'}</td>
       <td><span class="estado-chip ${activa ? 'activo' : 'inactivo'}">${activa ? '✅ Activa' : '❌ Inactiva'}</span></td>
-      <td><span class="estado-chip ${accesoIA ? 'activo' : 'inactivo'}">${accesoIA ? '✅' : '❌'}</span></td>
+      <td><span class="estado-chip ${cursosActivo ? 'activo' : 'inactivo'}" title="Edita el usuario para elegir cursos específicos">${cursosLabel}</span></td>
       <td>
         <button class="btn-editar" onclick="abrirEditar('${u.id}')">✏️ Editar</button>
         <button class="toggle-membresia ${activa ? 'desactivar' : 'activar'}" onclick="toggleMembresia('${u.id}', ${!activa})">${activa ? 'Desactivar' : 'Activar'}</button>
-        <button class="toggle-membresia ${accesoIA ? 'desactivar' : 'activar'}" onclick="toggleAccesoIA('${u.id}', ${!accesoIA})">${accesoIA ? 'Quitar IA' : 'Activar IA'}</button>
       </td>
     </tr>`;
   }).join('');
@@ -3138,13 +3103,55 @@ async function toggleMembresia(userId, estado) {
 async function toggleAccesoIA(userId, estado) {
   if (!esAdmin()) return;
   try {
-    const { error } = await sb.from('perfiles').update({ acceso_ia: estado }).eq('id', userId);
+    // Atajo rápido de la tabla: activa/desactiva TODOS los cursos de IA de una vez.
+    // Al activar, se quita cualquier restricción por curso específico (cursos_permitidos:null → acceso a todos).
+    // Al desactivar, se deja explícito que no tiene acceso a ninguno.
+    const { error } = await sb.from('perfiles').update({
+      acceso_ia: estado,
+      cursos_permitidos: estado ? null : []
+    }).eq('id', userId);
     if (error) throw error;
     cargarAdmin();
   } catch (e) {
     console.error('Error al cambiar acceso IA:', e);
     showAlertaAdmin('❌ No se pudo actualizar el acceso a IA. Intenta de nuevo.', 'error');
   }
+}
+
+async function renderCursosChecklist(containerId, seleccionados) {
+  const cont = document.getElementById(containerId);
+  if (!cont) return;
+  try {
+    const { data, error } = await sb.from('cursos').select('id, titulo, icono, categoria, nivel_requerido').order('categoria').order('orden');
+    if (error) throw error;
+    if (!data || data.length === 0) {
+      cont.innerHTML = '<div style="font-size:0.8rem;color:var(--gris)">Aún no hay cursos creados. Agrégalos desde la pestaña "Cursos".</div>';
+      return;
+    }
+    // seleccionados puede ser un array de IDs, o una función (curso) => boolean
+    // (se usa para precalcular el acceso "de facto" de usuarios aún no migrados al selector nuevo)
+    const estaSeleccionado = typeof seleccionados === 'function'
+      ? seleccionados
+      : (c => (seleccionados || []).map(String).includes(String(c.id)));
+    cont.innerHTML = data.map(c => {
+      const catLabel = c.categoria === 'ia' ? '🤖 IA' : `📚 ${c.nivel_requerido === 'primaria' ? 'Primaria' : 'Inicial'}`;
+      return `
+      <label style="display:flex;align-items:center;gap:8px;font-size:0.85rem;cursor:pointer">
+        <input type="checkbox" value="${c.id}" ${estaSeleccionado(c) ? 'checked' : ''} style="width:16px;height:16px;accent-color:var(--azul);flex-shrink:0">
+        <span>${c.icono || '🎓'} ${escapeHtml(c.titulo)}</span>
+        <span style="margin-left:auto;font-size:0.7rem;color:var(--gris);background:rgba(15,45,138,0.06);padding:2px 8px;border-radius:100px;white-space:nowrap">${catLabel}</span>
+      </label>`;
+    }).join('');
+  } catch (e) {
+    console.error('Error cargando checklist de cursos:', e);
+    cont.innerHTML = '<div style="font-size:0.8rem;color:var(--error)">⚠️ No se pudieron cargar los cursos.</div>';
+  }
+}
+
+function leerCursosIASeleccionados(containerId) {
+  const cont = document.getElementById(containerId);
+  if (!cont) return [];
+  return Array.from(cont.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value);
 }
 
 function abrirEditar(id) {
@@ -3158,6 +3165,15 @@ function abrirEditar(id) {
   document.getElementById('edit-tipo-examen').value = u.tipo_examen || 'nombramiento';
   document.getElementById('edit-especialidad').value = u.especialidad || 'inicial';
   document.getElementById('edit-limite').value = String(u.limite_diario || 3);
+  // Si el usuario aún no tiene cursos_permitidos definido (columna nueva / usuario antiguo),
+  // se precalcula qué cursos tenía de facto: los de "nivel" que calzan con su especialidad
+  // (si su membresía está activa) + los de "ia" si tenía acceso_ia activado. Así no pierde
+  // acceso a nada al guardar por primera vez con el selector nuevo.
+  const yaTieneSeleccion = Array.isArray(u.cursos_permitidos);
+  renderCursosChecklist('edit-cursos-ia-list', yaTieneSeleccion ? u.cursos_permitidos : (c => {
+    if (c.categoria === 'ia') return !!u.acceso_ia;
+    return !!u.membresia_activa && c.nivel_requerido === (u.especialidad || 'inicial');
+  }));
   const modal = document.getElementById('modal-editar');
   modal.style.display = 'flex';
 }
@@ -3175,6 +3191,7 @@ async function guardarEdicion() {
   const tipo_examen  = document.getElementById('edit-tipo-examen').value;
   const especialidad = document.getElementById('edit-especialidad').value;
   const limite_diario = parseInt(document.getElementById('edit-limite').value);
+  const cursos_permitidos = leerCursosIASeleccionados('edit-cursos-ia-list');
 
   let vencimiento = null;
   if (membresia) {
@@ -3188,7 +3205,8 @@ async function guardarEdicion() {
   try {
     const { error } = await sb.from('perfiles').update({
       nombre, plan, membresia_activa: membresia, vencimiento,
-      tipo_examen, especialidad, limite_diario
+      tipo_examen, especialidad, limite_diario,
+      cursos_permitidos, acceso_ia: cursos_permitidos.length > 0
     }).eq('id', id);
     if (error) throw error;
     cerrarModal();
@@ -3208,6 +3226,7 @@ async function crearUsuarioAdmin() {
   const tipo_examen  = document.getElementById('new-tipo-examen').value;
   const especialidad = document.getElementById('new-especialidad').value;
   const limite_diario = parseInt(document.getElementById('new-limite').value);
+  const cursos_permitidos = leerCursosIASeleccionados('new-cursos-ia-list');
 
   if (!nombre || !email || !pass) return showAlertaAdmin('⚠️ Completa todos los campos.', 'error');
   if (pass.length < 8) return showAlertaAdmin('⚠️ La contraseña debe tener al menos 8 caracteres.', 'error');
@@ -3232,6 +3251,7 @@ async function crearUsuarioAdmin() {
       membresia_activa: true,
       plan, tipo_examen, especialidad,
       limite_diario,
+      cursos_permitidos, acceso_ia: cursos_permitidos.length > 0,
       vencimiento: hoy.toISOString()
     });
     if (e2) throw e2;
@@ -3240,6 +3260,7 @@ async function crearUsuarioAdmin() {
     document.getElementById('new-nombre').value = '';
     document.getElementById('new-email').value = '';
     document.getElementById('new-pass').value = '';
+    document.querySelectorAll('#new-cursos-ia-list input[type="checkbox"]').forEach(cb => cb.checked = false);
   } catch (e) {
     console.error('Error creando usuario:', e);
     showAlertaAdmin('❌ Error de conexión. No se pudo crear el usuario.', 'error');
@@ -4101,10 +4122,13 @@ async function cargarExamenesPdfDashboard() {
     contenedor.innerHTML = data.map(e => {
       const espLabel = e.especialidad === 'inicial' ? '🧒 Inicial' : e.especialidad === 'primaria' ? '📚 Primaria' : '🌐 General';
       const tipoLabel = e.tipo === 'ascenso' ? '🏆 Ascenso' : '📋 Nombramiento';
-      return `<div class="sim-card" style="cursor:pointer" onclick="iniciarExamenPDF('${e.id}')">
-        <div class="sim-icon">📄</div>
-        <h3 style="font-size:1rem">${e.titulo}</h3>
-        <p style="font-size:0.82rem;margin-bottom:12px">${tipoLabel} · ${espLabel}</p>
+      return `<div class="sim-card pdf-card" style="cursor:pointer" onclick="iniciarExamenPDF('${e.id}')">
+        <div class="pdf-card-icon">📄</div>
+        <h3 style="font-size:1rem;margin-bottom:8px">${e.titulo}</h3>
+        <div class="pdf-card-tags">
+          <span class="pdf-card-tag">${tipoLabel}</span>
+          <span class="pdf-card-tag">${espLabel}</span>
+        </div>
         <div class="sim-meta">
           <span>📝 ${e.num_preguntas} preguntas</span>
           <span>🎯 Feedback inmediato</span>
@@ -4145,20 +4169,32 @@ async function cargarAulaVirtual() {
 
     const especialidad = currentProfile?.especialidad;
     const tieneMembresiaNivel = !!(currentProfile?.membresia_activa && (especialidad === 'inicial' || especialidad === 'primaria'));
-    const tieneAccesoIA = !!currentProfile?.acceso_ia;
+    const accesoIAGeneral = !!currentProfile?.acceso_ia;
+    // Si el perfil ya tiene una selección explícita (cursos_permitidos, elegida desde el
+    // panel admin), esa lista manda para TODOS los cursos, sean de nivel o de IA — control
+    // total curso por curso. Si aún no se ha migrado (columna null/undefined), se usa el
+    // criterio automático de siempre (nivel: membresía+especialidad · IA: acceso_ia),
+    // para no cortarle el acceso a nadie que ya lo tenía antes de este cambio.
+    const seleccionCursos = Array.isArray(currentProfile?.cursos_permitidos) ? currentProfile.cursos_permitidos.map(String) : null;
 
     const cursosNivel = (data || []).filter(c => c.categoria === 'nivel' && c.nivel_requerido === especialidad);
     const cursosIA = (data || []).filter(c => c.categoria === 'ia');
 
     if (cursosNivel.length > 0) {
       seccionNivel.style.display = 'block';
-      gridNivel.innerHTML = cursosNivel.map(c => renderCursoCard(c, tieneMembresiaNivel)).join('');
+      gridNivel.innerHTML = cursosNivel.map(c => {
+        const tieneAcceso = seleccionCursos ? seleccionCursos.includes(String(c.id)) : tieneMembresiaNivel;
+        return renderCursoCard(c, tieneAcceso);
+      }).join('');
     } else {
       seccionNivel.style.display = 'none';
     }
 
     gridIA.innerHTML = cursosIA.length
-      ? cursosIA.map(c => renderCursoCard(c, tieneAccesoIA)).join('')
+      ? cursosIA.map(c => {
+          const tieneAcceso = seleccionCursos ? seleccionCursos.includes(String(c.id)) : accesoIAGeneral;
+          return renderCursoCard(c, tieneAcceso);
+        }).join('')
       : '<div style="padding:20px;color:var(--gris);font-size:0.85rem;background:var(--blanco);border-radius:12px;border:1.5px dashed rgba(15,45,138,0.12)">📭 Aún no hay cursos de IA disponibles.</div>';
   } catch(e) {
     console.error('Error cargando aula virtual:', e);
