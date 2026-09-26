@@ -1171,8 +1171,6 @@ body.tema-tech .btn-editar {
           <label>Especialidad</label>
           <div class="input-wrap"><span class="ico">🏫</span>
             <select id="new-especialidad" style="width:100%;padding:12px 14px 12px 40px;border:1.5px solid rgba(15,45,138,0.15);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.9rem;background:var(--gris-claro);outline:none;color:var(--azul-oscuro)">
-              <option value="inicial">🧒 Educación Inicial</option>
-              <option value="primaria">📚 Educación Primaria</option>
             </select>
           </div>
         </div>
@@ -1290,10 +1288,6 @@ body.tema-tech .btn-editar {
           <option value="cp">🧠 Conocimientos Pedagógicos</option>
         </select>
         <select id="filtro-dif-esp" onchange="cargarPreguntasDificiles()" style="padding:9px 14px;border:1.5px solid rgba(15,45,138,0.15);border-radius:9px;font-family:'DM Sans',sans-serif;font-size:0.83rem;outline:none;background:var(--blanco)">
-          <option value="">Todas las especialidades</option>
-          <option value="general">🌐 General</option>
-          <option value="inicial">🧒 Inicial</option>
-          <option value="primaria">📚 Primaria</option>
         </select>
       </div>
     </div>
@@ -1370,9 +1364,6 @@ body.tema-tech .btn-editar {
         <div class="form-group" style="margin-bottom:0">
           <label>Especialidad</label>
           <select id="np-especialidad" style="width:100%;padding:11px 14px;border:1.5px solid rgba(15,45,138,0.15);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.88rem;background:var(--gris-claro);outline:none">
-            <option value="general">🌐 General (HG)</option>
-            <option value="inicial">🧒 Educación Inicial</option>
-            <option value="primaria">📚 Educación Primaria</option>
           </select>
         </div>
       </div>
@@ -1465,7 +1456,7 @@ body.tema-tech .btn-editar {
         <div style="margin-top:10px;font-size:0.75rem;color:var(--gris)">
           <strong>tipo:</strong> nombramiento | ascenso &nbsp;·&nbsp;
           <strong>subprueba:</strong> hg (Habilidades Generales) | cp (Conocimientos Pedagógicos) &nbsp;·&nbsp;
-          <strong>especialidad:</strong> inicial | primaria &nbsp;·&nbsp; <em style="color:#92400e">(hg no necesita especialidad, usar "general")</em> &nbsp;·&nbsp;
+          <strong>especialidad:</strong> inicial | primaria | comunicacion | matematica | ciencia_tecnologia | desarrollo_personal | aip | ingles &nbsp;·&nbsp; <em style="color:#92400e">(hg no necesita especialidad, usar "general")</em> &nbsp;·&nbsp;
           <strong>respuesta:</strong> A | B | C | D
         </div>
       </div>
@@ -1514,10 +1505,6 @@ body.tema-tech .btn-editar {
           <option value="cp">🧠 Conocimientos Pedagógicos</option>
         </select>
         <select id="filtro-esp-p" onchange="cargarPreguntas()" style="padding:10px 14px;border:1.5px solid rgba(15,45,138,0.15);border-radius:9px;font-family:'DM Sans',sans-serif;font-size:0.85rem;outline:none;background:var(--blanco)">
-          <option value="">Todas las especialidades</option>
-          <option value="general">🌐 General (HG)</option>
-          <option value="inicial">🧒 Inicial</option>
-          <option value="primaria">📚 Primaria</option>
         </select>
         <div id="contador-preguntas" style="font-size:0.83rem;color:var(--gris);margin-left:auto"></div>
       </div>
@@ -1555,9 +1542,6 @@ body.tema-tech .btn-editar {
       <div class="form-group" style="margin-bottom:0">
         <label>Especialidad</label>
         <select id="ep-especialidad" style="width:100%;padding:10px 14px;border:1.5px solid rgba(15,45,138,0.15);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.85rem;background:var(--gris-claro);outline:none">
-          <option value="general">🌐 General (HG)</option>
-          <option value="inicial">🧒 Inicial</option>
-          <option value="primaria">📚 Primaria</option>
         </select>
       </div>
     </div>
@@ -1608,8 +1592,6 @@ body.tema-tech .btn-editar {
       <label>Especialidad</label>
       <div class="input-wrap"><span class="ico">🏫</span>
         <select id="edit-especialidad" style="width:100%;padding:12px 14px 12px 40px;border:1.5px solid rgba(15,45,138,0.15);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.9rem;background:var(--gris-claro);outline:none">
-          <option value="inicial">🧒 Educación Inicial</option>
-          <option value="primaria">📚 Educación Primaria</option>
         </select>
       </div>
     </div>
@@ -1675,9 +1657,6 @@ body.tema-tech .btn-editar {
       <div class="form-group">
         <label>Especialidad</label>
         <select id="edit-pdf-especialidad" style="width:100%;padding:12px 14px;border:1.5px solid rgba(15,45,138,0.15);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.9rem;background:var(--gris-claro);outline:none">
-          <option value="inicial">🧒 Educación Inicial</option>
-          <option value="primaria">📚 Educación Primaria</option>
-          <option value="general">🌐 General (visible para ambas)</option>
         </select>
       </div>
     </div>
@@ -1736,10 +1715,6 @@ body.tema-tech .btn-editar {
       <div class="form-group" style="margin-bottom:0">
         <label>Especialidad</label>
         <select id="pdf-especialidad" style="width:100%;padding:12px 14px;border:1.5px solid rgba(15,45,138,0.15);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.9rem;background:var(--gris-claro);outline:none">
-          <option value="" selected disabled>⚠️ Selecciona una especialidad...</option>
-          <option value="inicial">🧒 Educación Inicial</option>
-          <option value="primaria">📚 Educación Primaria</option>
-          <option value="general">🌐 General (visible para ambas)</option>
         </select>
       </div>
       <div class="form-group" style="margin-bottom:0">
@@ -1812,14 +1787,12 @@ body.tema-tech .btn-editar {
         <label>Categoría</label>
         <select id="curso-categoria-input" onchange="toggleNivelRequerido()" style="width:100%;padding:12px 14px;border:1.5px solid rgba(15,45,138,0.15);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.9rem;background:var(--gris-claro);outline:none">
           <option value="ia">🤖 Inteligencia Artificial</option>
-          <option value="nivel">📚 Nivel (Inicial/Primaria)</option>
+          <option value="nivel">📚 Por especialidad</option>
         </select>
       </div>
       <div class="form-group" style="margin-bottom:0;display:none" id="curso-nivel-wrap">
-        <label>Nivel requerido</label>
+        <label>Especialidad requerida</label>
         <select id="curso-nivel-input" style="width:100%;padding:12px 14px;border:1.5px solid rgba(15,45,138,0.15);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:0.9rem;background:var(--gris-claro);outline:none">
-          <option value="inicial">🧒 Inicial</option>
-          <option value="primaria">📚 Primaria</option>
         </select>
       </div>
       <div class="form-group" style="margin-bottom:0">
@@ -1982,6 +1955,62 @@ function waLink(mensaje) {
   return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(mensaje)}`;
 }
 
+// ══════════════════════════════════════════
+// ESPECIALIDADES — fuente única de verdad.
+// Agregar una especialidad nueva SOLO requiere sumar un objeto aquí:
+// automáticamente aparece en todos los selects (crear/editar usuario,
+// preguntas, exámenes PDF, cursos, filtros) y en todas las etiquetas.
+// El valor (campo "valor") es el que se guarda en Supabase — no cambiar
+// una vez que haya datos guardados con ese valor.
+// ══════════════════════════════════════════
+const ESPECIALIDADES = [
+  { valor:'inicial',             emoji:'🧒', corto:'Inicial',              largo:'Educación Inicial' },
+  { valor:'primaria',            emoji:'📚', corto:'Primaria',             largo:'Educación Primaria' },
+  { valor:'comunicacion',        emoji:'🗣️', corto:'Comunicación',         largo:'Comunicación' },
+  { valor:'matematica',          emoji:'➗', corto:'Matemática',           largo:'Matemática' },
+  { valor:'ciencia_tecnologia',  emoji:'🔬', corto:'Ciencia y Tecnología', largo:'Ciencia y Tecnología' },
+  { valor:'desarrollo_personal', emoji:'🧭', corto:'Desarrollo Personal',  largo:'Desarrollo Personal, Ciudadanía y Cívica' },
+  { valor:'aip',                 emoji:'💻', corto:'AIP',                  largo:'AIP (Aula de Innovación Pedagógica)' },
+  { valor:'ingles',              emoji:'🇬🇧', corto:'Inglés',              largo:'Inglés' },
+];
+const ESPECIALIDADES_MAP = Object.fromEntries(ESPECIALIDADES.map(e => [e.valor, e]));
+
+// Devuelve la etiqueta para mostrar de una especialidad (o "general").
+// { largo:true } usa el nombre completo (ej. "Educación Inicial" en vez de "Inicial").
+// { conEmoji:false } la devuelve en texto plano (para jsPDF, que no renderiza emojis).
+function espLabel(valor, { largo = false, conEmoji = true } = {}) {
+  if (!valor || valor === 'general') return conEmoji ? '🌐 General' : 'General';
+  const e = ESPECIALIDADES_MAP[valor];
+  if (!e) return valor; // valor desconocido: se muestra tal cual, no debería ocurrir
+  const texto = largo ? e.largo : e.corto;
+  return conEmoji ? `${e.emoji} ${texto}` : texto;
+}
+
+// Devuelve solo las <option> de las 8 especialidades (sin "general" ni placeholder).
+function opcionesEspecialidades(largo = false) {
+  return ESPECIALIDADES.map(e => `<option value="${e.valor}">${espLabel(e.valor, { largo })}</option>`).join('');
+}
+
+// Puebla todos los <select> de especialidad del HTML con las 8 opciones,
+// respetando lo que cada uno necesitaba antes (placeholder, "general", nombre corto/largo).
+function poblarSelectsEspecialidad() {
+  const setOpts = (id, html) => { const el = document.getElementById(id); if (el) el.innerHTML = html; };
+
+  setOpts('new-especialidad', opcionesEspecialidades(true));
+  setOpts('edit-especialidad', opcionesEspecialidades(true));
+
+  setOpts('np-especialidad', '<option value="general">🌐 General (HG)</option>' + opcionesEspecialidades(false));
+  setOpts('ep-especialidad', '<option value="general">🌐 General (HG)</option>' + opcionesEspecialidades(false));
+
+  setOpts('edit-pdf-especialidad', opcionesEspecialidades(true) + '<option value="general">🌐 General (visible para todas)</option>');
+  setOpts('pdf-especialidad', '<option value="" selected disabled>⚠️ Selecciona una especialidad...</option>' + opcionesEspecialidades(true) + '<option value="general">🌐 General (visible para todas)</option>');
+
+  setOpts('filtro-dif-esp', '<option value="">Todas las especialidades</option><option value="general">🌐 General</option>' + opcionesEspecialidades(false));
+  setOpts('filtro-esp-p', '<option value="">Todas las especialidades</option><option value="general">🌐 General (HG)</option>' + opcionesEspecialidades(false));
+
+  setOpts('curso-nivel-input', opcionesEspecialidades(false));
+}
+
 
 // ══════════════════════════════════════════
 // ESTADO DE LA APP
@@ -1994,6 +2023,8 @@ let currentSim = null; // { tipo, preguntas, idx, respuestas, tiempoInicio, time
 // INICIALIZACIÓN
 // ══════════════════════════════════════════
 async function init() {
+  poblarSelectsEspecialidad();
+
   const waRenovar = document.getElementById('banner-vencimiento-wa');
   if (waRenovar) waRenovar.href = waLink('Hola, quiero renovar mi membresia');
 
@@ -2244,7 +2275,7 @@ async function descargarHistorialPDF() {
     const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
 
     const nombre   = currentProfile?.nombre || currentUser.email;
-    const esp      = currentProfile?.especialidad === 'inicial' ? 'Educación Inicial' : currentProfile?.especialidad === 'primaria' ? 'Educación Primaria' : 'General';
+    const esp      = espLabel(currentProfile?.especialidad, { largo: true, conEmoji: false });
     const tipoDoc  = currentProfile?.tipo_examen === 'ascenso' ? 'Ascenso Docente' : 'Nombramiento Docente';
     const fechaHoy = new Date().toLocaleDateString('es-PE', { day:'2-digit', month:'long', year:'numeric' });
 
@@ -2454,9 +2485,8 @@ async function cargarDashboard() {
   const esp = currentProfile?.especialidad;
   const tipoExamen = currentProfile?.tipo_examen;
   if (esp && esp !== 'general') {
-    const espLabel = esp === 'inicial' ? '🧒 Educación Inicial' : '📚 Educación Primaria';
     const tipoLabel = tipoExamen === 'ascenso' ? '🏆 Ascenso' : '📋 Nombramiento';
-    espBadge.innerHTML = `<span style="background:rgba(15,45,138,0.08);border:1.5px solid rgba(15,45,138,0.15);padding:5px 12px;border-radius:8px;font-size:0.82rem;font-weight:600;color:var(--admin-heading)">${tipoLabel} · ${espLabel}</span>`;
+    espBadge.innerHTML = `<span style="background:rgba(15,45,138,0.08);border:1.5px solid rgba(15,45,138,0.15);padding:5px 12px;border-radius:8px;font-size:0.82rem;font-weight:600;color:var(--admin-heading)">${tipoLabel} · ${espLabel(esp, { largo: true })}</span>`;
   }
 
   // Banner de vencimiento próximo (menos de 7 días)
@@ -2595,8 +2625,7 @@ async function iniciarSimulacro(tipo) {
     }
     if (!cpDB || cpDB.length < 50) {
       showScreen('dashboard');
-      const espLabel = especialidad === 'inicial' ? 'Inicial' : especialidad === 'primaria' ? 'Primaria' : 'General';
-      alert(`⚠️ No hay suficientes preguntas de Conocimientos Pedagógicos (${espLabel}).\nSe necesitan 50, hay ${cpDB?.length || 0}.\nEl administrador debe agregar más preguntas.`);
+      alert(`⚠️ No hay suficientes preguntas de Conocimientos Pedagógicos (${espLabel(especialidad, { conEmoji: false })}).\nSe necesitan 50, hay ${cpDB?.length || 0}.\nEl administrador debe agregar más preguntas.`);
       return;
     }
 
@@ -3062,12 +3091,12 @@ function renderTablaUsuarios(usuarios) {
     const plan = u.plan || 'ninguno';
     const planLabel = plan === '1mes' ? '1 mes' : plan === '6meses' ? '6 meses' : plan === '12meses' ? '12 meses' : '—';
     const tipoLabel = u.tipo_examen === 'ascenso' ? '🏆 Ascenso' : '📋 Nombramiento';
-    const espLabel  = u.especialidad === 'primaria' ? '📚 Primaria' : u.especialidad === 'inicial' ? '🧒 Inicial' : '—';
+    const espLabelTxt = u.especialidad ? espLabel(u.especialidad) : '—';
     return `<tr>
       <td><strong>${escapeHtml(u.nombre) || '—'}</strong></td>
       <td style="font-size:0.8rem">${escapeHtml(u.email)}</td>
       <td style="font-size:0.78rem">${tipoLabel}</td>
-      <td style="font-size:0.78rem">${espLabel}</td>
+      <td style="font-size:0.78rem">${espLabelTxt}</td>
       <td><span style="background:rgba(15,45,138,0.07);padding:3px 8px;border-radius:6px;font-size:0.78rem">${planLabel}</span></td>
       <td style="font-size:0.8rem;color:var(--gris)">${u.vencimiento ? new Date(u.vencimiento).toLocaleDateString('es-PE') : '—'}</td>
       <td><span class="estado-chip ${activa ? 'activo' : 'inactivo'}">${activa ? '✅ Activa' : '❌ Inactiva'}</span></td>
@@ -3134,7 +3163,7 @@ async function renderCursosChecklist(containerId, seleccionados) {
       ? seleccionados
       : (c => (seleccionados || []).map(String).includes(String(c.id)));
     cont.innerHTML = data.map(c => {
-      const catLabel = c.categoria === 'ia' ? '🤖 IA' : `📚 ${c.nivel_requerido === 'primaria' ? 'Primaria' : 'Inicial'}`;
+      const catLabel = c.categoria === 'ia' ? '🤖 IA' : espLabel(c.nivel_requerido);
       return `
       <label style="display:flex;align-items:center;gap:8px;font-size:0.85rem;cursor:pointer">
         <input type="checkbox" value="${c.id}" ${estaSeleccionado(c) ? 'checked' : ''} style="width:16px;height:16px;accent-color:var(--azul);flex-shrink:0">
@@ -3338,7 +3367,6 @@ async function cargarPreguntasDificiles() {
     }
 
     const subLabel = s => s === 'hg' ? '📖 HG' : '🧠 CP';
-    const espLabel = e => e === 'inicial' ? '🧒 Inicial' : e === 'primaria' ? '📚 Primaria' : '🌐 General';
     const colorTasa = t => t >= 70 ? '#dc2626' : t >= 50 ? '#d97706' : '#16a34a';
 
     tbody.innerHTML = ranking.map((p, i) => `
@@ -3629,12 +3657,11 @@ async function cargarPreguntas() {
   }
 
   tbody.innerHTML = data.map((p, i) => {
-    const espLabel = p.especialidad === 'inicial' ? '🧒 Inicial' : p.especialidad === 'primaria' ? '📚 Primaria' : '🌐 General';
     return `<tr>
     <td style="color:var(--gris);font-size:0.78rem">${i+1}</td>
     <td>${p.tipo === 'nombramiento' ? '📋' : '🏆'} ${p.tipo}</td>
     <td>${p.subprueba === 'hg' ? '📖 HG' : '🧠 CP'}</td>
-    <td style="font-size:0.78rem">${espLabel}</td>
+    <td style="font-size:0.78rem">${espLabel(p.especialidad)}</td>
     <td style="font-size:0.82rem;max-width:280px">${p.pregunta.substring(0,80)}${p.pregunta.length>80?'...':''}</td>
     <td><strong>${letras[p.respuesta_correcta]}</strong></td>
     <td>
@@ -3756,8 +3783,9 @@ async function procesarExcel(file) {
       errores.push(`Fila ${i+1}: subprueba inválida ("${sub}")`);
       continue;
     }
-    if (!['general','inicial','primaria'].includes(esp)) {
-      errores.push(`Fila ${i+1}: especialidad inválida ("${esp}") — usar: general | inicial | primaria`);
+    const especialidadesValidas = ['general', ...ESPECIALIDADES.map(e => e.valor)];
+    if (!especialidadesValidas.includes(esp)) {
+      errores.push(`Fila ${i+1}: especialidad inválida ("${esp}") — usar: ${especialidadesValidas.join(' | ')}`);
       continue;
     }
     if (!preg || !a || !b || !c || !d) {
@@ -3782,7 +3810,7 @@ async function procesarExcel(file) {
     <td>${i+1}</td>
     <td>${p.tipo}</td>
     <td>${p.subprueba === 'hg' ? '📖 HG' : '🧠 CP'}</td>
-    <td>${p.especialidad === 'inicial' ? '🧒 Inicial' : p.especialidad === 'primaria' ? '📚 Primaria' : '🌐 General'}</td>
+    <td>${espLabel(p.especialidad)}</td>
     <td style="font-size:0.78rem">${p.pregunta.substring(0,60)}...</td>
     <td>${['A','B','C','D'][p.respuesta_correcta]}</td>
     <td><span style="color:#16a34a;font-weight:700">✅ OK</span></td>
@@ -3913,7 +3941,7 @@ async function subirExamenPDF() {
   const claveTexto = document.getElementById('ep-clave').value.trim();
 
   if (!titulo) return showAlertaAdminPdf('⚠️ Escribe el título del examen.', 'error');
-  if (!especialidad) return showAlertaAdminPdf('⚠️ Selecciona la especialidad (Inicial / Primaria / General).', 'error');
+  if (!especialidad) return showAlertaAdminPdf('⚠️ Selecciona la especialidad.', 'error');
   if (!tipo) return showAlertaAdminPdf('⚠️ Selecciona el tipo (Nombramiento / Ascenso).', 'error');
   if (!pdfFileSeleccionado) return showAlertaAdminPdf('⚠️ Selecciona un archivo PDF.', 'error');
   if (!claveTexto) return showAlertaAdminPdf('⚠️ Ingresa la clave de respuestas.', 'error');
@@ -3992,12 +4020,11 @@ async function cargarExamenesPdfAdmin() {
     tbody.innerHTML = data.map(e => {
       examenesPdfAdminCache[e.id] = e; // guarda el registro completo, incluida clave_respuestas, para el modal de edición
       const fecha = new Date(e.created_at).toLocaleDateString('es-PE');
-      const espLabel = e.especialidad === 'inicial' ? '🧒 Inicial' : e.especialidad === 'primaria' ? '📚 Primaria' : '🌐 General';
       const tipoLabel = e.tipo === 'ascenso' ? '🏆 Ascenso' : '📋 Nombramiento';
       return `<tr>
         <td><strong>${e.titulo}</strong></td>
         <td style="font-size:0.82rem">${tipoLabel}</td>
-        <td style="font-size:0.82rem">${espLabel}</td>
+        <td style="font-size:0.82rem">${espLabel(e.especialidad)}</td>
         <td style="text-align:center">${e.num_preguntas}</td>
         <td style="font-size:0.8rem;color:var(--gris)">${fecha}</td>
         <td><span class="estado-chip ${e.activo ? 'activo' : 'inactivo'}">${e.activo ? '✅ Sí' : '❌ No'}</span></td>
@@ -4120,14 +4147,13 @@ async function cargarExamenesPdfDashboard() {
     }
 
     contenedor.innerHTML = data.map(e => {
-      const espLabel = e.especialidad === 'inicial' ? '🧒 Inicial' : e.especialidad === 'primaria' ? '📚 Primaria' : '🌐 General';
       const tipoLabel = e.tipo === 'ascenso' ? '🏆 Ascenso' : '📋 Nombramiento';
       return `<div class="sim-card pdf-card" style="cursor:pointer" onclick="iniciarExamenPDF('${e.id}')">
         <div class="pdf-card-icon">📄</div>
         <h3 style="font-size:1rem;margin-bottom:8px">${e.titulo}</h3>
         <div class="pdf-card-tags">
           <span class="pdf-card-tag">${tipoLabel}</span>
-          <span class="pdf-card-tag">${espLabel}</span>
+          <span class="pdf-card-tag">${espLabel(e.especialidad)}</span>
         </div>
         <div class="sim-meta">
           <span>📝 ${e.num_preguntas} preguntas</span>
@@ -4168,7 +4194,7 @@ async function cargarAulaVirtual() {
     if (error) throw error;
 
     const especialidad = currentProfile?.especialidad;
-    const tieneMembresiaNivel = !!(currentProfile?.membresia_activa && (especialidad === 'inicial' || especialidad === 'primaria'));
+    const tieneMembresiaNivel = !!(currentProfile?.membresia_activa && ESPECIALIDADES_MAP[especialidad]);
     const accesoIAGeneral = !!currentProfile?.acceso_ia;
     // Si el perfil ya tiene una selección explícita (cursos_permitidos, elegida desde el
     // panel admin), esa lista manda para TODOS los cursos, sean de nivel o de IA — control
@@ -4473,7 +4499,7 @@ async function cargarCursosAdmin() {
       const videosDelCurso = (videos || []).filter(v => v.curso_id === c.id);
       const numVideos = videosDelCurso.length;
       const incompleto = numVideos === 0 || videosDelCurso.some(v => !(preguntas || []).some(p => p.video_id === v.id));
-      const catLabel = c.categoria === 'ia' ? '🤖 IA' : `📚 Nivel · ${c.nivel_requerido === 'inicial' ? 'Inicial' : 'Primaria'}`;
+      const catLabel = c.categoria === 'ia' ? '🤖 IA' : espLabel(c.nivel_requerido);
       return `<tr>
         <td><strong>${c.icono || '🎓'} ${c.titulo}</strong>${incompleto ? ' <span title="Falta agregar videos o preguntas" style="background:rgba(245,158,11,0.12);color:var(--warning);border:1px solid rgba(245,158,11,0.3);padding:2px 8px;border-radius:10px;font-size:0.72rem;font-weight:700;margin-left:6px">⚠️ Incompleto</span>' : ''}</td>
         <td style="font-size:0.8rem">${catLabel}</td>
@@ -4906,8 +4932,8 @@ async function iniciarExamenPDF(id) {
     };
 
     document.getElementById('epdf-titulo').textContent = data.titulo;
-    const espLabel = data.especialidad === 'inicial' ? 'Inicial' : data.especialidad === 'primaria' ? 'Primaria' : 'General';
-    document.getElementById('epdf-subtitulo').textContent = data.tipo === 'ascenso' ? '🏆 Ascenso · ' + espLabel : '📋 Nombramiento · ' + espLabel;
+    const espLabelTxt = espLabel(data.especialidad, { conEmoji: false });
+    document.getElementById('epdf-subtitulo').textContent = data.tipo === 'ascenso' ? '🏆 Ascenso · ' + espLabelTxt : '📋 Nombramiento · ' + espLabelTxt;
     document.getElementById('epdf-iframe').src = data.pdf_url;
     document.getElementById('epdf-progreso').textContent = '0 / ' + data.num_preguntas;
     document.getElementById('epdf-barra').style.width = '0%';
