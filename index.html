@@ -904,7 +904,7 @@ body.tema-tech .btn-editar {
     <button onclick="cerrarVideo()" style="margin-bottom:20px;padding:9px 18px;background:var(--gris-claro);color:var(--azul-oscuro);border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer;font-size:0.85rem">← Volver al curso</button>
     <h2 id="video-titulo" style="font-family:'Playfair Display',serif;color:var(--azul-oscuro);margin-bottom:16px;font-size:1.2rem"></h2>
 
-    <div id="video-player-wrap" style="position:relative;padding-bottom:56.25%;height:0;border-radius:14px;overflow:hidden;box-shadow:0 12px 32px rgba(15,45,138,0.15)">
+    <div id="video-player-wrap" style="position:relative;padding-bottom:56.25%;height:0;border-radius:14px;overflow:hidden;background:#000;box-shadow:0 12px 32px rgba(15,45,138,0.15)">
       <div id="yt-player" style="position:absolute;top:0;left:0;width:100%;height:100%"></div>
     </div>
 
@@ -4303,7 +4303,6 @@ async function abrirVideo(videoId) {
   document.getElementById('cuestionario-resultado').textContent = '';
   showScreen('video');
 
-  await cargarYouTubeAPI();
   crearReproductor(video.youtube_id);
 }
 
@@ -4316,23 +4315,63 @@ function cerrarVideo() {
 
 // ── YouTube IFrame API ──
 function cargarYouTubeAPI() {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     if (window.YT && window.YT.Player) { ytApiReady = true; return resolve(); }
-    const tag = document.createElement('script');
-    tag.src = 'https://www.youtube.com/iframe_api';
-    document.head.appendChild(tag);
-    window.onYouTubeIframeAPIReady = () => { ytApiReady = true; resolve(); };
+    const prev = window.onYouTubeIframeAPIReady;
+    window.onYouTubeIframeAPIReady = () => { if (prev) { try { prev(); } catch(e){} } ytApiReady = true; resolve(); };
+    if (!document.querySelector('script[src*="youtube.com/iframe_api"]')) {
+      const tag = document.createElement('script');
+      tag.src = 'https://www.youtube.com/iframe_api';
+      tag.onerror = () => reject(new Error('No se pudo cargar la API de YouTube'));
+      document.head.appendChild(tag);
+    }
+    setTimeout(() => reject(new Error('Timeout cargando la API de YouTube')), 10000);
   });
 }
 
-function crearReproductor(youtubeId) {
+// Acepta un ID de 11 caracteres o cualquier URL de YouTube y devuelve solo el ID
+function extraerYouTubeId(v) {
+  v = (v || '').trim();
+  const m = v.match(/(?:youtu\.be\/|v=|embed\/|shorts\/|live\/)([A-Za-z0-9_-]{11})/);
+  if (m) return m[1];
+  return /^[A-Za-z0-9_-]{11}$/.test(v) ? v : null;
+}
+
+function mostrarErrorVideo(msg) {
+  document.getElementById('video-player-wrap').innerHTML =
+    '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:20px;text-align:center;background:#0f2d8a;color:#fff;font-size:0.9rem">⚠️ ' + msg + '</div>';
+}
+
+async function crearReproductor(youtubeId) {
+  youtubeId = extraerYouTubeId(youtubeId) || youtubeId;
   const wrap = document.getElementById('video-player-wrap');
-  wrap.innerHTML = '<div id="yt-player" style="position:absolute;top:0;left:0;width:100%;height:100%"></div>';
-  ytPlayer = new YT.Player('yt-player', {
-    videoId: youtubeId,
-    playerVars: { rel: 0, modestbranding: 1 },
-    events: { onStateChange: onPlayerStateChange }
-  });
+  const origin = location.protocol.startsWith('http') ? '&origin=' + encodeURIComponent(location.origin) : '';
+  // El iframe se pinta directo (con tamaño controlado) para que el video se vea aunque la API falle
+  wrap.innerHTML =
+    '<iframe id="yt-player" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;background:#000"' +
+    ' src="https://www.youtube.com/embed/' + youtubeId + '?enablejsapi=1&rel=0&modestbranding=1&playsinline=1' + origin + '"' +
+    ' allow="accelerometer; autoplay; encrypted-media; picture-in-picture; fullscreen"' +
+    ' allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>';
+  try {
+    await cargarYouTubeAPI();
+    ytPlayer = new YT.Player('yt-player', {
+      events: {
+        onStateChange: onPlayerStateChange,
+        onError: (e) => {
+          const msg = { 100: 'El video no existe o es privado.',
+                        101: 'El dueño no permite insertar este video.',
+                        150: 'El dueño no permite insertar este video.',
+                        153: 'Falta el referrer: abre la app desde https, no desde un archivo local.' }[e.data]
+                      || 'Error al reproducir el video.';
+          mostrarErrorVideo(msg);
+        }
+      }
+    });
+  } catch (e) {
+    console.error(e);
+    const av = document.getElementById('video-aviso');
+    if (av) av.textContent = '⚠️ No se pudo conectar con YouTube para detectar el final del video.';
+  }
 }
 
 async function onPlayerStateChange(event) {
@@ -4669,10 +4708,10 @@ async function guardarVideo() {
   if (!esAdmin() || !cursoVideosActivo) return;
   const id = document.getElementById('video-edit-id').value;
   const titulo = document.getElementById('video-titulo-input').value.trim();
-  const youtube_id = document.getElementById('video-youtube-input').value.trim();
+  const youtube_id = extraerYouTubeId(document.getElementById('video-youtube-input').value);
   const orden = parseInt(document.getElementById('video-orden-input').value) || 0;
 
-  if (!titulo || !youtube_id) return alert('⚠️ Completa el título y el ID de YouTube.');
+  if (!titulo || !youtube_id) return alert('⚠️ Completa el título y un ID o URL válida de YouTube.');
 
   const payload = { titulo, youtube_id, orden, curso_id: cursoVideosActivo.id };
   try {
